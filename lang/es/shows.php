@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'edit' => 'Editar',
+    'edit_order' => 'Editar orden',
+    'edit_service' => 'Editar servicio',
+    'shipment_details' => 'Detalles de embarque',
+    'attach' => 'Adjuntar',
+    'attach_file' => 'Adjuntar archivo',
+    'duplicate' => 'Duplicar',
+    'add_service' => 'Agregar servicio',
+    'services' => 'Servicios',
+    'files' => 'Expedientes',
+    'status' => 'Estatus',
+    'internal_control' => 'Control interno',
+    'make_urgent' => 'Marcar urgente',
+    'remove_urgent' => 'Quitar urgente',
+    'save_status' => 'Guardar estatus',
+    'order_errors' => 'Para editar la órden soluciona los siguientes errores:',
+    'service_errors' => 'Para editar el servicio soluciona los siguientes errores:',
+    'at_time' => 'a las',
+    'created_at' => 'Creado el',
+    'from' => 'Origen',
+    'to' => 'Destino',
+    'overload' => 'Sobre dimensión',
+    'hazardous_material' => 'Material peligroso',
+    'refrigerated' => 'Refrigerado',
+    'insurance' => 'Seguro',
+    'tarps' => 'Tarps',
+    'comments' => 'Comentarios'
+];

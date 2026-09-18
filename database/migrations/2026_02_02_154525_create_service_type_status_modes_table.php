@@ -1,0 +1,31 @@
+<?php
+
+use App\Models\ServiceMode;
+use App\Models\ServiceTypeStatus;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('service_type_status_modes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(ServiceTypeStatus::class)->constrained();
+            $table->foreignIdFor(ServiceMode::class)->constrained();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('service_type_status_modes');
+    }
+};

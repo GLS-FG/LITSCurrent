@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'edit' => 'Edit',
+    'edit_order' => 'Edit order',
+    'edit_service' => 'Edit Service',
+    'shipment_details' => 'Shipment details',
+    'attach' => 'Attach',
+    'attach_file' => 'Attach file',
+    'duplicate' => 'Duplicate',
+    'add_service' => 'Add service',
+    'services' => 'Services',
+    'files' => 'Files',
+    'status' => 'Status',
+    'internal_control' => 'Internal control',
+    'make_urgent' => 'Make urgent',
+    'remove_urgent' => 'Remove urgent',
+    'save_status' => 'Save status',
+    'order_errors' => 'Fix the following errors to edit the order:',
+    'service_errors' => 'Fix the following errors to edit the service:',
+    'at_time' => 'at',
+    'created_at' => 'Created at',
+    'from' => 'From',
+    'to' => 'To',
+    'overload' => 'Overload',
+    'hazardous_material' => 'Hazardous material',
+    'refrigerated' => 'Refrigerated',
+    'insurance' => 'Insurance',
+    'tarps' => 'Tarps',
+    'comments' => 'Comments',
+];
+

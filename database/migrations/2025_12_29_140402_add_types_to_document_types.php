@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('document_types', function (Blueprint $table) {
+            $table->boolean('shipments')->default(false);
+            $table->boolean('customs')->default(false);
+            $table->boolean('warehouse')->default(false);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('document_types', function (Blueprint $table) {
+            //
+        });
+    }
+};

@@ -1,0 +1,24 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.0.0",
+        "axios": "^1.8.2",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^1.2.0",
+        "tailwindcss": "^4.0.0",
+        "vite": "^6.2.4"
+    },
+    "dependencies": {
+        "@googlemaps/polyline-codec": "^1.0.28",
+        "alpinejs": "^3.14.9",
+        "chart.js": "^4.5.0",
+        "jquery": "^3.7.1",
+        "jquery-ui": "^1.14.1",
+        "tippy.js": "^6.3.7"
+    }
+}
