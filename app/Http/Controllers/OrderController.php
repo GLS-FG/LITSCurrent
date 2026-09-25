@@ -37,7 +37,7 @@ class OrderController extends Controller
         $client = $request->get('client_search');
         $service = $request->get('service_search');
         $user = Auth::user();
-        $orders = Order::whereNotIn('order_status_id', [OrderStatusEnum::CLOSED, OrderStatusEnum::CANCELED])
+        $baseQuery = Order::whereNotIn('order_status_id', [OrderStatusEnum::CLOSED, OrderStatusEnum::CANCELED])
             ->when($user->hasRole(RolesEnum::CLIENT), fn ($query) => $query
                 ->where('client_id', $user->client->id)
                 ->where('contact_id', $user->id)
@@ -134,13 +134,21 @@ class OrderController extends Controller
                                 });
                         })
                     );
-            })
+            });
+        $activeCount = (clone $baseQuery)->count();
+        $urgentCount = (clone $baseQuery)->where('urgent', true)->count();
+        $onlyUrgent = $request->boolean('urgent');
+        $orders = (clone $baseQuery)
+            ->when($onlyUrgent, fn ($query) => $query->where('urgent', true))
             ->orderBy('urgent', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20)->withQueryString();
         return view('order.index', [
             'orders' => $orders,
             'index' => route('orders.index'),
+            'activeCount' => $activeCount,
+            'urgentCount' => $urgentCount,
+            'onlyUrgent' => $onlyUrgent,
         ]);
     }
 

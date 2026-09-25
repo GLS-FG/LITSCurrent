@@ -3,7 +3,6 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Address;
-use App\Models\State;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
@@ -12,10 +11,10 @@ class AddressForm extends Form
     #[Validate('required|string|min:3')]
     public $contact_name = '';
 
-    #[Validate('required|max:256')]
+    #[Validate('required|min:3|max:256')]
     public $name = '';
 
-    #[Validate('required|max:256')]
+    #[Validate('required|min:3|max:256')]
     public $trade_name = '';
 
     #[Validate('nullable|email')]
@@ -24,29 +23,20 @@ class AddressForm extends Form
     #[Validate('nullable|min:10|numeric')]
     public $phone = '';
 
-    #[Validate('required|string')]
+    #[Validate('required|string|regex:/^[\p{L}\p{N}\s.,\/#-]+$/u')]
     public $address = '';
 
-    #[Validate('nullable|string|max:100')]
+    #[Validate('nullable|string|min:3|max:100')]
     public $neighborhood = '';
 
-    #[Validate('nullable|string|max:15')]
+    #[Validate('nullable|string|min:3|max:15')]
     public $postal_code = '';
-
-    #[Validate('required|string')]
-    public $city = '';
 
     #[Validate('required|exists:cities,id')]
     public $city_id;
 
-    #[Validate('required|string')]
-    public $state = '';
-
     #[Validate('required|exists:states,id')]
     public $state_id;
-
-    #[Validate('required|string')]
-    public $country = '';
 
     #[Validate('required|exists:countries,id')]
     public $country_id;
@@ -54,7 +44,7 @@ class AddressForm extends Form
     #[Validate('nullable|string')]
     public $link = '';
 
-    #[Validate('required|max:256')]
+    #[Validate('required|min:3|max:256')]
     public $location_name = '';
 
     #[Validate('required|numeric')]
@@ -63,10 +53,11 @@ class AddressForm extends Form
     #[Validate('required|numeric')]
     public $longitude = '';
 
-    public function setState(State $state)
+    public function messages(): array
     {
-        $this->state = $state->name;
-        $this->state_id = $state->id;
+        return [
+            'address.regex' => 'La "Calle y número" solo permite letras, números, espacios y los caracteres . , - / #',
+        ];
     }
 
     public function store()

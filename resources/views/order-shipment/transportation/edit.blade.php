@@ -90,69 +90,69 @@
         <form action="{{ route('orders.shipments.transportations.update', ['order' => $order, 'shipment' => $shipment, 'transportation' => $transportation]) }}" method="POST" class="mt-8" autocomplete="off">
             @csrf
             @method('PUT')
-            <div class="divide-y divide-gray-200 rounded bg-white shadow-lits-card">
+            <div class="divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
                 <div class="px-4 py-5 sm:p-6">
                     <div class="space-y-12">
-                        <div class="border-b border-gray-900/10 pb-12">
-                            <h2 class="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">{{$order->code}}</h2>
+                        <div class="border-b border-gray-900/10 dark:border-white/10 pb-12">
+                            <h2 class="text-2xl/7 font-bold text-gray-900 dark:text-gray-50 sm:truncate sm:text-3xl sm:tracking-tight">{{$order->code}}</h2>
                             <div class="pt-2 block md:flex md:justify-between">
                                 <div class="flex flex-1 items-center gap-x-6">
-                                    <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 outline -outline-offset-1 outline-black/5" />
+                                    <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
                                     <div>
-                                        <h1 class="mt-1 text-base font-semibold text-gray-900">{{$order->client->trade_name}}</h1>
-                                        <p class="text-sm/6 text-gray-700">{{$order->contact->name}}</p>
+                                        <h1 class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</h1>
+                                        <p class="text-sm/6 text-gray-700 dark:text-gray-300">{{$order->contact->name}}</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="text-sm/6 text-gray-700 text-left md:text-right">{{$order->reference}}</p>
+                                    <p class="text-sm/6 text-gray-700 dark:text-gray-300 text-left md:text-right">{{$order->reference}}</p>
                                 </div>
                             </div>
                         </div>
                         <div class="pb-12">
-                            <h2 class="text-base/7 font-semibold text-gray-900">Información general</h2>
-                            <p class="mt-1 text-sm/6 text-gray-600">Ingresa la información general del transporte.</p>
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Información general</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Ingresa la información general del transporte.</p>
                             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                                 <div class="sm:col-span-3">
-                                    <label for="transportation_agency_id" class="block text-sm/6 font-medium text-gray-900">Proveedor</label>
+                                    <label for="transportation_agency_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Proveedor</label>
                                     <div class="mt-2">
-                                        <input id="transportation_agency" placeholder="Busca una agencia" value="{{old('transportation_agency', $transportation->agency->name . ' / ' . $transportation->agency->company_name)}}" name="transportation_agency" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="transportation_agency" placeholder="Busca una agencia" value="{{old('transportation_agency', $transportation->agency->name . ' / ' . $transportation->agency->company_name)}}" name="transportation_agency" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         <input id="transportation_agency_id" value="{{old('transportation_agency_id', $transportation->transportation_agency_id)}}" name="transportation_agency_id" type="hidden">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-3">
-                                    <label for="unit_eco_number" class="block text-sm/6 font-medium text-gray-900">Unit Eco. Number</label>
+                                    <label for="unit_eco_number" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Unit Eco. Number</label>
                                     <div class="mt-2">
-                                        <input id="unit_eco_number" value="{{old('unit_eco_number', $transportation->unit_eco_number)}}" placeholder="Busca una unidad" name="unit_eco_number" type="search" autocomplete="off"  class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="unit_eco_number" value="{{old('unit_eco_number', $transportation->unit_eco_number)}}" placeholder="Busca una unidad" name="unit_eco_number" type="search" autocomplete="off"  class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         <input id="vehicle_id" value="{{old('vehicle_id', $transportation->vehicle_id)}}" name="vehicle_id" type="hidden">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-3">
-                                    <label for="transportation_type" class="block text-sm/6 font-medium text-gray-900">Tipo de Transporte</label>
+                                    <label for="transportation_type" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Tipo de Transporte</label>
                                     <div class="mt-2">
-                                        <input id="transportation_type" value="{{old('transportation_type', $transportation->transportation_type)}}" name="transportation_type" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="transportation_type" value="{{old('transportation_type', $transportation->transportation_type)}}" name="transportation_type" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-3">
-                                    <label for="plates" class="block text-sm/6 font-medium text-gray-900">Placas</label>
+                                    <label for="plates" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Placas</label>
                                     <div class="mt-2">
-                                        <input id="plates" value="{{old('plates', $transportation->plates)}}" name="plates" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="plates" value="{{old('plates', $transportation->plates)}}" name="plates" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-3">
-                                    <label for="driver" class="block text-sm/6 font-medium text-gray-900">Chofer</label>
+                                    <label for="driver" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Chofer</label>
                                     <div class="mt-2">
-                                        <input id="driver" value="{{old('driver', $transportation->driver)}}" name="driver" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="driver" value="{{old('driver', $transportation->driver)}}" name="driver" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-full">
-                                    <label for="tracking_link" class="block text-sm/6 font-medium text-gray-900">Enlace de rastreo</label>
+                                    <label for="tracking_link" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Enlace de rastreo</label>
                                     <div class="mt-2">
-                                        <input id="tracking_link" value="{{old('tracking_link', $transportation->tracking_link)}}" name="tracking_link" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="tracking_link" value="{{old('tracking_link', $transportation->tracking_link)}}" name="tracking_link" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +161,7 @@
                 </div>
                 <div class="px-4 py-4 sm:px-6">
                     <div class="mt-6 flex items-center justify-end gap-x-6">
-                        <a href="{{ route('orders.shipments.show', ['order' => $order->id, 'shipment' => $shipment->id]) }}" class="text-sm/6 font-semibold text-gray-900">Cancelar</a>
+                        <a href="{{ route('orders.shipments.show', ['order' => $order->id, 'shipment' => $shipment->id]) }}" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-50">Cancelar</a>
                         <button type="submit" class="rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">Guardar</button>
                     </div>
                 </div>

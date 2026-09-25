@@ -19,7 +19,7 @@
 >
     <button
         type="button"
-        class="relative flex items-center p-1.5 size-8 text-gray-700 hover:text-gray-500 text-lg group hover:cursor-pointer rounded-full"
+        class="relative flex items-center p-1.5 size-8 text-gray-700 dark:text-gray-300 hover:text-gray-500 text-lg group hover:cursor-pointer rounded-full"
         id="drawer-button"
         x-ref="buttonDrawer"
         @click="notificationIsOpen = true"
@@ -42,7 +42,7 @@
         role="dialog"
     >
         <div
-            class="fixed inset-0 bg-gray-500/75 transition-opacity"
+            class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
             x-show="notificationIsOpen"
             x-transition:enter="ease-in-out duration-500"
             x-transition:enter-start="opacity-0"
@@ -67,16 +67,16 @@
                         @click.outside="closeDrawer($refs.buttonDrawer)"
                         class="pointer-events-auto w-screen max-w-md"
                     >
-                        <div class="relative flex h-full flex-col overflow-y-auto bg-white shadow-xl">
-                            <div class="border-b border-gray-200 p-6">
+                        <div class="relative flex h-full flex-col overflow-y-auto bg-white dark:bg-lits-blue-550 shadow-xl">
+                            <div class="border-b border-gray-200 dark:border-lits-blue-450 p-6">
                                 <div class="flex items-start justify-between">
-                                    <div class="text-xl font-semibold text-gray-900">Notificaciones</div>
+                                    <div class="text-xl font-semibold text-gray-900 dark:text-gray-50">Notificaciones</div>
                                     <div class="ml-3 flex h-7 items-center">
                                         <button
                                             type="button"
                                             x-ref="buttonCloseDrawer"
                                             @click="closeDrawer($refs.buttonDrawer)"
-                                            class="relative rounded-md text-gray-400 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            class="relative rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         >
                                             <span class="absolute -inset-2.5" />
                                             <span class="sr-only">Cerrar notificaciones</span>
@@ -85,37 +85,37 @@
                                     </div>
                                 </div>
                             </div>
-                            <ul role="list" class="bg-gray-100 flex-1 overflow-y-auto p-4 space-y-2">
+                            <ul role="list" class="bg-gray-100 dark:bg-gray-800 flex-1 overflow-y-auto p-4 space-y-2">
                                 @forelse ($notifications as $notification)
-                                    <li class="bg-white border rounded-lg border-gray-300 py-2 px-3 space-y-1">
-                                        <a href="{{route('orders.shipments.show', ['order' => $notification->orderId, 'shipment' => $notification->id])}}" class="text-indigo-600 hover:text-indigo-900 text-sm">{{ $notification->orderCode }}</a>
+                                    <li class="bg-white dark:bg-lits-blue-550 border rounded-lg border-gray-300 dark:border-gray-600 py-2 px-3 space-y-1">
+                                        <a href="{{route('orders.shipments.show', ['order' => $notification->orderId, 'shipment' => $notification->id])}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 text-sm">{{ $notification->orderCode }}</a>
                                         <div class="flex items-start text-sm">
-                                            <div class="size-8 shrink-0 flex items-center justify-center rounded-full overflow-hidden bg-gray-200">
+                                            <div class="size-8 shrink-0 flex items-center justify-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                                                 <img alt="{{$notification->clientName}}" src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $notification->clientImage))]) }}" />
                                             </div>
-                                            <p class="ml-2 text-gray-500 text-xs line-clamp-2">{{ $notification->contactName }}</p>
+                                            <p class="ml-2 text-gray-500 dark:text-gray-400 text-xs line-clamp-2">{{ $notification->contactName }}</p>
                                         </div>
                                         <div x-data="{ isExpanded: false }">
-                                            <button type="button" class="flex items-center justify-start gap-1 text-indigo-600 hover:text-indigo-900 text-sm" x-on:click="isExpanded = ! isExpanded">
+                                            <button type="button" class="flex items-center justify-start gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 text-sm" x-on:click="isExpanded = ! isExpanded">
                                                 Eventos ({{ $notification->pending }})
                                                 <i class="fa-regular fa-angle-down shrink-0 transition" x-bind:class="isExpanded  ?  'rotate-180'  :  ''"></i>
                                             </button>
                                             <ul x-cloak x-show="isExpanded" class="space-y-1.5 mt-1.5">
                                                 @foreach($notification->events as $event)
-                                                    <li class="bg-gray-100 rounded py-1 px-2 flex space-x-2 text-sm items-center">
+                                                    <li class="bg-gray-100 dark:bg-gray-800 rounded py-1 px-2 flex space-x-2 text-sm items-center">
                                                         @if($event->done)
-                                                            <i class="fa-solid fa-square-check text-green-500"></i>
-                                                            <p class="line-through text-gray-500">{{$event->title}}</p>
+                                                            <i class="fa-solid fa-square-check text-green-500 dark:text-green-400"></i>
+                                                            <p class="line-through text-gray-500 dark:text-gray-400">{{$event->title}}</p>
                                                         @else
                                                             <i class="fa-regular fa-square"></i>
-                                                            <a href="{{route('orders.shipments.show', ['order' => $notification->orderId, 'shipment' => $notification->id, 'activeTab' => 2])}}" class="text-gray-900 hover:text-gray-700 hover:underline">{{ $event->title }}</a>
+                                                            <a href="{{route('orders.shipments.show', ['order' => $notification->orderId, 'shipment' => $notification->id, 'activeTab' => 2])}}" class="text-gray-900 dark:text-gray-50 hover:text-gray-700 hover:underline">{{ $event->title }}</a>
                                                         @endif
                                                     </li>
                                                 @endforeach
                                             </ul>
                                         </div>
                                         {{--<div class="flex space-x-4">
-                                            <button wire:click="markAsRead('{{$notification->id}}')" type="button" class="text-sm font-semibold text-indigo-600 hover:text-indigo-400 hover:cursor-pointer">
+                                            <button wire:click="markAsRead('{{$notification->id}}')" type="button" class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-400 hover:cursor-pointer">
                                                 Marcar como leída
                                             </button>
                                             <a
@@ -129,20 +129,20 @@
                                 @empty
                                     <li class="text-center">
                                         <i class="mt-2 text-5xl fa-regular fa-mailbox-open-empty"></i>
-                                        <p class="mt-2 text-xl text-gray-900 font-semibold">
+                                        <p class="mt-2 text-xl text-gray-900 dark:text-gray-50 font-semibold">
                                             Estás al día
                                         </p>
-                                        <p class="mt-1 text-sm text-gray-500">
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                             No tienes notificaciones pendientes por atender
                                         </p>
                                     </li>
                                 @endforelse
                             </ul>
-                            <div class="border-t border-gray-200 p-6">
+                            <div class="border-t border-gray-200 dark:border-lits-blue-450 p-6">
                                 <div class="flex items-center justify-left space-x-4">
                                     <a
                                         href="{{route('notifications.index')}}"
-                                        class="inline-flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50"
+                                        class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                                     >
                                         Centro de notificaciones
                                     </a>

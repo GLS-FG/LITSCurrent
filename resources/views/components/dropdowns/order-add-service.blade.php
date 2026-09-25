@@ -44,7 +44,7 @@
         @click.outside="closeDropdown($refs.button)"
         :id="$id('order-add-service-dropdown-button')"
         x-cloak
-        class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+        class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 dark:divide-gray-800 rounded-md bg-white dark:bg-lits-blue-550 shadow-lg ring-1 ring-black/5 dark:ring-white/10 focus:outline-hidden"
         role="menu"
         aria-orientation="vertical"
         aria-labelledby="user-menu-button"
@@ -57,15 +57,15 @@
         x-transition:leave-end="transform opacity-0 scale-95"
     >
         <div class="py-1" role="none">
-            <a href="{{route('orders.shipments.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="menu-item-1">
+            <a href="{{route('orders.shipments.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1" id="menu-item-1">
                 <i class="fa-regular fa-route text-lg mr-3"></i>
                 {{__('Shipment')}}
             </a>
-            <a href="{{route('orders.imports.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="menu-item-1">
+            <a href="{{route('orders.imports.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1" id="menu-item-1">
                 <i class="fa-regular fa-person-military-pointing text-lg mr-3"></i>
                 {{__('Custom')}}
             </a>
-            <a href="{{route('orders.warehouse-storages.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="menu-item-0">
+            <a href="{{route('orders.warehouse-storages.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1" id="menu-item-0">
                 <i class="fa-regular fa-warehouse text-lg mr-3"></i>
                 {{__('Warehouse')}}
             </a>

@@ -1,9 +1,9 @@
 <div class="mt-4 mx-auto flex items-center justify-between gap-x-8 lg:mx-0">
     <div class="flex flex-1 items-center gap-x-6">
-        <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 outline -outline-offset-1 outline-black/5" />
+        <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
         <h1>
-            <div class="text-sm/6 text-gray-700">{{$order->code}}</div>
-            <div class="mt-1 text-base font-semibold text-gray-900">{{$order->client->trade_name}}</div>
+            <div class="text-sm/6 text-gray-700 dark:text-gray-300">{{$order->code}}</div>
+            <div class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</div>
         </h1>
     </div>
     <div>
@@ -12,7 +12,7 @@
                 @csrf
                 <button
                     type="submit"
-                    class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 hover:cursor-pointer"
+                    class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
                     data-tippy-content="Notificar al cliente"
                 >
                     <i class="fa-regular fa-envelope"></i>

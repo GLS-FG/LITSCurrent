@@ -44,7 +44,7 @@ class OrderShipmentController extends Controller
         $service = $request->get('service_search');
         $status = $request->get('status_search');
         $user = Auth::user();
-        $shipments = OrderShipment::whereNotIn('order_shipment_status_id', [OrderShipmentStatusEnum::CLOSED, OrderShipmentStatusEnum::CANCELED])
+        $baseQuery = OrderShipment::whereNotIn('order_shipment_status_id', [OrderShipmentStatusEnum::CLOSED, OrderShipmentStatusEnum::CANCELED])
             ->when($user->hasRole(RolesEnum::CLIENT), fn ($query) => $query
                 ->whereHas('order', function ($query) use ($user) {
                     return $query->where('client_id', $user->client->id)
@@ -105,13 +105,21 @@ class OrderShipmentController extends Controller
                             });
                         })
                     );
-            })
+            });
+        $activeCount = (clone $baseQuery)->count();
+        $urgentCount = (clone $baseQuery)->where('urgent', true)->count();
+        $onlyUrgent = $request->boolean('urgent');
+        $shipments = (clone $baseQuery)
+            ->when($onlyUrgent, fn ($query) => $query->where('urgent', true))
             ->orderBy('urgent', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20)->withQueryString();
         return view('order-shipment.index', [
             'shipments' => $shipments,
-            'statuses' => OrderShipmentStatus::all()
+            'statuses' => OrderShipmentStatus::all(),
+            'activeCount' => $activeCount,
+            'urgentCount' => $urgentCount,
+            'onlyUrgent' => $onlyUrgent,
         ]);
     }
 

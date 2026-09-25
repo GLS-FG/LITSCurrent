@@ -15,20 +15,27 @@ class AddressPutRequest extends FormRequest
     {
         return [
             'contact_name' => 'required|string|min:3',
-            'name' => 'required|max:256',
-            'trade_name' => 'required|max:256',
+            'name' => 'required|min:3|max:256',
+            'trade_name' => 'required|min:3|max:256',
             'email' => 'nullable|email',
             'phone' => 'nullable|min:10|numeric',
-            'address' => 'required|string',
-            'neighborhood' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:15',
+            'address' => ['required', 'string', 'regex:/^[\p{L}\p{N}\s.,\/#-]+$/u'],
+            'neighborhood' => 'nullable|string|min:3|max:100',
+            'postal_code' => 'nullable|string|min:3|max:15',
             'city_id' => 'required|exists:cities,id',
             'state_id' => 'required|exists:states,id',
             'country_id' => 'required|exists:countries,id',
             'link' => 'nullable|string',
-            'location_name' => 'required|max:191',
+            'location_name' => 'required|min:3|max:191',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'address.regex' => 'El campo :attribute solo permite letras, números, espacios y los caracteres . , - / #',
         ];
     }
 

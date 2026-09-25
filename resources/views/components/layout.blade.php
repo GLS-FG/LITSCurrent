@@ -1,9 +1,16 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-body">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-body dark:bg-lits-blue-600">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="color-scheme" content="light">
+        <meta name="color-scheme" content="light dark">
+        <script>
+            (function () {
+                var stored = localStorage.getItem('theme');
+                var isDark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.classList.toggle('dark', isDark);
+            })();
+        </script>
 
         <title>LITS - @yield('title')</title>
 
@@ -22,7 +29,7 @@
         @livewireStyles
         <script src="https://kit.fontawesome.com/4e80bc1749.js" crossorigin="anonymous"></script>
     </head>
-    <body class="h-full">
+    <body class="h-full dark:bg-lits-blue-600">
         {{ $slot }}
         @livewireScripts
         @yield('custom_script')
@@ -38,6 +45,58 @@
                     }
                 })
             })
+
+            // wire:navigate swaps the document without a real page load, so
+            // the dark-mode class applied by the inline <head> script on the
+            // very first load never gets a chance to re-run on later
+            // navigations. Re-apply it after every soft navigation too.
+            function applyStoredTheme() {
+                var stored = localStorage.getItem('theme');
+                var isDark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.classList.toggle('dark', isDark);
+            }
+            document.addEventListener('livewire:navigated', applyStoredTheme);
+
+            // The sidebar/topbar persist across wire:navigate transitions
+            // (see the @@persist blocks in layout-app.blade.php), so their
+            // "active route" highlighting can't be recomputed by the server
+            // on every navigation. This keeps it in sync on the client instead.
+            function syncActiveNav() {
+                var current = window.location.pathname;
+
+                function matches(href) {
+                    try {
+                        var linkPath = new URL(href, window.location.origin).pathname;
+                        return current === linkPath || current.startsWith(linkPath + '/');
+                    } catch (e) {
+                        return false;
+                    }
+                }
+
+                document.querySelectorAll('a.nav-link[href]').forEach(function (link) {
+                    link.classList.toggle('is-active', matches(link.href));
+                });
+
+                document.querySelectorAll('[data-settings-menu]').forEach(function (root) {
+                    var anyActive = false;
+
+                    root.querySelectorAll('a.nav-sublink[href]').forEach(function (link) {
+                        var active = matches(link.href);
+                        link.classList.toggle('is-active', active);
+                        if (active) anyActive = true;
+                    });
+
+                    var trigger = root.querySelector('[data-settings-trigger]');
+                    if (trigger) trigger.classList.toggle('is-active', anyActive);
+
+                    if (anyActive && window.Alpine) {
+                        var data = window.Alpine.$data(root);
+                        if (data) data.settingsMenuOpen = true;
+                    }
+                });
+            }
+            document.addEventListener('livewire:navigated', syncActiveNav);
+            syncActiveNav();
         </script>
     </body>
 </html>

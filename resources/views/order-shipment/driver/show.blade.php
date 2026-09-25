@@ -15,9 +15,9 @@
             @if(!$shipment->driver_link_used)
                 <form action="{{url()->full()}}" enctype="multipart/form-data" method="POST">
                     @csrf
-                    <div class="h-fit lg:col-span-2 divide-y divide-gray-200 rounded bg-white shadow-lits-card">
+                    <div class="h-fit lg:col-span-2 divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
                         <div class="px-4 py-5 sm:px-6">
-                            <h3 class="text-lg font-semibold text-gray-900">Adjuntar imágenes a embarque</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-50">Adjuntar imágenes a embarque</h3>
                         </div>
                         <div class="px-4 py-5 sm:p-6">
                             <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -77,7 +77,7 @@
                                     }"
                                 >
                                     <div x-ref="dnd"
-                                         class="relative border border-dashed border-gray-900/25 px-6 py-10 rounded cursor-pointer"
+                                         class="relative border border-dashed border-gray-900/25 dark:border-white/20 px-6 py-10 rounded cursor-pointer"
                                          :class="isDragging ? 'bg-indigo-50' : ''"
                                     >
                                         <input type="file" id="attachments" name="attachments[]" title="" x-ref="file"
@@ -92,33 +92,33 @@
                                                @drop="isDragging = false"
                                         />
                                         <div class="flex flex-col items-center justify-center py-10 text-center">
-                                            <i class="fa-regular fa-image mx-auto text-5xl text-gray-300"></i>
-                                            <p class="mt-1 text-sm/6 text-gray-600">Arrastra tus archivos aquí, o haz click en esta área para tomar una foto.</p>
-                                            <p class="text-xs/6 text-gray-400">Máx. 25 MB</p>
+                                            <i class="fa-regular fa-image mx-auto text-5xl text-gray-300 dark:text-gray-600"></i>
+                                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Arrastra tus archivos aquí, o haz click en esta área para tomar una foto.</p>
+                                            <p class="text-xs/6 text-gray-400 dark:text-gray-500">Máx. 25 MB</p>
                                         </div>
                                     </div>
-                                    <div x-show="showFiles" class="mt-4 rounded-md border border-gray-200 divide-y divide-gray-200">
+                                    <div x-show="showFiles" class="mt-4 rounded-md border border-gray-200 dark:border-lits-blue-450 divide-y divide-gray-200 dark:divide-gray-700">
                                         <template x-for="(file, index) in files" :key="index">
                                             <div class="flex items-center p-4">
                                                 <div>
                                                     <img :src="imageSrcs[index]" alt="Preview" class="size-20 rounded object-cover" />
                                                 </div>
                                                 <div class="ml-2 space-y-0.5">
-                                                    <p class="font-medium text-gray-900" x-text="file.name"></p>
+                                                    <p class="font-medium text-gray-900 dark:text-gray-50" x-text="file.name"></p>
                                                     <div class="mb-1 grid grid-cols-1 w-fit">
-                                                        <select name="document_type_id[]" autocomplete="off" class="col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                        <select name="document_type_id[]" autocomplete="off" class="col-start-1 row-start-1 appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                                             @foreach ($documents as $document)
                                                                 <option value="{{ $document->id }}">{{ $document->name }}  </option>
                                                             @endforeach
                                                         </select>
-                                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                                     </div>
-                                                    <p class="text-xs text-gray-500" x-text="readableSize(file)"></p>
-                                                    <p x-show="sizeError(file) != ''" class="text-sm text-red-500" x-text="sizeError(file)"></p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400" x-text="readableSize(file)"></p>
+                                                    <p x-show="sizeError(file) != ''" class="text-sm text-red-500 dark:text-red-400" x-text="sizeError(file)"></p>
                                                 </div>
                                                 <div class="ml-auto pl-3">
                                                     <div class="-mx-1.5 -my-1.5">
-                                                        <button @click="removeItem(index)" type="button" class="inline-flex rounded-md  p-1.5 text-gray-500 hover:bg-gray-100 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-hidden">
+                                                        <button @click="removeItem(index)" type="button" class="inline-flex rounded-md  p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-hidden">
                                                             <span class="sr-only">Dismiss</span>
                                                             <i class="fa-regular fa-xmark"></i>
                                                         </button>

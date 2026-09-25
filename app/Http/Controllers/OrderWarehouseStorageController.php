@@ -41,7 +41,7 @@ class OrderWarehouseStorageController extends Controller
         $service = $request->get('service_search');
         $status = $request->get('status_search');
         $user = Auth::user();
-        $storages = WarehouseStorage::whereNotIn('warehouse_storage_status_id', [WarehouseStorageStatusEnum::CLOSED, WarehouseStorageStatusEnum::CANCELED])
+        $baseQuery = WarehouseStorage::whereNotIn('warehouse_storage_status_id', [WarehouseStorageStatusEnum::CLOSED, WarehouseStorageStatusEnum::CANCELED])
             ->when($user->hasRole(RolesEnum::CLIENT), fn ($query) => $query
                 ->whereHas('order', function ($query) use ($user) {
                     return $query->where('client_id', $user->client->id)
@@ -101,13 +101,21 @@ class OrderWarehouseStorageController extends Controller
                             });
                         })
                     );
-            })
+            });
+        $activeCount = (clone $baseQuery)->count();
+        $urgentCount = (clone $baseQuery)->where('urgent', true)->count();
+        $onlyUrgent = $request->boolean('urgent');
+        $storages = (clone $baseQuery)
+            ->when($onlyUrgent, fn ($query) => $query->where('urgent', true))
             ->orderBy('urgent', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20)->withQueryString();
         return view('warehouse-storage.index', [
             'storages' => $storages,
-            'statuses' => WarehouseStorageStatus::all()
+            'statuses' => WarehouseStorageStatus::all(),
+            'activeCount' => $activeCount,
+            'urgentCount' => $urgentCount,
+            'onlyUrgent' => $onlyUrgent,
         ]);
     }
 

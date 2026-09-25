@@ -27,7 +27,7 @@
 >
     <button
         type="button"
-        class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+        class="-m-2.5 p-2.5 text-gray-700 dark:text-gray-300 lg:hidden"
         id="sidebar-menu-button"
         x-ref="buttonSidebar"
         @click="toggleSidebar()"

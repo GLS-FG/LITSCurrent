@@ -20,5 +20,7 @@ return [
     'search_references' => 'Search references',
     'search_service_id' => 'Search Service ID',
     'search_status' => 'Search Status',
+    'active' => 'Active',
+    'urgent' => 'Urgent',
 ];
 

@@ -83,128 +83,128 @@
         <form action="{{ route('orders.warehouse-storages.update', ['order' => $order, 'warehouse_storage' => $storage->id]) }}" method="POST" class="mt-8">
             @csrf
             @method('PUT')
-            <div class="divide-y divide-gray-200 rounded bg-white shadow-lits-card">
+            <div class="divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
                 <div class="px-4 py-5 sm:p-6">
                     <div class="space-y-12">
-                    <div class="border-b border-gray-900/10 pb-12">
-                        <h2 class="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">{{$order->code}}</h2>
+                    <div class="border-b border-gray-900/10 dark:border-white/10 pb-12">
+                        <h2 class="text-2xl/7 font-bold text-gray-900 dark:text-gray-50 sm:truncate sm:text-3xl sm:tracking-tight">{{$order->code}}</h2>
                         <div class="pt-2 block md:flex md:justify-between">
                             <div class="flex flex-1 items-center gap-x-6">
-                                <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 outline -outline-offset-1 outline-black/5" />
+                                <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
                                 <div>
-                                    <h1 class="mt-1 text-base font-semibold text-gray-900">{{$order->client->trade_name}}</h1>
-                                    <p class="text-sm/6 text-gray-700">{{$order->contact->name}}</p>
+                                    <h1 class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</h1>
+                                    <p class="text-sm/6 text-gray-700 dark:text-gray-300">{{$order->contact->name}}</p>
                                 </div>
                             </div>
                             <div>
-                                <p class="text-sm/6 text-gray-700 text-left md:text-right">{{$order->reference}}</p>
+                                <p class="text-sm/6 text-gray-700 dark:text-gray-300 text-left md:text-right">{{$order->reference}}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="border-b border-gray-900/10 pb-12">
-                        <h2 class="text-base/7 font-semibold text-gray-900">Datos generales</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600">Llena la información necesaria para la órden de almacén.</p>
+                    <div class="border-b border-gray-900/10 dark:border-white/10 pb-12">
+                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Datos generales</h2>
+                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Llena la información necesaria para la órden de almacén.</p>
                         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div class="col-span-full">
-                                <label for="reference" class="block text-sm/6 font-medium text-gray-900">Referencia</label>
+                                <label for="reference" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Referencia</label>
                                 <div class="mt-2">
-                                    <textarea id="reference" name="reference" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('reference', $storage->reference)}}</textarea>
+                                    <textarea id="reference" name="reference" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('reference', $storage->reference)}}</textarea>
                                 </div>
                             </div>
 
                             <div class="sm:col-span-3">
-                                <label for="warehouse_id" class="block text-sm/6 font-medium text-gray-900">Almacén</label>
+                                <label for="warehouse_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Almacén</label>
                                 <div class="mt-2 grid grid-cols-1">
-                                    <select id="warehouse_id" name="warehouse_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    <select id="warehouse_id" name="warehouse_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         @foreach ($warehouses as $warehouse)
                                             <option value= {{ $warehouse->id }} @selected(old('warehouse_id', $storage->warehouse_id) == $warehouse->id)>{{ $warehouse->name }}  </option>
                                         @endforeach
                                     </select>
-                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                 </div>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="receipt" class="block text-sm/6 font-medium text-gray-900">Recibido de</label>
+                                <label for="receipt" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Recibido de</label>
                                 <div class="mt-2">
-                                    <input id="receipt" value="{{old('receipt', $storage->receipt)}}" name="receipt" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    <input id="receipt" value="{{old('receipt', $storage->receipt)}}" name="receipt" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 </div>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="receipt_date" class="block text-sm/6 font-medium text-gray-900">Fecha recibo</label>
+                                <label for="receipt_date" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Fecha recibo</label>
                                 <div class="mt-2">
-                                    <input id="receipt_date" value="{{old('receipt_date', is_null($storage->receipt_date) ? "" : $storage->receipt_date->format('d/m/Y'))}}" name="receipt_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    <input id="receipt_date" value="{{old('receipt_date', is_null($storage->receipt_date) ? "" : $storage->receipt_date->format('d/m/Y'))}}" name="receipt_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 </div>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="document" class="block text-sm/6 font-medium text-gray-900">Documento</label>
+                                <label for="document" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Documento</label>
                                 <div class="mt-2">
-                                    <input id="document" value="{{old('document', $storage->document)}}" name="document" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    <input id="document" value="{{old('document', $storage->document)}}" name="document" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 </div>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="document_date" class="block text-sm/6 font-medium text-gray-900">Fecha documento</label>
+                                <label for="document_date" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Fecha documento</label>
                                 <div class="mt-2">
-                                    <input id="document_date" value="{{old('document_date', is_null($storage->document_date) ? "" : $storage->document_date->format('d/m/Y'))}}" name="document_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    <input id="document_date" value="{{old('document_date', is_null($storage->document_date) ? "" : $storage->document_date->format('d/m/Y'))}}" name="document_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="border-b border-gray-900/10 pb-12">
-                        <h2 class="text-base/7 font-semibold text-gray-900">Service Type</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600">Ingresa la información del tipo de servicio.</p>
+                    <div class="border-b border-gray-900/10 dark:border-white/10 pb-12">
+                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Service Type</h2>
+                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Ingresa la información del tipo de servicio.</p>
                         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div class="sm:col-span-3">
-                                <label for="service_class_id" class="block text-sm/6 font-medium text-gray-900">Service Class</label>
+                                <label for="service_class_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Service Class</label>
                                 <div class="mt-2 grid grid-cols-1">
-                                    <select id="service_class_id" name="service_class_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    <select id="service_class_id" name="service_class_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         @foreach($serviceClasses as $service)
                                             <option value='{{$service->id}}' @selected(old('service_class_id', $storage->service_class_id) == $service->name)>{{$service->name}}</option>
                                         @endforeach
                                     </select>
-                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                 </div>
                             </div>
 
                             <div class="sm:col-span-3">
-                                <label for="service_mode_id" class="block text-sm/6 font-medium text-gray-900">Service Mode</label>
+                                <label for="service_mode_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Service Mode</label>
                                 <div class="mt-2 grid grid-cols-1">
-                                    <select id="service_mode_id" name="service_mode_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    <select id="service_mode_id" name="service_mode_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </select>
-                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                 </div>
                             </div>
 
                             <div class="sm:col-span-3">
-                                <label for="class_type_id" class="block text-sm/6 font-medium text-gray-900">Class Type</label>
+                                <label for="class_type_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Class Type</label>
                                 <div class="mt-2 grid grid-cols-1">
-                                    <select id="class_type_id" name="class_type_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    <select id="class_type_id" name="class_type_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </select>
-                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                 </div>
                             </div>
 
                             <div class="sm:col-span-3">
-                                <label for="service_level_id" class="block text-sm/6 font-medium text-gray-900">Service Level</label>
+                                <label for="service_level_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Service Level</label>
                                 <div class="mt-2 grid grid-cols-1">
-                                    <select id="service_level_id" name="service_level_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    <select id="service_level_id" name="service_level_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </select>
-                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="pb-12">
-                        <h2 class="text-base/7 font-semibold text-gray-900">Información adicional</h2>
-                        <p class="mt-1 text-sm/6 text-gray-600">Ingresa comentarios adicionales para la orden de almacen.</p>
+                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Información adicional</h2>
+                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Ingresa comentarios adicionales para la orden de almacen.</p>
                         <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div class="col-span-full">
-                                <label for="comments" class="block text-sm/6 font-medium text-gray-900">Comentarios</label>
+                                <label for="comments" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Comentarios</label>
                                 <div class="mt-2">
-                                    <textarea rows="4" id="comments" name="comments" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('comments', $storage->comments)}}</textarea>
+                                    <textarea rows="4" id="comments" name="comments" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('comments', $storage->comments)}}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -213,7 +213,7 @@
                 </div>
                 <div class="px-4 py-4 sm:px-6">
                     <div class="mt-6 flex items-center justify-end gap-x-6">
-                        <a href="{{ route('orders.warehouse-storages.show', ['order' => $order->id, 'warehouse_storage' => $storage->id]) }}" class="text-sm/6 font-semibold text-gray-900">Cancelar</a>
+                        <a href="{{ route('orders.warehouse-storages.show', ['order' => $order->id, 'warehouse_storage' => $storage->id]) }}" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-50">Cancelar</a>
                         <button type="submit" class="rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">Guardar</button>
                     </div>
                 </div>

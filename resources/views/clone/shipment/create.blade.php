@@ -198,46 +198,46 @@
         @endif
         <form action="{{ route('clone.order.shipments.store', ['shipment' => $from, 'order' => $order]) }}" method="POST">
             @csrf
-            <div class="mt-2 divide-y divide-gray-200 rounded bg-white shadow-lits-card">
+            <div class="mt-2 divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
                 <div class="px-4 py-5 sm:p-6">
                     <div class="space-y-2">
-                        <div class="border-b border-gray-900/10 pb-4">
-                            <h2 class="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">{{$order->code}}</h2>
+                        <div class="border-b border-gray-900/10 dark:border-white/10 pb-4">
+                            <h2 class="text-2xl/7 font-bold text-gray-900 dark:text-gray-50 sm:truncate sm:text-3xl sm:tracking-tight">{{$order->code}}</h2>
                             <div class="pt-2 block md:flex md:justify-between">
                                 <div class="flex flex-1 items-center gap-x-6">
-                                    <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 outline -outline-offset-1 outline-black/5" />
+                                    <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
                                     <div>
-                                        <h1 class="mt-1 text-base font-semibold text-gray-900">{{$order->client->trade_name}}</h1>
-                                        <p class="text-sm/6 text-gray-700">{{$order->contact->name}}</p>
+                                        <h1 class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</h1>
+                                        <p class="text-sm/6 text-gray-700 dark:text-gray-300">{{$order->contact->name}}</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="text-sm/6 text-gray-700 text-left md:text-right">{{$order->reference}}</p>
+                                    <p class="text-sm/6 text-gray-700 dark:text-gray-300 text-left md:text-right">{{$order->reference}}</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="border-b border-gray-900/10 pb-4">
-                            <h2 class="text-base/7 font-semibold text-gray-900">Referencia</h2>
-                            <p class="mt-1 text-sm/6 text-gray-600">Recuerda llenar sólo la información necesaria de la referencia.</p>
+                        <div class="border-b border-gray-900/10 dark:border-white/10 pb-4">
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Referencia</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Recuerda llenar sólo la información necesaria de la referencia.</p>
                             <div class="mt-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-6">
                                 <div class="col-span-full">
-                                    <label for="reference" class="block text-sm/6 font-medium text-gray-900">Referencia</label>
+                                    <label for="reference" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Referencia</label>
                                     <div class="mt-1">
-                                        <textarea id="reference" name="reference" autocomplete="off" class="@error('reference') outline-red-400 @else outline-gray-300 @enderror block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('reference', $from->reference)}}</textarea>
+                                        <textarea id="reference" name="reference" autocomplete="off" class="@error('reference') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('reference', $from->reference)}}</textarea>
                                         @error('reference')
-                                        <p class="mt-1 text-sm/6 text-red-600">{{ $message }}</p>
+                                        <p class="mt-1 text-sm/6 text-red-600 dark:text-red-400">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="border-b border-gray-900/10 pb-4">
-                            <h2 class="text-base/7 font-semibold text-gray-900">Ori<span class="hidden">avoidautocomplete</span>gen</h2>
-                            <p class="mt-1 text-sm/6 text-gray-600">Llena la información del ori<span class="hidden">avoidautocomplete</span>gen y la dire<span class="hidden">avoidautocomplete</span>cción de reco<span class="hidden">avoidautocomplete</span>leccion.</p>
+                        <div class="border-b border-gray-900/10 dark:border-white/10 pb-4">
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Ori<span class="hidden">avoidautocomplete</span>gen</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Llena la información del ori<span class="hidden">avoidautocomplete</span>gen y la dire<span class="hidden">avoidautocomplete</span>cción de reco<span class="hidden">avoidautocomplete</span>leccion.</p>
                             <div class="mt-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-6">
                                 <div class="sm:col-span-full text-right">
                                     <div class="flex gap-x-4">
-                                        <input id="origin_autocomplete" placeholder="Busca una dirección" name="origin_autocomplete" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="origin_autocomplete" placeholder="Busca una dirección" name="origin_autocomplete" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         <livewire:search-addresses type="origen" />
                                     </div>
                                 </div>
@@ -248,34 +248,34 @@
                                 <input id="ship_from_id" value="{{old('ship_from_id', $from->ship_from_id)}}" name="ship_from_id" type="hidden" />
 
                                 <div class="col-span-full">
-                                    <label for="ship_from" class="block text-sm/6 font-medium text-gray-900">Dir<span class="hidden">avoidautocomplete</span>ección de recolección</label>
+                                    <label for="ship_from" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Dir<span class="hidden">avoidautocomplete</span>ección de recolección</label>
                                     <div class="mt-1">
-                                        <textarea id="ship_from" rows="5" readonly name="ship_from" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('ship_from', $from->ship_from)}}</textarea>
+                                        <textarea id="ship_from" rows="5" readonly name="ship_from" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('ship_from', $from->ship_from)}}</textarea>
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-full">
-                                    <label for="ship_from_link" class="block text-sm/6 font-medium text-gray-900">Ubicación maps de recolección</label>
+                                    <label for="ship_from_link" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Ubicación maps de recolección</label>
                                     <div class="mt-1">
-                                        <input id="ship_from_link" value="{{old('ship_from_link', $from->ship_from_link)}}" name="ship_from_link" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="ship_from_link" value="{{old('ship_from_link', $from->ship_from_link)}}" name="ship_from_link" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="estimated_time_departure" class="block text-sm/6 font-medium text-gray-900">ETD</label>
+                                    <label for="estimated_time_departure" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">ETD</label>
                                     <div class="mt-1">
-                                        <input id="estimated_time_departure" value="{{old('estimated_time_departure')}}" name="estimated_time_departure" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="estimated_time_departure" value="{{old('estimated_time_departure')}}" name="estimated_time_departure" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="border-b border-gray-900/10 pb-4">
-                            <h2 class="text-base/7 font-semibold text-gray-900">Des<span class="hidden">avoidautocomplete</span>tino</h2>
-                            <p class="mt-1 text-sm/6 text-gray-600">Llena la información del des<span class="hidden">avoidautocomplete</span>tino y la dire<span class="hidden">avoidautocomplete</span>cción de ent<span class="hidden">avoidautocomplete</span>rega.</p>
+                        <div class="border-b border-gray-900/10 dark:border-white/10 pb-4">
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Des<span class="hidden">avoidautocomplete</span>tino</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Llena la información del des<span class="hidden">avoidautocomplete</span>tino y la dire<span class="hidden">avoidautocomplete</span>cción de ent<span class="hidden">avoidautocomplete</span>rega.</p>
                             <div class="mt-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-6">
                                 <div class="sm:col-span-full text-right">
                                     <div class="flex gap-x-4">
-                                        <input id="destination_autocomplete" placeholder="Busca una dirección" name="destination_autocomplete" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="destination_autocomplete" placeholder="Busca una dirección" name="destination_autocomplete" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         <livewire:search-addresses type="destino" />
                                     </div>
                                 </div>
@@ -286,154 +286,154 @@
                                 <input id="ship_to_id" value="{{old('ship_to_id', $from->ship_to_id)}}" name="ship_to_id" type="hidden" />
 
                                 <div class="col-span-full">
-                                    <label for="ship_to" class="block text-sm/6 font-medium text-gray-900">Dir<span class="hidden">avoidautocomplete</span>ección de ent<span class="hidden">avoidautocomplete</span>rega</label>
+                                    <label for="ship_to" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Dir<span class="hidden">avoidautocomplete</span>ección de ent<span class="hidden">avoidautocomplete</span>rega</label>
                                     <div class="mt-1">
-                                        <textarea id="ship_to" rows="5" readonly name="ship_to" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('ship_to', $from->ship_to)}}</textarea>
+                                        <textarea id="ship_to" rows="5" readonly name="ship_to" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('ship_to', $from->ship_to)}}</textarea>
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-full">
-                                    <label for="ship_to_link" class="block text-sm/6 font-medium text-gray-900">Ubicación maps de ent<span class="hidden">avoidautocomplete</span>rega</label>
+                                    <label for="ship_to_link" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Ubicación maps de ent<span class="hidden">avoidautocomplete</span>rega</label>
                                     <div class="mt-1">
-                                        <input id="ship_to_link" value="{{old('ship_to_link', $from->ship_to_link)}}" name="ship_to_link" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="ship_to_link" value="{{old('ship_to_link', $from->ship_to_link)}}" name="ship_to_link" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="estimated_time_arrival" class="block text-sm/6 font-medium text-gray-900">ETA</label>
+                                    <label for="estimated_time_arrival" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">ETA</label>
                                     <div class="mt-1">
-                                        <input id="estimated_time_arrival" value="{{old('estimated_time_arrival')}}" name="estimated_time_arrival" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="estimated_time_arrival" value="{{old('estimated_time_arrival')}}" name="estimated_time_arrival" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="border-b border-gray-900/10 pb-4">
-                            <h2 class="text-base/7 font-semibold text-gray-900">Service Type</h2>
-                            <p class="mt-1 text-sm/6 text-gray-600">Ingresa la información del tipo de servicio.</p>
+                        <div class="border-b border-gray-900/10 dark:border-white/10 pb-4">
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Service Type</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Ingresa la información del tipo de servicio.</p>
                             <div class="mt-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-6">
                                 <div class="sm:col-span-3">
-                                    <label for="service_class_id" class="block text-sm/6 font-medium text-gray-900">Service Class</label>
+                                    <label for="service_class_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Service Class</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="service_class_id" name="service_class_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="service_class_id" name="service_class_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                             @foreach($serviceClasses as $service)
                                                 <option value='{{$service->id}}' @selected(old('service_class_id', $from->service_class_id) == $service->id)>{{$service->name}}</option>
                                             @endforeach
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-3">
-                                    <label for="service_mode_id" class="block text-sm/6 font-medium text-gray-900">Service Mode</label>
+                                    <label for="service_mode_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Service Mode</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="service_mode_id" name="service_mode_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="service_mode_id" name="service_mode_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-3">
-                                    <label for="class_type_id" class="block text-sm/6 font-medium text-gray-900">Class Type</label>
+                                    <label for="class_type_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Class Type</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="class_type_id" name="class_type_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="class_type_id" name="class_type_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-3">
-                                    <label for="service_level_id" class="block text-sm/6 font-medium text-gray-900">Service Level</label>
+                                    <label for="service_level_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Service Level</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="service_level_id" name="service_level_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="service_level_id" name="service_level_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="border-b border-gray-900/10 pb-4">
-                            <h2 class="text-base/7 font-semibold text-gray-900">Manejo Especial</h2>
-                            <p class="mt-1 text-sm/6 text-gray-600">Ingresa la información si el embarque tiene manejo especial.</p>
+                        <div class="border-b border-gray-900/10 dark:border-white/10 pb-4">
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Manejo Especial</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Ingresa la información si el embarque tiene manejo especial.</p>
                             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-10">
                                 <div class="sm:col-span-2">
-                                    <label for="oversize" class="block text-sm/6 font-medium text-gray-900">Sobre dimensión</label>
+                                    <label for="oversize" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Sobre dimensión</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="oversize" name="oversize" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="oversize" name="oversize" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                             <option value="No" @selected(old('oversize', $from->oversize) == "No")>No</option>
                                             <option value="Si" @selected(old('oversize', $from->oversize) == "Si")>Si</option>
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="hazardous_material" class="block text-sm/6 font-medium text-gray-900">Material Peligroso</label>
+                                    <label for="hazardous_material" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Material Peligroso</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="hazardous_material" name="hazardous_material" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="hazardous_material" name="hazardous_material" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                             <option value="No" @selected(old('hazardous_material', $from->hazardous_material) == "No")>No</option>
                                             <option value="Si" @selected(old('hazardous_material', $from->hazardous_material) == "Si")>Si</option>
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="refrigerated" class="block text-sm/6 font-medium text-gray-900">Refrigerado</label>
+                                    <label for="refrigerated" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Refrigerado</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="refrigerated" name="refrigerated" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="refrigerated" name="refrigerated" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                             <option value="No" @selected(old('refrigerated', $from->refrigerated) == "No")>No</option>
                                             <option value="Si" @selected(old('refrigerated', $from->refrigerated) == "Si")>Si</option>
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="insurance" class="block text-sm/6 font-medium text-gray-900">Seguro</label>
+                                    <label for="insurance" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Seguro</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="insurance" name="insurance" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="insurance" name="insurance" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                             <option value="No" @selected(old('insurance', $from->insurance) == "No")>No</option>
                                             <option value="Si" @selected(old('insurance', $from->insurance) == "Si")>Si</option>
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="tarps" class="block text-sm/6 font-medium text-gray-900">Tarps</label>
+                                    <label for="tarps" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Tarps</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="tarps" name="tarps" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="tarps" name="tarps" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                             <option value="No" @selected(old('tarps', $from->tarps) == "No")>No</option>
                                             <option value="Si" @selected(old('tarps', $from->tarps) == "Si")>Si</option>
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="border-b border-gray-900/10 pb-4">
-                            <h2 class="text-base/7 font-semibold text-gray-900">Instrucciones</h2>
-                            <p class="mt-1 text-sm/6 text-gray-600">Llena las instrucciones de envío y consigna.</p>
+                        <div class="border-b border-gray-900/10 dark:border-white/10 pb-4">
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Instrucciones</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Llena las instrucciones de envío y consigna.</p>
                             <div class="mt-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-6">
                                 <div class="col-span-full">
-                                    <label for="instructions1" class="block text-sm/6 font-medium text-gray-900">Instrucciones de envio</label>
+                                    <label for="instructions1" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Instrucciones de envio</label>
                                     <div class="mt-1">
-                                        <textarea rows="4" id="instructions1" name="instructions1" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('instructions1', $instructionsOne)}}</textarea>
+                                        <textarea rows="4" id="instructions1" name="instructions1" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('instructions1', $instructionsOne)}}</textarea>
                                     </div>
                                 </div>
 
                                 <div class="col-span-full">
-                                    <label for="instructions2" class="block text-sm/6 font-medium text-gray-900">Instrucciones de consignia</label>
+                                    <label for="instructions2" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Instrucciones de consignia</label>
                                     <div class="mt-1">
-                                        <textarea rows="4" id="instructions2" name="instructions2" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('instructions2', $instructionsTwo)}}</textarea>
+                                        <textarea rows="4" id="instructions2" name="instructions2" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('instructions2', $instructionsTwo)}}</textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="pb-4">
-                            <h2 class="text-base/7 font-semibold text-gray-900">Información adicional</h2>
-                            <p class="mt-1 text-sm/6 text-gray-600">Ingresa comentarios adicionales para el embarque.</p>
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Información adicional</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Ingresa comentarios adicionales para el embarque.</p>
                             <div class="mt-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-6">
                                 <div class="col-span-full">
-                                    <label for="comments" class="block text-sm/6 font-medium text-gray-900">Comentarios</label>
+                                    <label for="comments" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Comentarios</label>
                                     <div class="mt-1">
-                                        <textarea rows="4" id="comments" name="comments" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('comments', $from->comments)}}</textarea>
+                                        <textarea rows="4" id="comments" name="comments" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('comments', $from->comments)}}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -442,7 +442,7 @@
                 </div>
                 <div class="px-4 py-4 sm:px-6">
                     <div class="flex items-center justify-end gap-x-6">
-                        <a href="{{ route('orders.show', ['order' => $order->id]) }}" class="text-sm/6 font-semibold text-gray-900">Cancelar</a>
+                        <a href="{{ route('orders.show', ['order' => $order->id]) }}" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-50">Cancelar</a>
                         <button type="submit" class="rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">Duplicar orden</button>
                     </div>
                 </div>

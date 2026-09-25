@@ -35,13 +35,14 @@ class AutocompleteController extends Controller
         }
         $country = $request->get('country_id');
         $search = $request->get('search');
-        $states = State::select('id', 'name')
+        $query = State::select('id', 'name')
             ->where( 'country_id', $country)
             ->where( 'name', 'like' , '%' . $search . '%')
-            ->orderBy('name')
-            ->limit(20)
-            ->get();
-        return response()->json($this->mapLocations($states));
+            ->orderBy('name');
+        if (!$request->boolean('all')) {
+            $query->limit(20);
+        }
+        return response()->json($this->mapLocations($query->get()));
     }
 
     public function cities(Request $request)
@@ -51,13 +52,14 @@ class AutocompleteController extends Controller
         }
         $state = $request->get('state_id');
         $search = $request->get('search');
-        $cities = City::select('id', 'name')
+        $query = City::select('id', 'name')
             ->where( 'state_id', $state)
             ->where( 'name', 'like' , '%' . $search . '%')
-            ->orderBy('name')
-            ->limit(20)
-            ->get();
-        return response()->json($this->mapLocations($cities));
+            ->orderBy('name');
+        if (!$request->boolean('all')) {
+            $query->limit(20);
+        }
+        return response()->json($this->mapLocations($query->get()));
     }
 
     public function contacts(Request $request)

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AddressPostRequest;
 use App\Http\Requests\AddressPutRequest;
 use App\Models\Address;
+use App\Models\City;
+use App\Models\Country;
+use App\Models\State;
 use Illuminate\Http\Request;
 
 class AddressController extends Controller
@@ -33,7 +36,9 @@ class AddressController extends Controller
 
     public function create()
     {
-        return view('address.create');
+        return view('address.create', [
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
+        ]);
     }
 
     public function store(AddressPostRequest $request)
@@ -50,7 +55,12 @@ class AddressController extends Controller
 
     public function edit(Address $address)
     {
-        return view('address.edit', ['address' => $address]);
+        return view('address.edit', [
+            'address' => $address,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
+            'states' => State::select('id', 'name')->where('country_id', $address->country_id)->orderBy('name')->get(),
+            'cities' => City::select('id', 'name')->where('state_id', $address->state_id)->orderBy('name')->get(),
+        ]);
     }
 
     public function update(AddressPutRequest $request, Address $address)

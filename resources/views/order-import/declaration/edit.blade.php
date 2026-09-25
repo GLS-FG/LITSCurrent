@@ -135,114 +135,114 @@
         <form action="{{ route('orders.imports.declarations.update', ['order' => $order, 'import' => $import->id, 'declaration' => $declaration->id]) }}" method="POST" class="mt-8">
             @csrf
             @method('PUT')
-            <div class="divide-y divide-gray-200 rounded bg-white shadow-lits-card">
+            <div class="divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
                 <div class="px-4 py-5 sm:p-6">
                     <div class="space-y-12">
                         <div class="pb-12">
                             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                                 <div class="sm:col-span-2">
-                                    <label for="custom" class="block text-sm/6 font-medium text-gray-900">Aduana</label>
+                                    <label for="custom" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Aduana</label>
                                     <div class="mt-2">
-                                        <input id="custom" value="{{old('custom', $custom->code . ' / ' . $custom->denomination)}}" placeholder="Busca una aduana" name="custom" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="custom" value="{{old('custom', $custom->code . ' / ' . $custom->denomination)}}" placeholder="Busca una aduana" name="custom" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         <input id="custom_id" value="{{old('custom_id', $declaration->custom_id)}}" name="custom_id" type="hidden">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="custom_agent_id" class="block text-sm/6 font-medium text-gray-900">Agente aduanal</label>
+                                    <label for="custom_agent_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Agente aduanal</label>
                                     <div class="mt-2">
-                                        <input id="custom_agent" value="{{old('custom_agent', $agent->company_name . ' / ' . $agent->patent)}}" placeholder="Busca un agente" name="custom_agent" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="custom_agent" value="{{old('custom_agent', $agent->company_name . ' / ' . $agent->patent)}}" placeholder="Busca un agente" name="custom_agent" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         <input id="custom_agent_id" value="{{old('custom_agent_id', $declaration->custom_agent_id)}}" name="custom_agent_id" type="hidden">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="petition" class="block text-sm/6 font-medium text-gray-900">Pedimento</label>
+                                    <label for="petition" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Pedimento</label>
                                     <div class="mt-2">
-                                        <input id="petition" value="{{old('petition', $declaration->petition)}}" name="petition" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="petition" value="{{old('petition', $declaration->petition)}}" name="petition" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="entry_date" class="block text-sm/6 font-medium text-gray-900">Fecha de entrada</label>
+                                    <label for="entry_date" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Fecha de entrada</label>
                                     <div class="mt-2">
-                                        <input id="entry_date" value="{{old('entry_date', is_null($declaration->entry_date) ? "" : $declaration->entry_date->format('d/m/Y'))}}" name="entry_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="entry_date" value="{{old('entry_date', is_null($declaration->entry_date) ? "" : $declaration->entry_date->format('d/m/Y'))}}" name="entry_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="draft_date" class="block text-sm/6 font-medium text-gray-900">Fecha de pedimento (Proforma)</label>
+                                    <label for="draft_date" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Fecha de pedimento (Proforma)</label>
                                     <div class="mt-2">
-                                        <input id="draft_date" value="{{old('draft_date', is_null($declaration->draft_date) ? "" : $declaration->draft_date->format('d/m/Y'))}}" name="draft_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="draft_date" value="{{old('draft_date', is_null($declaration->draft_date) ? "" : $declaration->draft_date->format('d/m/Y'))}}" name="draft_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="paid_date" class="block text-sm/6 font-medium text-gray-900">Fecha de pago</label>
+                                    <label for="paid_date" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Fecha de pago</label>
                                     <div class="mt-2">
-                                        <input id="paid_date" value="{{old('paid_date', is_null($declaration->paid_date) ? "" : $declaration->paid_date->format('d/m/Y'))}}" name="paid_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="paid_date" value="{{old('paid_date', is_null($declaration->paid_date) ? "" : $declaration->paid_date->format('d/m/Y'))}}" name="paid_date" type="text" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="commercial_value" class="block text-sm/6 font-medium text-gray-900">Valor comercial(MXN)</label>
+                                    <label for="commercial_value" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Valor comercial(MXN)</label>
                                     <div class="mt-2">
-                                        <input id="commercial_value" value="{{old('commercial_value', $declaration->commercial_value)}}" name="commercial_value" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="commercial_value" value="{{old('commercial_value', $declaration->commercial_value)}}" name="commercial_value" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="exchange_rate" class="block text-sm/6 font-medium text-gray-900">Tipo de cambio</label>
+                                    <label for="exchange_rate" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Tipo de cambio</label>
                                     <div class="mt-2">
-                                        <input id="exchange_rate" value="{{old('exchange_rate', $declaration->exchange_rate)}}" name="exchange_rate" type="number" step=".0001" min="0" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="exchange_rate" value="{{old('exchange_rate', $declaration->exchange_rate)}}" name="exchange_rate" type="number" step=".0001" min="0" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="customs_value" class="block text-sm/6 font-medium text-gray-900">Valor en aduana(MXN)</label>
+                                    <label for="customs_value" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Valor en aduana(MXN)</label>
                                     <div class="mt-2">
-                                        <input id="customs_value" value="{{old('customs_value', $declaration->customs_value)}}" name="customs_value" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="customs_value" value="{{old('customs_value', $declaration->customs_value)}}" name="customs_value" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="customs_value_foreign" class="block text-sm/6 font-medium text-gray-900">Valor en aduana(USD)</label>
+                                    <label for="customs_value_foreign" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Valor en aduana(USD)</label>
                                     <div class="mt-2">
-                                        <input id="customs_value_foreign" value="{{old('customs_value_foreign', $declaration->customs_value_foreign)}}" name="customs_value_foreign" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="customs_value_foreign" value="{{old('customs_value_foreign', $declaration->customs_value_foreign)}}" name="customs_value_foreign" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="gross_weight" class="block text-sm/6 font-medium text-gray-900">Peso bruto</label>
+                                    <label for="gross_weight" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Peso bruto</label>
                                     <div class="mt-2">
-                                        <input id="gross_weight" value="{{old('gross_weight', $declaration->gross_weight)}}" name="gross_weight" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="gross_weight" value="{{old('gross_weight', $declaration->gross_weight)}}" name="gross_weight" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-2">
-                                    <label for="packages" class="block text-sm/6 font-medium text-gray-900">Total de bultos</label>
+                                    <label for="packages" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Total de bultos</label>
                                     <div class="mt-2">
-                                        <input id="packages" value="{{old('packages', $declaration->packages)}}" name="packages" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <input id="packages" value="{{old('packages', $declaration->packages)}}" name="packages" type="number" step=".01" min="0" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                     </div>
                                 </div>
 
                                 <div class="sm:col-span-3">
-                                    <label for="incoterm_id" class="block text-sm/6 font-medium text-gray-900">INCOTERM</label>
+                                    <label for="incoterm_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">INCOTERM</label>
                                     <div class="mt-2 grid grid-cols-1">
-                                        <select id="incoterm_id" name="incoterm_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <select id="incoterm_id" name="incoterm_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                             @foreach ($incoterms as $incoterm)
                                                 <option value="{{ $incoterm->id }}" @selected(old('incoterm_id', $declaration->incoterm_id) == $incoterm->id)>{{ $incoterm->code }} ({{ $incoterm->name }})</option>
                                             @endforeach
                                         </select>
-                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                        <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                                     </div>
                                 </div>
 
                                 @if($import->class_type_id == 16)
                                     <div class="sm:col-span-3">
-                                        <label for="port_departure" class="block text-sm/6 font-medium text-gray-900">Aduana de salida</label>
+                                        <label for="port_departure" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Aduana de salida</label>
                                         <div class="mt-2">
-                                            <input id="port_departure" value="{{old('port_departure', $custom->code . ' / ' . $custom->denomination)}}" placeholder="Busca una aduana de salida" name="port_departure" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                            <input id="port_departure" value="{{old('port_departure', $custom->code . ' / ' . $custom->denomination)}}" placeholder="Busca una aduana de salida" name="port_departure" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                             <input id="port_departure_id" value="{{old('port_departure_id', $declaration->custom_id)}}" name="port_departure_id" type="hidden">
                                         </div>
                                     </div>
@@ -253,7 +253,7 @@
                 </div>
                 <div class="px-4 py-4 sm:px-6">
                     <div class="mt-6 flex items-center justify-end gap-x-6">
-                        <a href="{{ route('orders.imports.show', ['order' => $order->id, 'import' => $import->id]) }}" class="text-sm/6 font-semibold text-gray-900">Cancelar</a>
+                        <a href="{{ route('orders.imports.show', ['order' => $order->id, 'import' => $import->id]) }}" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-50">Cancelar</a>
                         <button type="submit" class="rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">Guardar</button>
                     </div>
                 </div>

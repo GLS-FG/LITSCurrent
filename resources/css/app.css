@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -38,6 +40,15 @@
 
     --color-wp-card-body: #212A37;
 
+    --color-entity-orders: #4338CA;
+    --color-entity-orders-50: #ECEBFB;
+    --color-entity-shipments: #0891B2;
+    --color-entity-shipments-50: #E3F4F8;
+    --color-entity-customs: #7C3AED;
+    --color-entity-customs-50: #F1E9FD;
+    --color-entity-warehouses: #B45309;
+    --color-entity-warehouses-50: #FBEEE1;
+
     --shadow-lits-card: 0 0.25rem 1.875rem rgba(46,45,116,0.05);
 }
 
@@ -45,14 +56,81 @@
     color-scheme: light;
 }
 
+.dark {
+    color-scheme: dark;
+    --shadow-lits-card: 0 0.25rem 1.875rem rgba(0, 0, 0, 0.35);
+}
+
 [x-cloak] { display: none !important; }
 
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-up {
+    animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dashboard-stat-card {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.dashboard-stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.dashboard-stat-icon {
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-stat-card:hover .dashboard-stat-icon {
+    transform: scale(1.08);
+}
+
+.dashboard-stat-link {
+    transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-stat-card:hover .dashboard-stat-link {
+    gap: 0.5rem;
+}
+
+.dashboard-chart-card {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.dashboard-chart-card:hover {
+    box-shadow: 0 0.75rem 2.5rem rgba(46, 45, 116, 0.09);
+}
+
+.dark .dashboard-chart-card:hover {
+    box-shadow: 0 0.75rem 2.5rem rgba(0, 0, 0, 0.45);
+}
+
+.dashboard-pill-active {
+    background-color: #ffffff;
+    color: var(--color-lits-red-500);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.dark .dashboard-pill-active {
+    background-color: var(--color-lits-blue-450);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
 gmp-place-autocomplete {
-    @apply block w-full rounded-md bg-white text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6
+    @apply block w-full rounded-md bg-white text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-gray-900 dark:text-gray-100 dark:outline-gray-600
 }
 
 .ui-menu.ui-widget.ui-widget-content.ui-autocomplete.ui-front {
-    @apply absolute z-10 mt-1 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-hidden sm:text-sm;
+    @apply absolute z-10 mt-1 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-hidden sm:text-sm dark:bg-gray-900 dark:ring-white/10;
 }
 
 .ui-autocomplete {
@@ -69,6 +147,10 @@ gmp-place-autocomplete {
     white-space: nowrap;
 }
 
+.dark .ui-autocomplete > li > div {
+    color: #e5e7eb;
+}
+
 .ui-state-hover,
 .ui-state-active,
 .ui-state-focus {
@@ -76,6 +158,39 @@ gmp-place-autocomplete {
     color: #262626;
     background-color: #f5f5f5;
     cursor: pointer;
+}
+
+.dark .ui-state-hover,
+.dark .ui-state-active,
+.dark .ui-state-focus {
+    color: #f3f4f6;
+    background-color: #374151;
+}
+
+/*
+ * The sidebar/topbar are kept alive across wire:navigate transitions via
+ * @persist, so their "active route" state can no longer be recalculated by
+ * the server on every navigation. These classes let a small client-side
+ * script (see layout.blade.php) toggle the highlighted state instead.
+ */
+.nav-link.is-active {
+    @apply bg-slate-100 dark:bg-gray-800 text-red-600;
+}
+.nav-link:not(.is-active) {
+    @apply text-gray-700 dark:text-white;
+}
+.nav-link:not(.is-active):hover {
+    @apply text-red-600 bg-slate-100 dark:bg-gray-800;
+}
+
+.nav-sublink.is-active {
+    @apply bg-slate-100 dark:bg-gray-800 text-red-600;
+}
+.nav-sublink:not(.is-active) {
+    @apply text-gray-600 dark:text-gray-300;
+}
+.nav-sublink:not(.is-active):hover {
+    @apply text-red-600 bg-slate-100 dark:bg-gray-800;
 }
 
 .ui-helper-hidden-accessible {

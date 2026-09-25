@@ -12,7 +12,7 @@
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
         <div class="mt-8">
-            <div class="divide-y divide-gray-200 rounded bg-white shadow-lits-card">
+            <div class="divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
                 <div class="px-4 py-5 sm:px-6">
                     <div class="flex flex-wrap items-center justify-between gap-4">
                         <div>
@@ -27,28 +27,28 @@
                         </div>
                     </div>
                 </div>
-                <div class="px-4 py-5 sm:p-6 divide-y divide-gray-200">
+                <div class="px-4 py-5 sm:p-6 divide-y divide-gray-200 dark:divide-gray-700">
                     <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900">Nombre</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Nombre</dt>
+                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
                             {{$serviceTypeStatus->name}}
                         </dd>
                     </div>
                     <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900">Color</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Color</dt>
+                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
                             <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring {{$serviceTypeStatus->color}}">{{$serviceTypeStatus->name}}</span>
                         </dd>
                     </div>
                     <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900">Service Modes</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Service Modes</dt>
+                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
                             <table class="relative divide-y border">
                                 <thead>
                                 <tr class="divide-x">
-                                    <th scope="col" class="py-3.5 px-3 text-center text-sm font-semibold text-gray-900 bg-gray-200">Service Class</th>
-                                    <th scope="col" class="py-3.5 px-3 text-center text-sm font-semibold text-gray-900 bg-gray-200">Service Mode</th>
-                                    <th scope="col" class="py-3.5 px-3 bg-gray-200">
+                                    <th scope="col" class="py-3.5 px-3 text-center text-sm font-semibold text-gray-900 dark:text-gray-50 bg-gray-200 dark:bg-gray-700">Service Class</th>
+                                    <th scope="col" class="py-3.5 px-3 text-center text-sm font-semibold text-gray-900 dark:text-gray-50 bg-gray-200 dark:bg-gray-700">Service Mode</th>
+                                    <th scope="col" class="py-3.5 px-3 bg-gray-200 dark:bg-gray-700">
                                         <span class="sr-only"></span>
                                     </th>
                                 </tr>
@@ -58,14 +58,14 @@
                                     @foreach($serviceClass->serviceModes as $serviceMode)
                                         <tr class="divide-x">
                                             @if($loop->first)
-                                                <td rowspan="{{count($serviceClass->serviceModes)}}" class="py-4 px-3 text-sm text-center font-medium whitespace-nowrap text-gray-900 bg-gray-200">{{$serviceClass->code}}</td>
+                                                <td rowspan="{{count($serviceClass->serviceModes)}}" class="py-4 px-3 text-sm text-center font-medium whitespace-nowrap text-gray-900 dark:text-gray-50 bg-gray-200 dark:bg-gray-700">{{$serviceClass->code}}</td>
                                             @endif
-                                            <td class="px-3 py-4 text-sm text-center text-gray-900 bg-gray-200">{{$serviceMode->code}}</td>
+                                            <td class="px-3 py-4 text-sm text-center text-gray-900 dark:text-gray-50 bg-gray-200 dark:bg-gray-700">{{$serviceMode->code}}</td>
                                             <td class="py-4 px-3 text-lg font-medium text-center">
                                                 @if(in_array($serviceMode->id, $modes))
-                                                    <i class="fa-solid fa-square-check text-green-500"></i>
+                                                    <i class="fa-solid fa-square-check text-green-500 dark:text-green-400"></i>
                                                 @else
-                                                    <i class="fa-solid fa-square-xmark text-red-500"></i>
+                                                    <i class="fa-solid fa-square-xmark text-red-500 dark:text-red-400"></i>
                                                 @endif
                                             </td>
                                         </tr>

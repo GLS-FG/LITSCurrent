@@ -20,4 +20,6 @@ return [
     'search_references' => 'Busca una referencia',
     'search_service_id' => 'Busca un Service ID',
     'search_status' => 'Busca un estatus',
+    'active' => 'Activas',
+    'urgent' => 'Urgentes',
 ];

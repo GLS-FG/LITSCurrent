@@ -81,11 +81,11 @@
         <form action="{{ route('orders.update', ['order' => $order->id]) }}" method="POST" class="mt-2 flow-root">
             @csrf
             @method('PUT')
-            <div class="divide-y divide-gray-200 overflow-hidden rounded bg-white shadow-lits-card">
+            <div class="divide-y divide-gray-200 dark:divide-gray-700 overflow-hidden rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
                 <div class="px-4 py-5 sm:p-6">
                     <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-4">
-                            <label for="client" class="block text-sm/6 font-medium text-gray-900">Cliente</label>
+                            <label for="client" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Cliente</label>
                             <div class="mt-2">
                                 <input
                                     id="client"
@@ -93,27 +93,27 @@
                                     name="client"
                                     type="text"
                                     autocomplete="off"
-                                    class="@error('client_id') outline-red-400 @else outline-gray-300 @enderror block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1  placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    class="@error('client_id') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1  placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 <input id="client_id" value="{{old('client_id', $order->client_id)}}" name="client_id" type="hidden" />
                             </div>
                             @error('client_id')
-                            <p class="mt-1 text-sm/6 text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-sm/6 text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="sm:col-span-2">
-                            <label for="contact_id" class="block text-sm/6 font-medium text-gray-900">Usuario</label>
+                            <label for="contact_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Usuario</label>
                             <div class="mt-2 grid grid-cols-1">
-                                <select id="contact_id" name="contact_id" autocomplete="off" class="@error('contact_id') outline-red-400 @else outline-gray-300 @enderror col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1  focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                <select id="contact_id" name="contact_id" autocomplete="off" class="@error('contact_id') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1  focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 </select>
-                                <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 sm:text-sm"></i>
+                                <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
                             </div>
                             @error('contact_id')
-                            <p class="mt-1 text-sm/6 text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-sm/6 text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="col-span-full">
-                            <label for="carbon_copy" class="block text-sm/6 font-medium text-gray-900">
-                                Receptores Adicionales <span class="font-normal text-gray-500">(Ingresa emails separados por punto y coma ";")</span>
+                            <label for="carbon_copy" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">
+                                Receptores Adicionales <span class="font-normal text-gray-500 dark:text-gray-400">(Ingresa emails separados por punto y coma ";")</span>
                             </label>
                             <div class="mt-2">
                                 <input
@@ -122,19 +122,19 @@
                                     autocomplete="off"
                                     type="text"
                                     value="{{old('carbon_copy', $order->carbon_copy)}}"
-                                    class="@error('reference') outline-red-400 @else outline-gray-300 @enderror block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                    class="@error('reference') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                 />
                             </div>
                             @error('carbon_copy')
-                            <p class="mt-1 text-sm/6 text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-sm/6 text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="col-span-full">
-                            <label for="reference" class="block text-sm/6 font-medium text-gray-900">Referencia</label>
+                            <label for="reference" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Referencia</label>
                             <div class="mt-2">
-                                <textarea id="reference" name="reference" autocomplete="off" class="@error('reference') outline-red-400 @else outline-gray-300 @enderror block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('reference', $order->reference)}}</textarea>
+                                <textarea id="reference" name="reference" autocomplete="off" class="@error('reference') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('reference', $order->reference)}}</textarea>
                                 @error('reference')
-                                <p class="mt-1 text-sm/6 text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm/6 text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -142,7 +142,7 @@
                 </div>
                 <div class="px-4 py-4 sm:px-6">
                     <div class="mt-6 flex items-center justify-end gap-x-6">
-                        <a href="{{route('orders.show', ['order' => $order->id])}}" class="text-sm/6 font-semibold text-gray-900">Cancelar</a>
+                        <a href="{{route('orders.show', ['order' => $order->id])}}" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-50">Cancelar</a>
                         <button type="submit" class="rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">Guardar</button>
                     </div>
                 </div>
