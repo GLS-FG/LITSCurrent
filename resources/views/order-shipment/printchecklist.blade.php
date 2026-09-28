@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <style>
         @page {
-            margin: 48px;
+            margin: 25px;
         }
         body {
             margin: 0;

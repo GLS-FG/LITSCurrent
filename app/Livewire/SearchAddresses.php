@@ -76,6 +76,33 @@ class SearchAddresses extends Component
         $this->createAddress = false;
     }
 
+    public function selectAddress(Address $address)
+    {
+        $this->openSearch = false;
+        $neighborhood = "";
+        if($address->neighborhood){
+            $neighborhood = ', ' . $address->neighborhood;
+        }
+        $fullAddress = $address->name . PHP_EOL .
+                       $address->address . $neighborhood . PHP_EOL .
+                       $address->city->name . ', ' . $address->state->name. ' ' . $address->postal_code . ' ' . $address->country->name . PHP_EOL .
+                       $address->contact_name;
+        $data = [
+            'type' => $this->type,
+            'id' => $address->id,
+            'address_name' => $address->name,
+            'country_id' => $address->country_id,
+            'country_name' => $address->country->name,
+            'state_id' => $address->state_id,
+            'state_name' => $address->state->name,
+            'city_id' => $address->city_id,
+            'city_name' => $address->city->name,
+            'link' => $address->link,
+            'full_address' => $fullAddress
+        ];
+        $this->dispatch('address-selected', address: $data);
+    }
+
     public function render()
     {
         $addresses = Address::where('nickname', 'like', '%' . $this->search . '%')

@@ -12,446 +12,530 @@
     </script>
 @endsection
 <x-layout-app>
-    <section>
+    <div>
         <x-navigation.breadcrumbs :links="['Ordenes' => route('orders.index'), $order->code => route('orders.show', ['order' => $order->id]), 'Aduana' => '#']" />
-        <div class="mt-6 flex justify-between items-center flex-wrap gap-y-2">
-            <div class="flex items-center flex-wrap sm:flex-nowrap gap-1">
+
+        <div class="mt-5 flex items-start justify-between gap-4 flex-wrap">
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <div class="size-9 shrink-0 rounded-lg flex items-center justify-center bg-entity-customs-50 dark:bg-entity-customs/15 text-entity-customs">
+                    <i class="fa-regular fa-person-military-pointing text-base"></i>
+                </div>
+                @if($import->urgent)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-lits-red-50 dark:bg-lits-red-500/15 px-2.5 py-1 text-xs font-bold text-lits-red-600 dark:text-lits-red-400">
+                        <i class="fa-regular fa-light-emergency-on"></i>
+                        {{__('Urgent')}}
+                    </span>
+                @endif
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">
+                    {{$import->tracking_code}}
+                </h1>
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $import->order_import_status_id->textColor() }}">
+                    <span class="size-1.5 rounded-full {{ $import->order_import_status_id->dotColor() }}"></span>
+                    {{ $import->order_import_status_id->label() }}
+                </span>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap">
                 @can('update', $import)
                     <a
                         href="{{route('orders.imports.edit', [ 'order' => $order->id, 'import' => $import->id ])}}"
-                        data-tippy-content="Editar Orden"
+                        data-tippy-content="{{__('shows.edit_service')}}"
                         role="button"
-                        class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
                         <i class="fa-regular fa-pen-to-square"></i>
-                        Editar
+                        {{__('shows.edit')}}
                     </a>
                     <a
                         href='{{route('orders.imports.documents.create', [ 'order' => $import->order, 'import' => $import ])}}'
-                        data-tippy-content="Adjuntar archivo"
+                        data-tippy-content="{{__('shows.attach_file')}}"
                         role="button"
-                        class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
                         <i class="fa-regular fa-paperclip"></i>
-                        Adjuntar
+                        {{__('shows.attach_file')}}
                     </a>
                 @endcan
-            </div>
-            <div>
                 @canany(['update', 'restore'], $import)
                     <form action="{{ route('orders.imports.update.status', ['order' => $order->id, 'import' => $import->id]) }}" method="POST" class="flex">
                         @csrf
                         @method('PUT')
-                        <div class="-mr-px  grid grid-cols-1 focus-within:relative">
-                            <select id="order_import_status_id" name="order_import_status_id" autocomplete="off" aria-label="Country" class="col-start-1 row-start-1 w-full appearance-none rounded-l-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                        <div class="grid grid-cols-1 focus-within:relative">
+                            <select id="order_import_status_id" name="order_import_status_id" autocomplete="off" aria-label="{{__('indexes.status')}}" class="col-start-1 row-start-1 w-full appearance-none rounded-l-lg border border-r-0 border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 py-2 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-none focus:ring-2 focus:ring-indigo-600">
                                 @foreach ($statuses as $status)
                                     <option value= {{ $status->id }} @selected($import->order_import_status_id->value == $status->id)>{{ $status->name }}  </option>
                                 @endforeach
                             </select>
-                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
+                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2.5 self-center justify-self-end text-xs text-gray-400 dark:text-gray-500"></i>
                         </div>
-                        <button data-tippy-content="Guardar Estatus" type="submit" class="flex shrink-0 items-center gap-x-1.5 rounded-r-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 focus:relative focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 hover:cursor-pointer">
+                        <button data-tippy-content="{{__('shows.save_status')}}" type="submit" class="flex items-center gap-x-1.5 rounded-r-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer">
                             <i class="fa-regular fa-floppy-disk"></i>
                         </button>
                     </form>
                 @endcanany
             </div>
         </div>
+
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
         @if ($errors->any())
             <x-alerts.error :message="'Para editar la órden soluciona los siguientes errores:'" :errors="$errors" class="my-4" />
         @endif
-        <div class="shadow-lits-card border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 mt-2 -mx-4 sm:mx-0 lg:mx-0">
-            <div class="px-4 sm:px-6 pt-4 pb-1">
-                <div class="min-w-0 flex gap-x-5 items-center">
-                    <h2 class="text-2xl/7 font-bold text-gray-900 dark:text-gray-50 sm:truncate sm:text-3xl sm:tracking-tight">{{$import->tracking_code}}</h2>
-                    <span class="inline-flex items-center rounded-md  px-2 py-1 text-sm font-medium  ring-1 ring-inset {{ $import->order_import_status_id->badgeColor() }}">{{ $import->order_import_status_id->label() }}</span>
+
+        <div class="mt-5 flex items-start justify-between gap-4 flex-wrap py-4 border-t border-b border-gray-200 dark:border-lits-blue-450">
+            <div class="flex items-center gap-3">
+                <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-11 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
+                <div>
+                    <div class="text-sm font-bold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{$order->contact->name}}</div>
                 </div>
             </div>
-            <div class="px-4 sm:px-6 pt-1 pb-8 block md:flex md:justify-between">
-                <div class="flex flex-1 items-center gap-x-6">
-                    <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
-                    <div>
-                        <h1 class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</h1>
-                        <p class="text-sm/6 text-gray-700 dark:text-gray-300">{{$order->contact->name}}</p>
-                    </div>
+            <div class="flex items-start gap-6 flex-wrap">
+                <div>
+                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
+                    <div class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-xs break-words">{{$import->reference}}</div>
                 </div>
                 <div>
-                    <p class="text-sm/6 text-gray-700 dark:text-gray-300 text-left md:text-right">{{$import->reference}}</p>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 text-left md:text-right">{{ $import->created_at->isoFormat('DD/MM/YYYY [a las] h:mm a') }}</p>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 text-left md:text-right">{{ $import->order->createdBy->name }}</p>
+                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $import->created_at->isoFormat('DD/MM/YYYY ['. __('shows.at_time') .'] h:mm a') }}</div>
+                </div>
+                <div>
+                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $import->order->createdBy->name }}</div>
                 </div>
             </div>
-            <div x-data="{ activeTab: {{request()->get('activeTab', 0)}} }">
-                <div class="px-4 sm:px-6 border-b border-gray-200 dark:border-lits-blue-450">
-                    <nav aria-label="Tabs" class="-mb-px flex justify-between">
-                        <div class="flex">
-                            <button
-                                @click="activeTab = 0"
-                                class="group inline-flex items-center border-l border-t border-b border-gray-200 dark:border-lits-blue-450 px-3 py-2 text-sm font-medium"
-                                :class="{ 'border-t-indigo-500 text-t-indigo-600 border-t-2 border-b-white': activeTab === 0, 'text-gray-500 hover:border-gray-300 hover:text-gray-700 hover:cursor-pointer': activeTab !== 0 }"
-                            >
-                                Servicios
-                            </button>
-                            <button
-                                @click="activeTab = 1"
-                                class="group inline-flex items-center border-l border-t border-b border-gray-200 dark:border-lits-blue-450 px-3 py-2 text-sm font-medium"
-                                :class="{ 'border-t-indigo-500 text-t-indigo-600 border-t-2 border-b-white': activeTab === 1, 'text-gray-500 hover:border-gray-300 hover:text-gray-700 hover:cursor-pointer': activeTab !== 1 }"
+        </div>
 
-                            >
-                                Expediente
-                            </button>
-                            <button
-                                @click="activeTab = 2"
-                                class="group inline-flex items-center border-l border-r border-t border-b border-gray-200 dark:border-lits-blue-450 px-3 py-2 text-sm font-medium"
-                                :class="{ 'border-t-indigo-500 text-t-indigo-600 border-t-2 border-b-white': activeTab === 2, 'text-gray-500 hover:border-gray-300 hover:text-gray-700 hover:cursor-pointer': activeTab !== 2 }"
+        <div x-data="{ activeTab: {{request()->get('activeTab', 0)}} }" class="mt-6">
+            <div class="flex items-center gap-6">
+                <button
+                    @click="activeTab = 0"
+                    class="py-3 text-sm border-b-2 hover:cursor-pointer"
+                    :class="{ 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50': activeTab === 0, 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200': activeTab !== 0 }"
+                >
+                    {{__('shows.services')}}
+                </button>
+                <button
+                    @click="activeTab = 1"
+                    class="py-3 text-sm border-b-2 hover:cursor-pointer"
+                    :class="{ 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50': activeTab === 1, 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200': activeTab !== 1 }"
+                >
+                    {{__('shows.files')}}
+                </button>
+                <button
+                    @click="activeTab = 2"
+                    class="py-3 text-sm border-b-2 hover:cursor-pointer"
+                    :class="{ 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50': activeTab === 2, 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200': activeTab !== 2 }"
+                >
+                    {{__('shows.status')}}
+                </button>
+                @can('checklist', $import)
+                    <button
+                        @click="activeTab = 3"
+                        class="py-3 text-sm border-b-2 hover:cursor-pointer"
+                        :class="{ 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50': activeTab === 3, 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200': activeTab !== 3 }"
+                    >
+                        {{__('shows.internal_control')}}
+                    </button>
+                @endcan
+            </div>
+            <div class="border-b border-gray-200 dark:border-lits-blue-450 -mt-px mb-5"></div>
 
-                            >
-                                Estatus
-                            </button>
-                        </div>
-                        @can('checklist', $import)
-                            <button
-                                @click="activeTab = 3"
-                                class="group inline-flex items-center border-l border-r border-t border-b border-gray-200 dark:border-lits-blue-450 px-3 py-2 text-sm font-medium"
-                                :class="{ 'border-t-indigo-500 text-t-indigo-600 border-t-2 border-b-white': activeTab === 3, 'text-gray-500 hover:border-gray-300 hover:text-gray-700 hover:cursor-pointer': activeTab !== 3 }"
+            <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 0" class="pt-2">
+                <div class="flex flex-col gap-6">
+                    <div class="flex gap-1.5 flex-wrap">
+                        @foreach([
+                            'Service Class' => $import->serviceClass?->code,
+                            'Service Mode' => $import->serviceMode?->code,
+                            'Class Type' => $import->classType?->code,
+                            'Service Level' => $import->serviceLevel?->code,
+                        ] as $label => $code)
+                            @if($code)
+                                <span data-tippy-content="{{ $label }}" class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:cursor-help">{{ $code }}</span>
+                            @endif
+                        @endforeach
+                    </div>
 
-                            >
-                                Control Interno
-                            </button>
-                        @endcan
-                    </nav>
-                </div>
-                <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 0">
-                    <div class="px-4 py-5 sm:px-6 grid grid-cols-1 text-sm/6 sm:grid-cols-2">
-                        <div class="mt-6 border-t border-gray-900/5 pt-6 sm:pr-4 sm:col-span-2 grid grid-cols-1 text-sm/6 sm:grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-4">
-                            <div class="">
-                                <dt class="font-semibold text-gray-900 dark:text-gray-50">Service Class</dt>
-                                <dd class="text-gray-500 dark:text-gray-400">{{$import->serviceClass?->name}}</dd>
-                            </div>
-                            <div class="">
-                                <dt class="font-semibold text-gray-900 dark:text-gray-50">Service Mode</dt>
-                                <dd class="text-gray-500 dark:text-gray-400">{{$import->serviceMode?->name}}</dd>
-                            </div>
-                            <div class="">
-                                <dt class="font-semibold text-gray-900 dark:text-gray-50">Class Type</dt>
-                                <dd class="text-gray-500 dark:text-gray-400">{{$import->classType?->name}}</dd>
-                            </div>
-                            <div class="">
-                                <dt class="font-semibold text-gray-900 dark:text-gray-50">Service Level</dt>
-                                <dd class="text-gray-500 dark:text-gray-400">{{$import->serviceLevel?->name}}</dd>
-                            </div>
-                        </div>
-                        <div class="mt-8 sm:mt-6 sm:border-t sm:border-gray-900/5 sm:pt-6 sm:col-span-2">
-                            <dt class="font-semibold text-gray-900 dark:text-gray-50">Comentarios</dt>
-                            <dd class="mt-2 text-gray-500 dark:text-gray-400">
-                                {{ $import->comments == null || $import->comments == "" ? "Sin comentarios" : $import->comments }}
-                            </dd>
-                        </div>
-                        @can('create', \App\Models\Order::class)
-                            <div class="mt-8 sm:mt-6 sm:border-t sm:border-gray-900/5 sm:pt-6 sm:col-span-2"></div>
+                    <div>
+                        <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">{{__('shows.comments')}}</div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $import->comments == null || $import->comments == "" ? "Sin comentarios" : $import->comments }}
+                        </p>
+                    </div>
+
+                    @can('create', \App\Models\Order::class)
+                        <div class="pt-6 border-t border-gray-200 dark:border-lits-blue-450/60">
                             <x-cards.custom-declarations-section
                                 :order="$order"
                                 :import="$import"
                             />
-                        @endcan
-                        <div class="mt-8 sm:mt-6 sm:border-t sm:border-gray-900/5 sm:pt-6 sm:col-span-2"></div>
+                        </div>
+                    @endcan
+
+                    <div class="pt-6 border-t border-gray-200 dark:border-lits-blue-450/60">
                         <livewire:products-section :order="$import" />
                     </div>
                 </div>
-                <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 1">
-                    <livewire:documents :order="$import" />
-                </div>
-                <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 2">
-                    <div class="px-4 py-5 sm:px-6">
-                        <div class="flow-root">
-                            <div class="overflow-hidden">
-                                <div class="">
-                                    <div class="px-4 md:px-8">
-                                        <div x-data="{ mode: 1 }">
-                                            <div x-cloak x-show.transition.in.opacity.duration.600="mode === 1">
-                                                <div class="space-y-4">
-                                                    <div class="sm:flex sm:justify-between sm:items-center">
-                                                        <p class="text-xl text-gray-900 dark:text-gray-50 font-semibold">Seguimiento de aduana</p>
-                                                    </div>
-                                                    @can('update', $import)
-                                                        <div class="w-full flex justify-start gap-2">
-                                                            <button data-tippy-content="Agregar geolocalización" @click="mode = 2" class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">
-                                                                <i class="fa-regular fa-location-dot"></i>
-                                                                Agregar
-                                                            </button>
-                                                        </div>
-                                                    @endcan
-                                                    <div>
-                                                        <div x-data="{ collapsed: false }" @collapse="collapsed = !collapsed">
-                                                            <button
-                                                                @click="$dispatch('collapse', !collapsed)"
-                                                                class="rounded-sm bg-white dark:bg-lits-blue-550 px-2 py-1 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                                                                x-text="collapsed ? 'Expandir' : 'Minimizar'"
-                                                            ></button>
-                                                        </div>
-                                                        <ul role="list" class="space-y-2 overflow-y-auto pt-2 pb-5">
-                                                            @forelse($import->locations as $location)
-                                                                <li class="relative flex gap-x-2">
-                                                                    @if (!$loop->last)
-                                                                        <div class="absolute top-0 -bottom-6 left-0 flex w-6 justify-center">
-                                                                            <div class="w-px bg-gray-300"></div>
-                                                                        </div>
-                                                                    @endif
-                                                                    @if ($location->service_type_status_id == 20)
-                                                                        <div class="relative flex size-6 flex-none items-center justify-center bg-white dark:bg-lits-blue-550">
-                                                                            <i class="fa-solid fa-circle-check text-lg text-indigo-600 dark:text-indigo-400"></i>
-                                                                        </div>
-                                                                    @else
-                                                                        <div class="relative flex size-6 flex-none items-center justify-center bg-white dark:bg-lits-blue-550">
-                                                                            <div class="size-1.5 rounded-full bg-gray-500 ring ring-gray-500"></div>
-                                                                        </div>
-                                                                    @endif
-                                                                    <div x-data="{ collapsed: false }" @collapse.window="collapsed = $event.detail">
-                                                                        <div class="flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-gray-400 flex-wrap">
-                                                                            <p class="text-sm/6 text-gray-900 dark:text-gray-50">
-                                                                                {{$location->status->name}}
-                                                                            </p>
-                                                                            <button x-cloak x-show.transition.in.opacity.duration.600="collapsed === false" @click="collapsed = true" class="rounded-full bg-white dark:bg-lits-blue-550 p-1 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
-                                                                                <i class="fa-regular fa-angle-up"></i>
-                                                                            </button>
-                                                                            <button x-cloak x-show.transition.in.opacity.duration.600="collapsed === true" @click="collapsed = false" class="rounded-full bg-white dark:bg-lits-blue-550 p-1 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
-                                                                                <i class="fa-regular fa-angle-down"></i>
-                                                                            </button>
-                                                                            @can('delete', $import)
-                                                                                <button @click="mode = 3; editLocation({{$location}})" class="rounded-md p-1 bg-green-100 dark:bg-green-500/15 flex items-center justify-center text-sm font-semibold text-green-500 dark:text-green-400 hover:text-green-800 hover:bg-green-200">
-                                                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                                                </button>
-                                                                                <div
-                                                                                    class="relative inline-block text-left"
-                                                                                    x-data="{ openCancel: false }"
-                                                                                >
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        @click="openCancel = true"
-                                                                                        data-tippy-content="Eliminar estatus"
-                                                                                        class="rounded-md p-1 bg-red-100 dark:bg-red-500/15 flex items-center justify-center text-sm font-semibold text-red-500 dark:text-red-400 hover:text-red-800 hover:bg-red-200"
-                                                                                    >
-                                                                                        <i class="fa-regular fa-trash-can"></i>
-                                                                                    </button>
-                                                                                    <div x-cloak x-show="openCancel" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                                                                                        <div
-                                                                                            class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
-                                                                                            aria-hidden="true"
-                                                                                            x-show="openCancel"
-                                                                                            x-transition:enter="ease-out duration-300"
-                                                                                            x-transition:enter-start="opacity-0"
-                                                                                            x-transition:enter-end="opacity-100"
-                                                                                            x-transition:leave="ease-in duration-200"
-                                                                                            x-transition:leave-start="opacity-100"
-                                                                                            x-transition:leave-end="opacity-0"
-                                                                                        ></div>
+            </div>
 
-                                                                                        <div class="fixed inset-0 z-100 w-screen overflow-y-auto">
-                                                                                            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                                                                                                <div
-                                                                                                    x-show="openCancel"
-                                                                                                    x-transition:enter="ease-out duration-300"
-                                                                                                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                                                                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                                                                                                    x-transition:leave="ease-in duration-200"
-                                                                                                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                                                                                                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                                                                    class="relative transform overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
-                                                                                                >
-                                                                                                    <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-                                                                                                        <button type="button" @click="openCancel = false" class="rounded-md bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
-                                                                                                            <span class="sr-only">Close</span>
-                                                                                                            <i class="fa-regular fa-xmark"></i>
-                                                                                                        </button>
-                                                                                                    </div>
-                                                                                                    <div class="sm:flex sm:items-start">
-                                                                                                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/15 sm:mx-0 sm:size-10">
-                                                                                                            <i class="fa-regular fa-triangle-exclamation text-lg text-red-600 dark:text-red-400"></i>
-                                                                                                        </div>
-                                                                                                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left whitespace-normal">
-                                                                                                            <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Eliminar estatus</h3>
-                                                                                                            <div class="mt-2">
-                                                                                                                <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">¿Estás seguro de eliminar el estatus?</p>
-                                                                                                                <p class="text-sm text-red-500 dark:text-red-400 font-medium">{{$location->status->name}}</p>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                                                                                        <form action="{{route('orders.imports.locations.destroy', ['order' => $order->id, 'import' => $import->id, 'location' => $location])}}" method="POST">
-                                                                                                            @csrf
-                                                                                                            @method('DELETE')
-                                                                                                            <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Eliminar</button>
-                                                                                                        </form>
-                                                                                                        <button type="button" @click="openCancel = false" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs ring-1 ring-gray-300 dark:ring-gray-600 ring-inset hover:bg-gray-50 dark:hover:bg-gray-800 sm:mt-0 sm:w-auto">Regresar</button>
-                                                                                                    </div>
+            <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 1">
+                <livewire:documents :order="$import" />
+            </div>
+
+            <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 2">
+                <div class="pt-2">
+                    <div x-data="{ mode: 1 }">
+                        <div x-cloak x-show.transition.in.opacity.duration.600="mode === 1">
+                            <div class="flex flex-col gap-6">
+                                <div class="flex items-center justify-between gap-3 flex-wrap">
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-50">Seguimiento de aduana</p>
+                                    @can('update', $import)
+                                        <button data-tippy-content="Agregar geolocalización" @click="mode = 2" class="inline-flex items-center gap-1.5 rounded-lg bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">
+                                            <i class="fa-regular fa-location-dot"></i>
+                                            Agregar
+                                        </button>
+                                    @endcan
+                                </div>
+                                <div class="rounded-lg border border-gray-200 dark:border-lits-blue-450 p-4">
+                                    <div x-data="{ collapsed: false }" @collapse="collapsed = !collapsed" class="flex justify-end mb-3">
+                                        <button
+                                            @click="$dispatch('collapse', !collapsed)"
+                                            class="text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
+                                            x-text="collapsed ? 'Expandir todo' : 'Minimizar todo'"
+                                        ></button>
+                                    </div>
+                                    <ul role="list">
+                                        @forelse($import->locations as $location)
+                                            <li class="relative flex gap-x-2 @if (!$loop->last) pb-6 @endif">
+                                                @if (!$loop->last)
+                                                    <div class="absolute top-0 -bottom-0 left-0 flex w-6 justify-center">
+                                                        <div class="w-px bg-gray-200 dark:bg-lits-blue-450"></div>
+                                                    </div>
+                                                @endif
+                                                @if ($location->service_type_status_id == 20)
+                                                    <div class="relative flex size-6 flex-none items-center justify-center bg-body dark:bg-lits-blue-600">
+                                                        <i class="fa-solid fa-circle-check text-lg text-indigo-600 dark:text-indigo-400"></i>
+                                                    </div>
+                                                @else
+                                                    <div class="relative flex size-6 flex-none items-center justify-center bg-body dark:bg-lits-blue-600">
+                                                        <div class="size-1.5 rounded-full {{ $loop->last ? 'bg-entity-customs shadow-[0_0_8px_2px_#7C3AED]' : 'bg-gray-400 dark:bg-gray-600' }}"></div>
+                                                    </div>
+                                                @endif
+                                                <div class="flex-1 min-w-0">
+                                                    <div x-data="{ collapsed: false }" @collapse.window="collapsed = $event.detail">
+                                                        <div class="flex items-center gap-x-1 text-gray-500 dark:text-gray-400 flex-wrap">
+                                                            <p class="text-sm/6 text-gray-900 dark:text-gray-50 font-medium">
+                                                                {{$location->status->name}}
+                                                            </p>
+                                                            <button x-cloak x-show.transition.in.opacity.duration.600="collapsed === false" @click="collapsed = true" data-tippy-content="Minimizar" class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200">
+                                                                <i class="fa-regular fa-angle-up text-xs"></i>
+                                                            </button>
+                                                            <button x-cloak x-show.transition.in.opacity.duration.600="collapsed === true" @click="collapsed = false" data-tippy-content="Expandir" class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200">
+                                                                <i class="fa-regular fa-angle-down text-xs"></i>
+                                                            </button>
+                                                            <div class="ml-auto flex items-center gap-1">
+                                                                <button type="button" disabled data-tippy-content="Mapa próximamente" class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-300 dark:text-gray-600 cursor-not-allowed">
+                                                                    <i class="fa-regular fa-location-dot text-xs"></i>
+                                                                </button>
+                                                                @can('delete', $import)
+                                                                    <button @click="mode = 3; editLocation({{$location}})" data-tippy-content="Editar estatus" class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200">
+                                                                        <i class="fa-regular fa-pen-to-square text-xs"></i>
+                                                                    </button>
+                                                                    <div
+                                                                        class="relative inline-block text-left"
+                                                                        x-data="{ openCancel: false }"
+                                                                    >
+                                                                        <button
+                                                                            type="button"
+                                                                            @click="openCancel = true"
+                                                                            data-tippy-content="Eliminar estatus"
+                                                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400 hover:cursor-pointer"
+                                                                        >
+                                                                            <i class="fa-regular fa-trash-can text-xs"></i>
+                                                                        </button>
+                                                                        <div x-cloak x-show="openCancel" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                                                                            <div
+                                                                                class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
+                                                                                aria-hidden="true"
+                                                                                x-show="openCancel"
+                                                                                x-transition:enter="ease-out duration-300"
+                                                                                x-transition:enter-start="opacity-0"
+                                                                                x-transition:enter-end="opacity-100"
+                                                                                x-transition:leave="ease-in duration-200"
+                                                                                x-transition:leave-start="opacity-100"
+                                                                                x-transition:leave-end="opacity-0"
+                                                                            ></div>
+
+                                                                            <div class="fixed inset-0 z-100 w-screen overflow-y-auto">
+                                                                                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                                                                                    <div
+                                                                                        x-show="openCancel"
+                                                                                        x-transition:enter="ease-out duration-300"
+                                                                                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                                                                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                                                                        x-transition:leave="ease-in duration-200"
+                                                                                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                                                                                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                                                                        class="relative transform overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+                                                                                    >
+                                                                                        <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
+                                                                                            <button type="button" @click="openCancel = false" class="rounded-md bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
+                                                                                                <span class="sr-only">Close</span>
+                                                                                                <i class="fa-regular fa-xmark"></i>
+                                                                                            </button>
+                                                                                        </div>
+                                                                                        <div class="sm:flex sm:items-start">
+                                                                                            <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/15 sm:mx-0 sm:size-10">
+                                                                                                <i class="fa-regular fa-triangle-exclamation text-lg text-red-600 dark:text-red-400"></i>
+                                                                                            </div>
+                                                                                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left whitespace-normal">
+                                                                                                <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Eliminar estatus</h3>
+                                                                                                <div class="mt-2">
+                                                                                                    <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">¿Estás seguro de eliminar el estatus?</p>
+                                                                                                    <p class="text-sm text-red-500 dark:text-red-400 font-medium">{{$location->status->name}}</p>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
+                                                                                        <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                                                                            <form action="{{route('orders.imports.locations.destroy', ['order' => $order->id, 'import' => $import->id, 'location' => $location])}}" method="POST">
+                                                                                                @csrf
+                                                                                                @method('DELETE')
+                                                                                                <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Eliminar</button>
+                                                                                            </form>
+                                                                                            <button type="button" @click="openCancel = false" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs ring-1 ring-gray-300 dark:ring-gray-600 ring-inset hover:bg-gray-50 dark:hover:bg-gray-800 sm:mt-0 sm:w-auto">Regresar</button>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
-                                                                            @endcan
-                                                                        </div>
-                                                                        <div x-cloak x-show.transition.in.opacity.duration.600="collapsed === false">
-                                                                            <div class="flex items-start gap-x-1">
-                                                                                <i class="fa-regular fa-calendar-clock text-gray-500 dark:text-gray-400 text-lg"></i>
-                                                                                <p class="py-0.5 text-xs/5 text-gray-500 dark:text-gray-400 text-left"><time datetime="{{$location->location_date->isoFormat('YYYY-MM-DD')}}">{{$location->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$location->location_date->isoFormat('h:mm a')}}</time></p>
-                                                                            </div>
-                                                                            @isset($location->name)
-                                                                                <div class="flex items-start gap-x-1">
-                                                                                    <i class="fa-regular fa-location-dot text-gray-500 dark:text-gray-400 text-lg"></i>
-                                                                                    <button
-                                                                                        class="hover:underline hover:cursor-pointer py-0.5 text-xs/5 text-blue-700 dark:text-blue-400 hover:text-blue-500 text-left"
-                                                                                        onclick="moveMarker({{$location->latitude}}, {{$location->longitude}}, '{{$location->name}}', '{{$location->location_date->isoFormat('D MMMM YYYY h:mm a')}}')"
-                                                                                    >
-                                                                                        {{$location->name}}
-                                                                                    </button>
-                                                                                </div>
-                                                                            @endisset
-                                                                            @isset($location->comments)
-                                                                                <div class="flex items-start gap-x-1">
-                                                                                    <i class="fa-regular fa-message-lines text-gray-500 dark:text-gray-400 text-lg"></i>
-                                                                                    <p class="py-0.5 text-xs/5 text-gray-500 dark:text-gray-400 text-left">
-                                                                                        {{$location->comments}}
-                                                                                    </p>
-                                                                                </div>
-                                                                            @endisset
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @empty
-                                                                <li>
-                                                                    <div class="bg-yellow-50 dark:bg-yellow-500/10 p-3 mb-4">
-                                                                        <div class="flex">
-                                                                            <div class="shrink-0">
-                                                                                <i class="fa-solid fa-triangle-exclamation text-yellow-400"></i>
-                                                                            </div>
-                                                                            <div class="ml-3">
-                                                                                <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-400">Sin actualizaciones</h3>
-                                                                                <div class="mt-2 text-sm text-yellow-700 dark:text-yellow-400">
-                                                                                    <p>Aún no se han agregado actualizaciones de estatus.</p>
-                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                </li>
-                                                            @endforelse
-                                                        </ul>
+                                                                @endcan
+                                                            </div>
+                                                        </div>
+                                                        <div x-cloak x-show.transition.in.opacity.duration.600="collapsed === false" class="mt-1">
+                                                            <div class="flex items-start gap-x-1">
+                                                                <i class="fa-regular fa-calendar-clock text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400 text-left"><time datetime="{{$location->location_date->isoFormat('YYYY-MM-DD')}}">{{$location->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$location->location_date->isoFormat('h:mm a')}}</time></p>
+                                                            </div>
+                                                            @isset($location->name)
+                                                                <div class="flex items-start gap-x-1 mt-0.5">
+                                                                    <i class="fa-regular fa-location-dot text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                    <p class="text-xs text-gray-500 dark:text-gray-400 text-left">{{$location->name}}</p>
+                                                                </div>
+                                                            @endisset
+                                                            @isset($location->comments)
+                                                                <div class="flex items-start gap-x-1 mt-0.5">
+                                                                    <i class="fa-regular fa-message-lines text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                    <p class="text-xs text-gray-500 dark:text-gray-400 text-left">
+                                                                        {{$location->comments}}
+                                                                    </p>
+                                                                </div>
+                                                            @endisset
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            @can('update', $import)
-                                                <div x-cloak x-show.transition.in.opacity.duration.600="mode === 2">
-                                                    <form action="{{ route('orders.imports.locations.store', ['order' => $order->id, 'import' => $import->id]) }}" method="POST" class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-4" autocomplete="off">
-                                                        @csrf
-                                                        <div class="sm:col-span-full">
-                                                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Nuevo estatus</h2>
-                                                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Agrega un estatus al embarque, puedes buscar una dirección para ingresar una nueva geolocalización.</p>
+                                            </li>
+                                        @empty
+                                            <li>
+                                                <div class="rounded-md bg-yellow-50 dark:bg-yellow-500/10 p-3">
+                                                    <div class="flex">
+                                                        <div class="shrink-0">
+                                                            <i class="fa-solid fa-triangle-exclamation text-yellow-400"></i>
                                                         </div>
-                                                        <div class="sm:col-span-2">
-                                                            <label for="location_date" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Fecha</label>
-                                                            <div class="mt-2">
-                                                                <input id="location_date" required value="{{old('location_date', $now->format('Y-m-d\TH:i'))}}" name="location_date" type="datetime-local" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                                            </div>
-                                                        </div>
-                                                        <div class="sm:col-span-2">
-                                                            <label for="service_type_status_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Estatus</label>
-                                                            <div class="mt-2 grid grid-cols-1">
-                                                                <select id="service_type_status_id" name="service_type_status_id" required autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                                                    <option value="" selected disabled>Selecciona un nuevo estatus</option>
-                                                                    @if ($import->serviceMode)
-                                                                        @foreach ($import->serviceMode->statuses as $status)
-                                                                            <option value="{{ $status->id }}">{{ $status->name }}</option>
-                                                                        @endforeach
-                                                                    @endif
-                                                                </select>
-                                                                <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
+                                                        <div class="ml-3">
+                                                            <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-400">Sin actualizaciones</h3>
+                                                            <div class="mt-1 text-sm text-yellow-700 dark:text-yellow-400">
+                                                                <p>Aún no se han agregado actualizaciones de estatus.</p>
                                                             </div>
                                                         </div>
-                                                        <div class="sm:col-span-full">
-                                                            <label for="comments" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Comentarios</label>
-                                                            <div class="mt-2">
-                                                                <textarea id="comments" name="comments" autocomplete="off" class="@error('comments') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('comments')}}</textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="sm:col-span-full">
-                                                            <div class="flex items-center justify-end gap-x-6">
-                                                                <button
-                                                                    class="text-sm/6 font-semibold text-gray-900 dark:text-gray-50 hover:cursor-pointer hover:text-gray-500"
-                                                                    @click="mode = 1"
-                                                                    type="button"
-                                                                >
-                                                                    Cancelar
-                                                                </button>
-                                                                <button type="submit" class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">
-                                                                    <i class="fa-regular fa-location-dot"></i>
-                                                                    Agregar
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                @isset($import->latestLocation)
-                                                    <div x-cloak x-show.transition.in.opacity.duration.600="mode === 3">
-                                                        <form id="edit-location-form" action="" method="POST" class="grid grid-cols-1 gap-x-4 gap-y-4 lg:grid-cols-4" autocomplete="off">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <div class="sm:col-span-full">
-                                                                <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Editar estatus</h2>
-                                                                <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Edita el estatus de la aduana.</p>
-                                                            </div>
-                                                            <div class="sm:col-span-2">
-                                                                <label for="edit-location_date" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Fecha</label>
-                                                                <div class="mt-2">
-                                                                    <input id="edit-location_date" required name="location_date" type="datetime-local" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                                                </div>
-                                                            </div>
-                                                            <div class="sm:col-span-2">
-                                                                <label for="edit-service_type_status_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Estatus</label>
-                                                                <div class="mt-2 grid grid-cols-1">
-                                                                    <select id="edit-service_type_status_id" name="service_type_status_id" required autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                                                        @foreach ($import->serviceMode?->statuses as $status)
-                                                                            <option value= {{ $status->id }}>{{ $status->name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
-                                                                </div>
-                                                            </div>
-                                                            <div class="sm:col-span-full">
-                                                                <label for="edit-comments" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Comentarios</label>
-                                                                <div class="mt-2">
-                                                                    <textarea id="edit-comments" name="comments" autocomplete="off" class="@error('comments') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <div class="sm:col-span-full">
-                                                                <div class="flex items-center justify-end gap-x-6">
-                                                                    <button
-                                                                        class="text-sm/6 font-semibold text-gray-900 dark:text-gray-50 hover:cursor-pointer hover:text-gray-500"
-                                                                        @click="mode = 1"
-                                                                        type="button"
-                                                                    >
-                                                                        Cancelar
-                                                                    </button>
-                                                                    <button type="submit" class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">
-                                                                        <i class="fa-regular fa-location-dot"></i>
-                                                                        Editar
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </form>
                                                     </div>
-                                                @endisset
-                                            @endcan
+                                                </div>
+                                            </li>
+                                        @endforelse
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        @can('update', $import)
+                            <div x-cloak x-show.transition.in.opacity.duration.600="mode === 2">
+                                <form action="{{ route('orders.imports.locations.store', ['order' => $order->id, 'import' => $import->id]) }}" method="POST" class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-4" autocomplete="off">
+                                    @csrf
+                                    <div class="sm:col-span-full">
+                                        <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Nuevo estatus</h2>
+                                        <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Agrega un estatus a la aduana, puedes buscar una dirección para ingresar una nueva geolocalización.</p>
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label for="location_date" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Fecha</label>
+                                        <div class="mt-2">
+                                            <input id="location_date" required value="{{old('location_date', $now->format('Y-m-d\TH:i'))}}" name="location_date" type="datetime-local" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                         </div>
                                     </div>
-                                    <div class="relative inline-block text-left" x-data>
-                                        <div x-cloak x-show="$store.map.openMap" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                                    <div class="sm:col-span-2">
+                                        <label for="service_type_status_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Estatus</label>
+                                        <div class="mt-2 grid grid-cols-1">
+                                            <select id="service_type_status_id" name="service_type_status_id" required autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                <option value="" selected disabled>Selecciona un nuevo estatus</option>
+                                                @if ($import->serviceMode)
+                                                    @foreach ($import->serviceMode->statuses as $status)
+                                                        <option value="{{ $status->id }}">{{ $status->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="sm:col-span-full">
+                                        <label for="comments" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Comentarios</label>
+                                        <div class="mt-2">
+                                            <textarea id="comments" name="comments" autocomplete="off" class="@error('comments') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('comments')}}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="sm:col-span-full">
+                                        <div class="flex items-center justify-end gap-x-6">
+                                            <button
+                                                class="text-sm/6 font-semibold text-gray-900 dark:text-gray-50 hover:cursor-pointer hover:text-gray-500"
+                                                @click="mode = 1"
+                                                type="button"
+                                            >
+                                                Cancelar
+                                            </button>
+                                            <button type="submit" class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">
+                                                <i class="fa-regular fa-location-dot"></i>
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            @isset($import->latestLocation)
+                                <div x-cloak x-show.transition.in.opacity.duration.600="mode === 3">
+                                    <form id="edit-location-form" action="" method="POST" class="grid grid-cols-1 gap-x-4 gap-y-4 lg:grid-cols-4" autocomplete="off">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="sm:col-span-full">
+                                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">Editar estatus</h2>
+                                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Edita el estatus de la aduana.</p>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <label for="edit-location_date" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Fecha</label>
+                                            <div class="mt-2">
+                                                <input id="edit-location_date" required name="location_date" type="datetime-local" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                            </div>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <label for="edit-service_type_status_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Estatus</label>
+                                            <div class="mt-2 grid grid-cols-1">
+                                                <select id="edit-service_type_status_id" name="service_type_status_id" required autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                    @foreach ($import->serviceMode?->statuses as $status)
+                                                        <option value= {{ $status->id }}>{{ $status->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
+                                            </div>
+                                        </div>
+                                        <div class="sm:col-span-full">
+                                            <label for="edit-comments" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Comentarios</label>
+                                            <div class="mt-2">
+                                                <textarea id="edit-comments" name="comments" autocomplete="off" class="@error('comments') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="sm:col-span-full">
+                                            <div class="flex items-center justify-end gap-x-6">
+                                                <button
+                                                    class="text-sm/6 font-semibold text-gray-900 dark:text-gray-50 hover:cursor-pointer hover:text-gray-500"
+                                                    @click="mode = 1"
+                                                    type="button"
+                                                >
+                                                    Cancelar
+                                                </button>
+                                                <button type="submit" class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">
+                                                    <i class="fa-regular fa-location-dot"></i>
+                                                    Editar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            @endisset
+                        @endcan
+                    </div>
+                    <div class="relative inline-block text-left" x-data>
+                        <div x-cloak x-show="$store.map.openMap" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                            <div
+                                class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
+                                aria-hidden="true"
+                                x-show="$store.map.openMap"
+                                x-transition:enter="ease-out duration-300"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="ease-in duration-200"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                            ></div>
+
+                            <div class="fixed inset-0 z-100 w-screen overflow-y-auto">
+                                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                                    <div
+                                        x-show="$store.map.openMap"
+                                        x-transition:enter="ease-out duration-300"
+                                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                        x-transition:leave="ease-in duration-200"
+                                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                        class="relative transform overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+                                    >
+                                        <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
+                                            <button type="button" @click="$store.map.openMap = false" class="rounded-md bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
+                                                <span class="sr-only">Close</span>
+                                                <i class="fa-regular fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                        <div class="mt-10 sm:mt-8">
+                                            <div class="h-full w-full aspect-square" id="grand-map"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @can('checklist', $import)
+                <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 3">
+                    <div class="pt-2">
+                        <div class="mb-2 md:flex md:items-center md:justify-between">
+                            <div class="">
+                                <h2 class="text-2xl/7 font-bold text-gray-900 dark:text-gray-50 sm:truncate sm:text-3xl sm:tracking-tight">Checklist</h2>
+                            </div>
+                            <div class="mt-3 flex sm:mt-0 sm:ml-4">
+                                @can('updateChecklist', $import)
+                                    <a
+                                        href='{{route('orders.imports.privates.create', [ 'order' => $import->order, 'import' => $import ])}}'
+                                        data-tippy-content="Adjuntar archivo interno"
+                                        role="button"
+                                        class="mr-3 inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 whitespace-nowrap"
+                                    >
+                                        <i class="fa-regular fa-paperclip"></i>
+                                        Adjuntar Interno
+                                    </a>
+                                    <div
+                                        class="relative inline-block text-left"
+                                        x-data="{ openComments: false }"
+                                    >
+                                        <button
+                                            type="button"
+                                            x-on:click="openComments = true"
+                                            class="mr-3 inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
+                                        >
+                                            Comentarios
+                                        </button>
+                                        <div x-cloak x-show="openComments" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                                             <div
                                                 class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
                                                 aria-hidden="true"
-                                                x-show="$store.map.openMap"
+                                                x-show="openComments"
                                                 x-transition:enter="ease-out duration-300"
                                                 x-transition:enter-start="opacity-0"
                                                 x-transition:enter-end="opacity-100"
@@ -463,150 +547,76 @@
                                             <div class="fixed inset-0 z-100 w-screen overflow-y-auto">
                                                 <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                                                     <div
-                                                        x-show="$store.map.openMap"
+                                                        x-show="openComments"
                                                         x-transition:enter="ease-out duration-300"
                                                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                                                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                                                         x-transition:leave="ease-in duration-200"
                                                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                                                         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                        class="relative transform overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+                                                        class="relative transform overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
                                                     >
                                                         <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-                                                            <button type="button" @click="$store.map.openMap = false" class="rounded-md bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
+                                                            <button type="button" @click="openComments = false" class="rounded-md bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
                                                                 <span class="sr-only">Close</span>
                                                                 <i class="fa-regular fa-xmark"></i>
                                                             </button>
                                                         </div>
-                                                        <div class="mt-10 sm:mt-8">
-                                                            <div class="h-full w-full aspect-square" id="grand-map"></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @can('checklist', $import)
-                    <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 3">
-                        <div class="px-4 py-5 sm:px-6">
-                            <div class="mb-2 md:flex md:items-center md:justify-between">
-                                <div class="">
-                                    <h2 class="text-2xl/7 font-bold text-gray-900 dark:text-gray-50 sm:truncate sm:text-3xl sm:tracking-tight">Checklist</h2>
-                                </div>
-                                <div class="mt-3 flex sm:mt-0 sm:ml-4">
-                                    @can('updateChecklist', $import)
-                                        <a
-                                            href='{{route('orders.imports.privates.create', [ 'order' => $import->order, 'import' => $import ])}}'
-                                            data-tippy-content="Adjuntar archivo interno"
-                                            role="button"
-                                            class="mr-3 inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 whitespace-nowrap"
-                                        >
-                                            <i class="fa-regular fa-paperclip"></i>
-                                            Adjuntar Interno
-                                        </a>
-                                        <div
-                                            class="relative inline-block text-left"
-                                            x-data="{ openComments: false }"
-                                        >
-                                            <button
-                                                type="button"
-                                                x-on:click="openComments = true"
-                                                class="mr-3 inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
-                                            >
-                                                Comentarios
-                                            </button>
-                                            <div x-cloak x-show="openComments" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                                                <div
-                                                    class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
-                                                    aria-hidden="true"
-                                                    x-show="openComments"
-                                                    x-transition:enter="ease-out duration-300"
-                                                    x-transition:enter-start="opacity-0"
-                                                    x-transition:enter-end="opacity-100"
-                                                    x-transition:leave="ease-in duration-200"
-                                                    x-transition:leave-start="opacity-100"
-                                                    x-transition:leave-end="opacity-0"
-                                                ></div>
-
-                                                <div class="fixed inset-0 z-100 w-screen overflow-y-auto">
-                                                    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                                                        <div
-                                                            x-show="openComments"
-                                                            x-transition:enter="ease-out duration-300"
-                                                            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                                                            x-transition:leave="ease-in duration-200"
-                                                            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                                                            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                            class="relative transform overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
-                                                        >
-                                                            <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-                                                                <button type="button" @click="openComments = false" class="rounded-md bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
-                                                                    <span class="sr-only">Close</span>
-                                                                    <i class="fa-regular fa-xmark"></i>
-                                                                </button>
-                                                            </div>
-                                                            <form action="{{route('orders.imports.update.checklist', ['order' => $order, 'import' => $import])}}" method="POST">
-                                                                @csrf
-                                                                @method('PUT')
-                                                                <div class="mt-3 text-center sm:mt-0 sm:text-left whitespace-normal">
-                                                                    <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Editar checklist</h3>
-                                                                    <div class="mt-2">
-                                                                        <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">Edita los comentarios del checklist</p>
-                                                                        <div class="col-span-full">
-                                                                            <label for="checklist_comments" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Comentarios</label>
-                                                                            <div class="mt-2">
-                                                                                <textarea id="checklist_comments" name="checklist_comments" autocomplete="off" class=" block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('checklist_comments', $import->checklist_comments)}}</textarea>
-                                                                            </div>
+                                                        <form action="{{route('orders.imports.update.checklist', ['order' => $order, 'import' => $import])}}" method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="mt-3 text-center sm:mt-0 sm:text-left whitespace-normal">
+                                                                <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Editar checklist</h3>
+                                                                <div class="mt-2">
+                                                                    <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">Edita los comentarios del checklist</p>
+                                                                    <div class="col-span-full">
+                                                                        <label for="checklist_comments" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Comentarios</label>
+                                                                        <div class="mt-2">
+                                                                            <textarea id="checklist_comments" name="checklist_comments" autocomplete="off" class=" block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">{{old('checklist_comments', $import->checklist_comments)}}</textarea>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                                                    <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Guardar</button>
-                                                                    <button type="button" @click="openComments = false" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs ring-1 ring-gray-300 dark:ring-gray-600 ring-inset hover:bg-gray-50 dark:hover:bg-gray-800 sm:mt-0 sm:w-auto">Cancelar</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
+                                                            </div>
+                                                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                                                <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Guardar</button>
+                                                                <button type="button" @click="openComments = false" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs ring-1 ring-gray-300 dark:ring-gray-600 ring-inset hover:bg-gray-50 dark:hover:bg-gray-800 sm:mt-0 sm:w-auto">Cancelar</button>
+                                                            </div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    @endcan
-                                    <a
-                                        href="{{route('orders.imports.printCL', [ 'order' => $order->id, 'import' => $import->id ])}}"
-                                        data-tippy-content="Descargar checklist"
-                                        role="button"
-                                        class="mr-3 inline-flex items-center gap-x-1.5 rounded-md bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer"
-                                    >
-                                        <i class="fa-regular fa-arrow-down-to-bracket"></i>
-                                        Descargar
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="mt-8">
-                                <div class="-mx-4 sm:mx-0 overflow-auto">
-                                    <div class="bg-white dark:bg-lits-blue-550 shadow-lits-card w-fit h-fit mx-auto border" style="width: 816px;padding: 48px;">
-                                        <x-cards.checklist :order="$order" :service="$import" :documentTypes="$documentTypes" :milestones="$milestones" />
                                     </div>
+                                @endcan
+                                <a
+                                    href="{{route('orders.imports.printCL', [ 'order' => $order->id, 'import' => $import->id ])}}"
+                                    data-tippy-content="Descargar checklist"
+                                    role="button"
+                                    class="mr-3 inline-flex items-center gap-x-1.5 rounded-lg bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer"
+                                >
+                                    <i class="fa-regular fa-arrow-down-to-bracket"></i>
+                                    Descargar
+                                </a>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                            <div class="-mx-4 sm:mx-0 overflow-auto">
+                                <div class="bg-white shadow-lits-card w-fit h-fit mx-auto border border-gray-200" style="width: 816px;padding: 25px;">
+                                    <x-cards.checklist :order="$order" :service="$import" :documentTypes="$documentTypes" :milestones="$milestones" />
                                 </div>
                             </div>
                         </div>
-                        <x-cards.privatedocuments
-                            :order="$import"
-                            :documents="$import->privateDocuments"
-                            :create="route('orders.imports.privates.create', [ 'order' => $import->order, 'import' => $import ])"
-                            :download="route('orders.imports.privates.index', ['order' => $order->id, 'import' => $import->id])"
-                            :destroyRoute="'orders.privates.destroy'"
-                            :destroyParams="['order' => $order->id]"
-                        />
                     </div>
-                @endcan
-            </div>
+                    <x-cards.privatedocuments
+                        :order="$import"
+                        :documents="$import->privateDocuments"
+                        :create="route('orders.imports.privates.create', [ 'order' => $import->order, 'import' => $import ])"
+                        :download="route('orders.imports.privates.index', ['order' => $order->id, 'import' => $import->id])"
+                        :destroyRoute="'orders.privates.destroy'"
+                        :destroyParams="['order' => $order->id]"
+                    />
+                </div>
+            @endcan
         </div>
-    </section>
+    </div>
 </x-layout-app>

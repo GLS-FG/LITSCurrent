@@ -1,4 +1,4 @@
-<div style="padding: 10px 0 25px 0;">
+<div style="padding: 10px 0 25px 0; background-color: #ffffff; color: #000000;">
     <div style="padding: 20px 0 10px 0;border-bottom: 1px #000000 solid;">
         <table style="width: 100%;">
             <tbody>
@@ -37,7 +37,7 @@
             </tbody>
         </table>
     </div>
-    <div style="height: 20px; width: 100%"></div>
+    <table style="width: 100%; border-collapse: collapse;"><tbody><tr><td style="height: 20px; border-left: 1px #000000 solid; border-right: 1px #000000 solid;"></td></tr></tbody></table>
     <table style="width: 100%; border-collapse: collapse;">
         <tbody>
             <tr>
@@ -53,7 +53,7 @@
         </tbody>
     </table>
     @if($service::class == \App\Models\OrderShipment::class)
-    <div style="height: 20px; width: 100%"></div>
+    <table style="width: 100%; border-collapse: collapse;"><tbody><tr><td style="height: 20px; border-left: 1px #000000 solid; border-right: 1px #000000 solid;"></td></tr></tbody></table>
     <table style="width: 100%; border-collapse: collapse;">
         <tbody>
             <tr>
@@ -88,7 +88,7 @@
     </table>
     @endif
     @if($service::class == \App\Models\OrderShipment::class)
-    <div style="height: 20px; width: 100%"></div>
+    <table style="width: 100%; border-collapse: collapse;"><tbody><tr><td style="height: 20px; border-left: 1px #000000 solid; border-right: 1px #000000 solid;"></td></tr></tbody></table>
     <table style="width: 100%; border-collapse: collapse;">
         <tbody>
         @foreach ($service->transportations as $transportation)
@@ -109,7 +109,7 @@
         </tbody>
     </table>
     @endif
-    <div style="height: 20px; width: 100%"></div>
+    <table style="width: 100%; border-collapse: collapse;"><tbody><tr><td style="height: 20px; border-left: 1px #000000 solid; border-right: 1px #000000 solid;"></td></tr></tbody></table>
     <table style="width: 100%; border-collapse: collapse;">
         <tbody>
         <tr>
@@ -136,7 +136,7 @@
         @endif
         </tbody>
     </table>
-    <div style="height: 20px; width: 100%"></div>
+    <table style="width: 100%; border-collapse: collapse;"><tbody><tr><td style="height: 20px; border-left: 1px #000000 solid; border-right: 1px #000000 solid;"></td></tr></tbody></table>
     <table style="width: 100%; border-collapse: collapse;">
         <tbody>
             <tr>
@@ -181,7 +181,7 @@
             @endif
         </tbody>
     </table>
-    <div style="height: 20px; width: 100%"></div>
+    <table style="width: 100%; border-collapse: collapse;"><tbody><tr><td style="height: 20px; border-left: 1px #000000 solid; border-right: 1px #000000 solid;"></td></tr></tbody></table>
     <table style="width: 100%; border-collapse: collapse;">
         <tbody>
             <tr>

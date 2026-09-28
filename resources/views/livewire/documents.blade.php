@@ -13,103 +13,103 @@
         <div class="overflow-x-auto">
             <div class="inline-block min-w-full align-middle">
                 <div class="group/table relative">
-                    <div class="absolute top-0 left-14 z-10 hidden h-12 items-center space-x-3 bg-white dark:bg-lits-blue-550 group-has-checked/table:flex sm:left-12">
+                    <div class="absolute top-0 left-14 z-10 hidden h-12 items-center space-x-3 group-has-checked/table:flex sm:left-12">
                         <button
                             type="button"
                             wire:click="download"
-                            class="inline-flex items-center rounded-sm bg-white dark:bg-lits-blue-550 px-2 py-1 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
+                            class="inline-flex items-center rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-30"
                         >
                             {{__('Download ZIP file')}}
                         </button>
                     </div>
-                    <table id="users-table" class="relative min-w-full table-fixed divide-y divide-gray-300 dark:divide-gray-600">
+                    <table id="users-table" class="relative min-w-full table-fixed">
                         <thead>
-                        <tr>
+                        <tr class="border-b border-gray-200 dark:border-lits-blue-450">
                             <th scope="col" class="relative px-7 sm:w-12 sm:px-6">
                                 <div class="group absolute top-1/2 left-4 -mt-2 grid size-4 grid-cols-1">
-                                    <input type="checkbox" wire:model.live="selectAll" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-lits-blue-550 checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
+                                    <input type="checkbox" wire:model.live="selectAll" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-lits-blue-550 checked:border-lits-red-500 checked:bg-lits-red-500 indeterminate:border-lits-red-500 indeterminate:bg-lits-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-500 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
                                     <i class="fa-solid fa-check text-xs pointer-events-none col-start-1 row-start-1 self-center justify-self-center text-white group-has-disabled:text-gray-950/25 opacity-0 group-has-checked:opacity-100 group-has-indeterminate:opacity-100"></i>
                                 </div>
                             </th>
-                            <th scope="col" class="min-w-48 py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">
-                                <button type="button" wire:click="changeSort('original_name')" class="rounded hover:bg-gray-200 dark:hover:bg-gray-600 p-1 hover:cursor-pointer">
+                            <th scope="col" class="min-w-48 py-2.5 pr-3 text-left text-xs font-semibold text-gray-400 dark:text-gray-500">
+                                <button type="button" wire:click="changeSort('original_name')" class="rounded hover:bg-gray-100 dark:hover:bg-gray-800 p-1 hover:cursor-pointer">
                                     {{__('File')}}
                                     @if($sortBy == "original_name")
                                         @if($sortByDirection == "asc")
-                                            <i class="fa-regular fa-arrow-down-short-wide text-blue-600 dark:text-blue-400"></i>
+                                            <i class="fa-regular fa-arrow-down-short-wide text-lits-red-500"></i>
                                         @else
-                                            <i class="fa-regular fa-arrow-up-short-wide text-blue-600 dark:text-blue-400"></i>
+                                            <i class="fa-regular fa-arrow-up-short-wide text-lits-red-500"></i>
                                         @endif
                                     @endif
                                 </button>
                             </th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">
-                                <button type="button" wire:click="changeSort('document_type_id')" class="rounded hover:bg-gray-200 dark:hover:bg-gray-600 p-1 hover:cursor-pointer">
+                            <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold text-gray-400 dark:text-gray-500">
+                                <button type="button" wire:click="changeSort('document_type_id')" class="rounded hover:bg-gray-100 dark:hover:bg-gray-800 p-1 hover:cursor-pointer">
                                     {{__('Type')}}
                                     @if($sortBy == "document_type_id")
                                         @if($sortByDirection == "asc")
-                                            <i class="fa-regular fa-arrow-down-short-wide text-blue-600 dark:text-blue-400"></i>
+                                            <i class="fa-regular fa-arrow-down-short-wide text-lits-red-500"></i>
                                         @else
-                                            <i class="fa-regular fa-arrow-up-short-wide text-blue-600 dark:text-blue-400"></i>
+                                            <i class="fa-regular fa-arrow-up-short-wide text-lits-red-500"></i>
                                         @endif
                                     @endif
                                 </button>
                             </th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">
-                                <button type="button" wire:click="changeSort('size_bytes')" class="rounded hover:bg-gray-200 dark:hover:bg-gray-600 p-1 hover:cursor-pointer">
+                            <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold text-gray-400 dark:text-gray-500">
+                                <button type="button" wire:click="changeSort('size_bytes')" class="rounded hover:bg-gray-100 dark:hover:bg-gray-800 p-1 hover:cursor-pointer">
                                     {{__('Size')}}
                                     @if($sortBy == "size_bytes")
                                         @if($sortByDirection == "asc")
-                                            <i class="fa-regular fa-arrow-down-short-wide text-blue-600 dark:text-blue-400"></i>
+                                            <i class="fa-regular fa-arrow-down-short-wide text-lits-red-500"></i>
                                         @else
-                                            <i class="fa-regular fa-arrow-up-short-wide text-blue-600 dark:text-blue-400"></i>
+                                            <i class="fa-regular fa-arrow-up-short-wide text-lits-red-500"></i>
                                         @endif
                                     @endif
                                 </button>
                             </th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">
-                                <button type="button" wire:click="changeSort('created_at')" class="rounded hover:bg-gray-200 dark:hover:bg-gray-600 p-1 hover:cursor-pointer">
+                            <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold text-gray-400 dark:text-gray-500">
+                                <button type="button" wire:click="changeSort('created_at')" class="rounded hover:bg-gray-100 dark:hover:bg-gray-800 p-1 hover:cursor-pointer">
                                     {{__('Date')}}
                                     @if($sortBy == "created_at")
                                         @if($sortByDirection == "asc")
-                                            <i class="fa-regular fa-arrow-down-short-wide text-blue-600 dark:text-blue-400"></i>
+                                            <i class="fa-regular fa-arrow-down-short-wide text-lits-red-500"></i>
                                         @else
-                                            <i class="fa-regular fa-arrow-up-short-wide text-blue-600 dark:text-blue-400"></i>
+                                            <i class="fa-regular fa-arrow-up-short-wide text-lits-red-500"></i>
                                         @endif
                                     @endif
                                 </button>
                             </th>
-                            <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-3">
-                                <span class="sr-only">{{__('indexes.actions')}}</span>
+                            <th scope="col" class="py-2.5 pr-4 pl-3 sm:pr-3 text-center text-xs font-semibold text-gray-400 dark:text-gray-500">
+                                {{__('indexes.actions')}}
                             </th>
                         </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-lits-blue-550">
+                        <tbody>
                         @forelse($documents as $file)
-                            <tr x-data="{ open: false }" wire:key="{{ $file->id }}" class="group has-checked:bg-gray-50">
+                            <tr x-data="{ open: false }" wire:key="{{ $file->id }}" class="group border-b border-gray-100 dark:border-lits-blue-450/60 last:border-b-0 has-checked:bg-gray-50 dark:has-checked:bg-lits-blue-550/60">
                                 <td class="relative px-7 sm:w-12 sm:px-6">
-                                    <div class="absolute inset-y-0 left-0 hidden w-0.5 bg-indigo-600 group-has-checked:block"></div>
+                                    <div class="absolute inset-y-0 left-0 hidden w-0.5 bg-lits-red-500 group-has-checked:block"></div>
                                     <div class="group absolute top-1/2 left-4 -mt-2 grid size-4 grid-cols-1">
-                                        <input type="checkbox" wire:model.live="files" value="{{$file->id}}" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-lits-blue-550 checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
+                                        <input type="checkbox" wire:model.live="files" value="{{$file->id}}" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-lits-blue-550 checked:border-lits-red-500 checked:bg-lits-red-500 indeterminate:border-lits-red-500 indeterminate:bg-lits-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-500 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
                                         <i class="fa-solid fa-check text-xs pointer-events-none col-start-1 row-start-1 self-center justify-self-center text-white group-has-disabled:text-gray-950/25 opacity-0 group-has-checked:opacity-100 group-has-indeterminate:opacity-100"></i>
                                     </div>
                                 </td>
-                                <td class="py-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-50 group-has-checked:text-indigo-600">{{$file->original_name}}</td>
-                                <td class="px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $file->documentType->name }}</td>
-                                <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">{{ $file->size_label }}</td>
-                                <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">{{ $file->created_at->isoFormat('DD/MM/YYYY') }}</td>
-                                <td class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-3">
-                                    <div class="relative flex-none flex justify-end gap-x-1 ml-2.5">
+                                <td class="py-3.5 pr-3 text-sm font-medium text-gray-900 dark:text-gray-50 group-has-checked:text-lits-red-600 dark:group-has-checked:text-lits-red-400">{{$file->original_name}}</td>
+                                <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $file->documentType->name }}</td>
+                                <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">{{ $file->size_label }}</td>
+                                <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">{{ $file->created_at->isoFormat('DD/MM/YYYY') }}</td>
+                                <td class="py-3.5 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-3">
+                                    <div class="relative flex-none flex justify-center gap-x-1">
                                         @if (str_starts_with($file->mime_type, 'image/') || $file->mime_type === 'application/pdf')
-                                            <a data-tippy-content="Vista Previa" target="_blank" href="{{route('documents.show', ['document' => $file->id])}}" class="size-7 shrink-0 rounded-md bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center font-semibold text-blue-500 dark:text-blue-400 hover:text-blue-800 hover:bg-blue-200">
+                                            <a data-tippy-content="Vista Previa" target="_blank" href="{{route('documents.show', ['document' => $file->id])}}" class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200">
                                                 <i class="fa-regular fa-eye"></i>
                                             </a>
                                         @endif
-                                        <a data-tippy-content="{{__('Download')}}" href="{{route('documents.download', ['document' => $file->id])}}" class="size-7 shrink-0 rounded-md bg-green-100 dark:bg-green-500/15 flex items-center justify-center font-semibold text-green-500 dark:text-green-400 hover:text-green-800 hover:bg-green-200">
+                                        <a data-tippy-content="{{__('Download')}}" href="{{route('documents.download', ['document' => $file->id])}}" class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200">
                                             <i class="fa-regular fa-arrow-down-to-bracket"></i>
                                         </a>
                                         @can('delete', $file)
-                                            <button data-tippy-content="{{__('Delete')}}" @click="open = true" type="button" class="size-7 shrink-0 rounded-md bg-red-100 dark:bg-red-500/15 flex items-center justify-center font-semibold text-red-500 dark:text-red-400 hover:text-red-800 hover:bg-red-200 hover:cursor-pointer">
+                                            <button data-tippy-content="{{__('Delete')}}" @click="open = true" type="button" class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400 hover:cursor-pointer">
                                                 <i class="fa-regular fa-trash-can"></i>
                                             </button>
                                             <div x-cloak x-show="open" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">

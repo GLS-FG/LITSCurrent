@@ -11,106 +11,105 @@
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
-        <div class="mt-2 flow-root">
-            <div class="shadow-lits-card rounded bg-white dark:bg-lits-blue-550">
-                <div class="overflow-x-auto">
-                    <div class="inline-block min-w-full align-middle">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="">
-                            <tr>
-                                <th scope="col" rowspan="2" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold whitespace-nowrap text-gray-900 dark:text-gray-50 sm:pl-6">Nombre</th>
-                                <th scope="col" rowspan="2" class="py-3.5 px-4 text-left text-sm font-semibold whitespace-nowrap text-gray-900 dark:text-gray-50 sm:pl-6">Color</th>
-                                @foreach($serviceType->serviceClasses as $serviceClass)
-                                    <th scope="col" colspan="{{count($serviceClass->serviceModes)}}" class="bg-gray-200 dark:bg-gray-700 border-r border-l border-b px-3 py-0.5 text-center text-sm font-semibold whitespace-nowrap text-gray-900 dark:text-gray-50">{{$serviceClass->code}}</th>
-                                @endforeach
-                                <th scope="col" rowspan="2" class="relative py-3.5 pr-4 pl-3 sm:pr-6"><span class="sr-only">Detalles</span></th>
-                            </tr>
-                            <tr>
-                                @foreach($serviceType->serviceClasses as $serviceClass)
-                                    @foreach($serviceClass->serviceModes as $serviceMode)
-                                        <th scope="col" class="bg-gray-200 dark:bg-gray-700 border-r border-l border-b px-3 py-0.5 text-center text-sm font-semibold whitespace-nowrap text-gray-900 dark:text-gray-50">{{$serviceMode->code}}</th>
-                                    @endforeach
-                                @endforeach
-                            </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 ">
-                            @forelse($statuses as $status)
-                                <tr>
-                                    <td class="py-4 pr-3 pl-4 text-gray-900 dark:text-gray-50 sm:pl-6">
-                                        <a href="{{route('service-statuses.service-type-statuses.show', ['service_status' => $serviceType, 'service_type_status' => $status])}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 text-sm font-medium">{{ $status->name }}</a>
+        <div class="mt-5 overflow-x-auto">
+            <div class="inline-block min-w-full align-middle">
+                <table class="min-w-full">
+                    <thead>
+                    <tr>
+                        <th scope="col" rowspan="2" class="py-2.5 pl-2 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Nombre</th>
+                        <th scope="col" rowspan="2" class="py-2.5 px-3 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Color</th>
+                        @foreach($serviceType->serviceClasses as $serviceClass)
+                            <th scope="col" colspan="{{count($serviceClass->serviceModes)}}" class="bg-gray-50 dark:bg-white/[0.02] border-r border-l border-b border-gray-200 dark:border-lits-blue-450 px-3 py-1.5 text-center text-xs font-semibold whitespace-nowrap text-gray-500 dark:text-gray-400">{{$serviceClass->code}}</th>
+                        @endforeach
+                        <th scope="col" rowspan="2" class="py-2.5 pr-2 pl-3 text-center text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Acciones</th>
+                    </tr>
+                    <tr class="border-b border-gray-200 dark:border-lits-blue-450">
+                        @foreach($serviceType->serviceClasses as $serviceClass)
+                            @foreach($serviceClass->serviceModes as $serviceMode)
+                                <th scope="col" class="bg-gray-50 dark:bg-white/[0.02] border-r border-l border-gray-200 dark:border-lits-blue-450 px-3 py-1.5 text-center text-xs font-semibold whitespace-nowrap text-gray-500 dark:text-gray-400">{{$serviceMode->code}}</th>
+                            @endforeach
+                        @endforeach
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @forelse($statuses as $status)
+                        <tr class="border-b border-gray-100 dark:border-lits-blue-450/60 hover:bg-gray-50 dark:hover:bg-lits-blue-550/60">
+                            <td class="py-3.5 pl-2">
+                                <a href="{{route('service-statuses.service-type-statuses.show', ['service_status' => $serviceType, 'service_type_status' => $status])}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 text-sm font-medium">{{ $status->name }}</a>
+                            </td>
+                            <td class="py-3.5 px-3">
+                                <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring {{$status->color}}">COLOR</span>
+                            </td>
+                            @foreach($serviceType->serviceClasses as $serviceClass)
+                                @foreach($serviceClass->serviceModes as $serviceMode)
+                                    <td class="px-3 py-3.5 border-l border-r border-gray-200 dark:border-lits-blue-450 text-center whitespace-nowrap">
+                                        @if($status->modes->where('id', $serviceMode->id)->first() != null)
+                                            <i class="fa-solid fa-square-check text-green-500 dark:text-green-400"></i>
+                                        @else
+                                            <i class="fa-solid fa-square-xmark text-gray-300 dark:text-gray-600"></i>
+                                        @endif
                                     </td>
-                                    <td class="py-4 px-4 text-gray-900 dark:text-gray-50 sm:pl-6">
-                                        <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring {{$status->color}}">COLOR</span>
-                                    </td>
-                                    @foreach($serviceType->serviceClasses as $serviceClass)
-                                        @foreach($serviceClass->serviceModes as $serviceMode)
-                                            <td class="px-3 py-4 border-l border-r text-center whitespace-nowrap">
-                                                @if($status->modes->where('id', $serviceMode->id)->first() != null)
-                                                    <i class="fa-solid fa-square-check text-green-500 dark:text-green-400"></i>
-                                                @else
-                                                    <i class="fa-solid fa-square-xmark text-red-500 dark:text-red-400"></i>
-                                                @endif
-                                            </td>
-                                        @endforeach
-                                    @endforeach
-                                    <td class="relative py-4 pr-4 pl-3 text-sm font-medium whitespace-nowrap sm:pr-6 flex items-center justify-end gap-x-1">
-                                        <a
-                                            href="{{route('service-statuses.service-type-statuses.show', ['service_status' => $serviceType, 'service_type_status' => $status])}}"
-                                            data-tippy-content="Ver"
-                                            role="button"
-                                            class="size-7 shrink-0 rounded-md bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center font-semibold text-blue-500 dark:text-blue-400 hover:text-blue-800 hover:bg-blue-200"
+                                @endforeach
+                            @endforeach
+                            <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-1">
+                                <a
+                                    href="{{route('service-statuses.service-type-statuses.show', ['service_status' => $serviceType, 'service_type_status' => $status])}}"
+                                    data-tippy-content="Ver"
+                                    role="button"
+                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                >
+                                    <i class="fa-regular fa-eye"></i>
+                                </a>
+                                @can('update', $serviceType)
+                                    @if (!$loop->first)
+                                        <form action="{{route('service-statuses.service-type-statuses.up', ['service_status' => $serviceType, 'service_type_status' => $status])}}" method="POST">
+                                            @csrf
+                                            <button
+                                                type="submit"
+                                                class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
+                                                data-tippy-content="Mover a arriba"
+                                            >
+                                                <i class="fa-regular fa-arrow-up"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if (!$loop->last)
+                                        <form action="{{route('service-statuses.service-type-statuses.down', ['service_status' => $serviceType, 'service_type_status' => $status])}}" method="POST">
+                                            @csrf
+                                            <button
+                                                type="submit"
+                                                class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
+                                                data-tippy-content="Mover a abajo"
+                                            >
+                                                <i class="fa-regular fa-arrow-down"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                    <a
+                                        href="{{route('service-statuses.service-type-statuses.edit', ['service_status' => $serviceType, 'service_type_status' => $status])}}"
+                                        data-tippy-content="Editar"
+                                        role="button"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                    >
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                    </a>
+                                @endcan
+                                @can('delete', $serviceType)
+                                    <div
+                                        class="relative inline-block text-left"
+                                        x-data="{ openCancel: false }"
+                                        @keydown.escape.prevent.stop="close($refs.buttonDropdown)"
+                                        @focusin.window="! $refs.panel.contains($event.target) && close()"
+                                        x-id="['dropdown-button-{{$status->id}}']"
+                                        @confirm.window="{{$status->id}} == $event.detail && $refs['delete-row-' + $event.detail].submit()"
+                                    >
+                                        <button
+                                            type="button"
+                                            @click="openCancel = true"
+                                            data-tippy-content="Eliminar"
+                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400 hover:cursor-pointer"
                                         >
-                                            <i class="fa-regular fa-eye"></i>
-                                        </a>
-                                        @can('update', $serviceType)
-                                            @if (!$loop->first)
-                                                <form action="{{route('service-statuses.service-type-statuses.up', ['service_status' => $serviceType, 'service_type_status' => $status])}}" method="POST">
-                                                    @csrf
-                                                    <button
-                                                        type="submit"
-                                                        class="size-7 shrink-0 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 hover:cursor-pointer"
-                                                        data-tippy-content="Mover a arriba"
-                                                    >
-                                                        <i class="fa-regular fa-arrow-up"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                            @if (!$loop->last)
-                                                <form action="{{route('service-statuses.service-type-statuses.down', ['service_status' => $serviceType, 'service_type_status' => $status])}}" method="POST">
-                                                    @csrf
-                                                    <button
-                                                        type="submit"
-                                                        class="size-7 shrink-0 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 hover:cursor-pointer"
-                                                        data-tippy-content="Mover a abajo"
-                                                    >
-                                                        <i class="fa-regular fa-arrow-down"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                            <a
-                                                href="{{route('service-statuses.service-type-statuses.edit', ['service_status' => $serviceType, 'service_type_status' => $status])}}"
-                                                data-tippy-content="Editar"
-                                                role="button"
-                                                class="size-7 shrink-0 rounded-md bg-green-100 dark:bg-green-500/15 flex items-center justify-center font-semibold text-green-500 dark:text-green-400 hover:text-green-800 hover:bg-green-200"
-                                            >
-                                                <i class="fa-regular fa-pen-to-square"></i>
-                                            </a>
-                                        @endcan
-                                        @can('delete', $serviceType)
-                                            <div
-                                                class="relative inline-block text-left"
-                                                x-data="{ openCancel: false }"
-                                                @keydown.escape.prevent.stop="close($refs.buttonDropdown)"
-                                                @focusin.window="! $refs.panel.contains($event.target) && close()"
-                                                x-id="['dropdown-button-{{$status->id}}']"
-                                                @confirm.window="{{$status->id}} == $event.detail && $refs['delete-row-' + $event.detail].submit()"
-                                            >
-                                                <button
-                                                    type="button"
-                                                    @click="openCancel = true"
-                                                    data-tippy-content="Eliminar"
-                                                    class="size-7 shrink-0 rounded-md bg-red-100 dark:bg-red-500/15 flex items-center justify-center font-semibold text-red-500 dark:text-red-400 hover:text-red-800 hover:bg-red-200 hover:cursor-pointer"
-                                                >
                                                     <i class="fa-regular fa-trash-can"></i>
                                                 </button>
                                                 <div x-cloak x-show="openCancel" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -170,6 +169,7 @@
                                                 </div>
                                             </div>
                                         @endcan
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -183,10 +183,8 @@
                                     </td>
                                 </tr>
                             @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>

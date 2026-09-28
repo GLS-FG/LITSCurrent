@@ -78,6 +78,14 @@
                 $serviceLevel.val(firstId).change();
             }
         });
+        $('form').on('submit', function(e) {
+            const $submitButton = $(this).find('button[type="submit"]');
+            if ($submitButton.prop('disabled')) {
+                e.preventDefault();
+                return;
+            }
+            $submitButton.prop('disabled', true);
+        });
     </script>
 @endsection
 <x-layout-app>

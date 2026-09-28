@@ -97,6 +97,20 @@
             }
             document.addEventListener('livewire:navigated', syncActiveNav);
             syncActiveNav();
+
+            // wire:navigate swaps in new content without a real page load, so
+            // the one-time `tippy('[data-tippy-content]')` call in bootstrap.js
+            // never sees elements rendered by a later navigation. Bind tooltips
+            // to those on every soft navigation too, skipping elements that
+            // already have an instance (e.g. the persisted sidebar/topbar).
+            function initTooltips() {
+                document.querySelectorAll('[data-tippy-content]').forEach(function (el) {
+                    if (!el._tippy) {
+                        window.tippy(el);
+                    }
+                });
+            }
+            document.addEventListener('livewire:navigated', initTooltips);
         </script>
     </body>
 </html>

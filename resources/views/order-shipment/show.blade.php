@@ -364,14 +364,37 @@
 <x-layout-app>
     <div>
         <x-navigation.breadcrumbs :links="[__('Orders') => route('orders.index'), $order->code => route('orders.show', ['order' => $order->id]), __('Shipment') => '#']" />
-        <div class="mt-6 flex justify-between items-center flex-wrap gap-y-2">
-            <div class="flex items-center flex-wrap sm:flex-nowrap gap-1">
+
+        <div class="mt-5 flex items-start justify-between gap-4 flex-wrap">
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <div class="size-9 shrink-0 rounded-lg flex items-center justify-center bg-entity-shipments-50 dark:bg-entity-shipments/15 text-entity-shipments">
+                    <i class="fa-regular fa-route text-base"></i>
+                </div>
+                @if($shipment->urgent)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-lits-red-50 dark:bg-lits-red-500/15 px-2.5 py-1 text-xs font-bold text-lits-red-600 dark:text-lits-red-400">
+                        <i class="fa-regular fa-light-emergency-on"></i>
+                        {{__('Urgent')}}
+                    </span>
+                @endif
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">
+                    @can('create', \App\Models\Order::class)
+                        {{$shipment->tracking_code}}
+                    @else
+                        {{$shipment->tracking_number}}
+                    @endcan
+                </h1>
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $shipment->order_shipment_status_id->textColor() }}">
+                    <span class="size-1.5 rounded-full {{ $shipment->order_shipment_status_id->dotColor() }}"></span>
+                    {{ $shipment->order_shipment_status_id->label() }}
+                </span>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap">
                 @can('update', $shipment)
                     <a
                         href="{{route('orders.shipments.edit', [ 'order' => $order->id, 'shipment' => $shipment->id ])}}"
                         data-tippy-content="{{__('shows.edit_service')}}"
                         role="button"
-                        class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
                         <i class="fa-regular fa-pen-to-square"></i>
                         {{__('shows.edit')}}
@@ -382,7 +405,7 @@
                         href='{{route('orders.shipments.documents.create', [ 'order' => $shipment->order, 'shipment' => $shipment ])}}'
                         data-tippy-content="{{__('shows.attach_file')}}"
                         role="button"
-                        class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
                         <i class="fa-regular fa-paperclip"></i>
                         {{__('shows.attach_file')}}
@@ -392,48 +415,47 @@
                     href="{{route('orders.shipments.bol', [ 'order' => $order->id, 'shipment' => $shipment->id ])}}"
                     data-tippy-content="Bill Of Lading"
                     role="button"
-                    class="whitespace-nowrap inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    class="whitespace-nowrap inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                     <i class="fa-regular fa-file-contract shrink-0"></i>
                     Bill Of Lading
                 </a>
                 @can('clone', $shipment)
-                        <a
-                            href="{{route('clone.order.create', [ 'shipment' => $shipment->id ])}}"
-                            data-tippy-content="{{__('shows.duplicate')}}"
-                            role="button"
-                            class="whitespace-nowrap inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                        >
-                            <i class="fa-regular fa-copy shrink-0"></i>
-                            {{__('shows.duplicate')}}
-                        </a>
+                    <a
+                        href="{{route('clone.order.create', [ 'shipment' => $shipment->id ])}}"
+                        data-tippy-content="{{__('shows.duplicate')}}"
+                        role="button"
+                        class="whitespace-nowrap inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    >
+                        <i class="fa-regular fa-copy shrink-0"></i>
+                        {{__('shows.duplicate')}}
+                    </a>
                 @endcan
-            </div>
-            <div>
                 @canany(['update', 'restore'], $shipment)
                     <form action="{{ route('orders.shipments.update.status', ['order' => $order->id, 'shipment' => $shipment->id]) }}" method="POST" class="flex">
                         @csrf
                         @method('PUT')
-                        <div class="-mr-px  grid grid-cols-1 focus-within:relative">
-                            <select id="order_shipment_status_id" name="order_shipment_status_id" autocomplete="off" aria-label="Country" class="col-start-1 row-start-1 w-full appearance-none rounded-l-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                        <div class="grid grid-cols-1 focus-within:relative">
+                            <select id="order_shipment_status_id" name="order_shipment_status_id" autocomplete="off" aria-label="{{__('indexes.status')}}" class="col-start-1 row-start-1 w-full appearance-none rounded-l-lg border border-r-0 border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 py-2 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-none focus:ring-2 focus:ring-indigo-600">
                                 @foreach ($statuses as $status)
                                     <option value= {{ $status->id }} @selected($shipment->order_shipment_status_id->value == $status->id)>{{ $status->name }}  </option>
                                 @endforeach
                             </select>
-                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 text-base self-center justify-self-end text-gray-500 dark:text-gray-400 sm:text-sm"></i>
+                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2.5 self-center justify-self-end text-xs text-gray-400 dark:text-gray-500"></i>
                         </div>
-                        <button data-tippy-content="{{__('shows.save_status')}}" type="submit" class="flex shrink-0 items-center gap-x-1.5 rounded-r-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 focus:relative focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 hover:cursor-pointer">
+                        <button data-tippy-content="{{__('shows.save_status')}}" type="submit" class="flex items-center gap-x-1.5 rounded-r-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer">
                             <i class="fa-regular fa-floppy-disk"></i>
                         </button>
                     </form>
                 @endcanany
             </div>
         </div>
-        @if ($errors->any())
-            <x-alerts.error :message="__('shows.service_errors')" :errors="$errors" class="my-4" />
-        @endif
+
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
+        @endif
+        @if ($errors->any())
+            <x-alerts.error :message="__('shows.service_errors')" :errors="$errors" class="my-4" />
         @endif
         <div id="copyAlert" style="display: none" class="mt-2 rounded-md bg-green-50 dark:bg-green-500/10 p-4 border border-green-400">
             <div class="flex items-center">
@@ -453,155 +475,139 @@
                 </div>
             </div>
         </div>
-        <div class="shadow-lits-card border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 mt-2 -mx-4 sm:mx-0 lg:mx-0">
-            <div class="px-4 sm:px-6 pt-4 pb-1">
-                <div class="min-w-0 flex gap-x-2 items-center">
-                    @if($shipment->urgent)
-                        <i class="fa-regular fa-light-emergency-on text-3xl/7 text-red-500 dark:text-red-400"></i>
-                    @endif
-                    <h2 class="text-2xl/7 font-bold text-gray-900 dark:text-gray-50 sm:truncate sm:text-3xl sm:tracking-tight">
-                        @can('create', \App\Models\Order::class)
-                            {{$shipment->tracking_code}}
-                        @else
-                            {{$shipment->tracking_number}}
-                        @endcan
-                    </h2>
-                    <span class="inline-flex items-center rounded-md  px-2 py-1 text-sm font-medium  ring-1 ring-inset {{ $shipment->order_shipment_status_id->badgeColor() }}">{{ $shipment->order_shipment_status_id->label() }}</span>
+
+        <div class="mt-5 flex items-start justify-between gap-4 flex-wrap py-4 border-t border-b border-gray-200 dark:border-lits-blue-450">
+            <div class="flex items-center gap-3">
+                <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-11 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
+                <div>
+                    <div class="text-sm font-bold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{$order->contact->name}}</div>
                 </div>
             </div>
-            <div class="px-4 sm:px-6 pt-1 pb-8 block md:flex md:justify-between">
-                <div class="flex flex-1 items-center gap-x-6">
-                    <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-16 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
+            <div class="flex items-start gap-6 flex-wrap">
+                @can('create', \App\Models\Order::class)
                     <div>
-                        <h1 class="mt-1 text-base font-semibold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</h1>
-                        <p class="text-sm/6 text-gray-700 dark:text-gray-300">{{$order->contact->name}}</p>
+                        <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">Tracking Number</div>
+                        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">{{$shipment->tracking_number}}</div>
                     </div>
+                @endcan
+                <div>
+                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
+                    <div class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-xs break-words">{{$shipment->reference}}</div>
                 </div>
                 <div>
-                    @can('create', \App\Models\Order::class)
-                        <p class="text-xl/6 text-gray-900 dark:text-gray-50 font-medium text-left md:text-right">Tracking Number: {{$shipment->tracking_number}}</p>
-                    @endcan
-                    <p class="text-sm/6 text-gray-700 dark:text-gray-300 text-left md:text-right">{{$shipment->reference}}</p>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 text-left md:text-right">{{ $shipment->created_at->isoFormat('DD/MM/YYYY [' . __('shows.at_time') . '] h:mm a') }}</p>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 text-left md:text-right">{{ $shipment->order->createdBy->name }}</p>
+                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $shipment->created_at->isoFormat('DD/MM/YYYY ['. __('shows.at_time') .'] h:mm a') }}</div>
+                </div>
+                <div>
+                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $shipment->order->createdBy->name }}</div>
                 </div>
             </div>
-            <div x-data="{ activeTab: {{request()->get('activeTab', 0)}} }">
-                <div class="px-4 sm:px-6 border-b border-gray-200 dark:border-lits-blue-450">
-                    <nav aria-label="Tabs" class="-mb-px flex justify-between">
-                        <div class="flex">
-                            <button
-                                @click="activeTab = 0"
-                                class="group inline-flex items-center border-l border-t border-b border-gray-200 dark:border-lits-blue-450 px-3 py-2 text-sm font-medium"
-                                :class="{ 'border-t-indigo-500 text-t-indigo-600 border-t-2 border-b-white': activeTab === 0, 'text-gray-500 hover:border-gray-300 hover:text-gray-700 hover:cursor-pointer': activeTab !== 0 }"
-                            >
-                                {{__('shows.services')}}
-                            </button>
-                            <button
-                                @click="activeTab = 1"
-                                class="group inline-flex items-center border-l border-t border-b border-gray-200 dark:border-lits-blue-450 px-3 py-2 text-sm font-medium"
-                                :class="{ 'border-t-indigo-500 text-t-indigo-600 border-t-2 border-b-white': activeTab === 1, 'text-gray-500 hover:border-gray-300 hover:text-gray-700 hover:cursor-pointer': activeTab !== 1 }"
+        </div>
 
-                            >
-                                {{__('shows.files')}}
-                            </button>
-                            <button
-                                @click="activeTab = 2"
-                                class="group inline-flex items-center border-l border-r border-t border-b border-gray-200 dark:border-lits-blue-450 px-3 py-2 text-sm font-medium"
-                                :class="{ 'border-t-indigo-500 text-t-indigo-600 border-t-2 border-b-white': activeTab === 2, 'text-gray-500 hover:border-gray-300 hover:text-gray-700 hover:cursor-pointer': activeTab !== 2 }"
-
-                            >
-                                {{__('shows.status')}}
-                            </button>
-                        </div>
-                        @can('checklist', $shipment)
-                        <button
-                            @click="activeTab = 3"
-                            class="group inline-flex items-center border-l border-r border-t border-b border-gray-200 dark:border-lits-blue-450 px-3 py-2 text-sm font-medium"
-                            :class="{ 'border-t-indigo-500 text-t-indigo-600 border-t-2 border-b-white': activeTab === 3, 'text-gray-500 hover:border-gray-300 hover:text-gray-700 hover:cursor-pointer': activeTab !== 3 }"
-
-                        >
-                            {{__('shows.internal_control')}}
-                        </button>
-                        @endcan
-                    </nav>
+        <div x-data="{ activeTab: {{request()->get('activeTab', 0)}} }" class="mt-6">
+                <div class="flex items-center gap-6">
+                    <button
+                        @click="activeTab = 0"
+                        class="py-3 text-sm border-b-2 hover:cursor-pointer"
+                        :class="{ 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50': activeTab === 0, 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200': activeTab !== 0 }"
+                    >
+                        {{__('shows.services')}}
+                    </button>
+                    <button
+                        @click="activeTab = 1"
+                        class="py-3 text-sm border-b-2 hover:cursor-pointer"
+                        :class="{ 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50': activeTab === 1, 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200': activeTab !== 1 }"
+                    >
+                        {{__('shows.files')}}
+                    </button>
+                    <button
+                        @click="activeTab = 2"
+                        class="py-3 text-sm border-b-2 hover:cursor-pointer"
+                        :class="{ 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50': activeTab === 2, 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200': activeTab !== 2 }"
+                    >
+                        {{__('shows.status')}}
+                    </button>
+                    @can('checklist', $shipment)
+                    <button
+                        @click="activeTab = 3"
+                        class="py-3 text-sm border-b-2 hover:cursor-pointer"
+                        :class="{ 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50': activeTab === 3, 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200': activeTab !== 3 }"
+                    >
+                        {{__('shows.internal_control')}}
+                    </button>
+                    @endcan
                 </div>
-                <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 0">
-                    <div class="px-4 py-5 sm:px-6">
-                        <div class="space-y-4 divide-y divide-gray-900/5">
-                            <dl class="grid grid-cols-1 text-sm/6 sm:grid-cols-4 pb-4">
-                                <div>
-                                    <dt class="font-semibold text-gray-900 dark:text-gray-50">Service Class</dt>
-                                    <dd class="text-gray-500 dark:text-gray-400">{{$shipment->serviceClass?->name}}</dd>
+                <div class="border-b border-gray-200 dark:border-lits-blue-450 -mt-px mb-5"></div>
+                <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 0" class="pt-2">
+                    <div class="flex flex-col gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-6 items-start gap-6">
+                            <div class="md:col-span-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-50">{{__('shows.from')}}</span>
+                                    <button id="copyFrom" data-tippy-content="Copiar dirección" class="size-6 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer">
+                                        <i class="fa-regular fa-copy text-xs"></i>
+                                    </button>
                                 </div>
-                                <div>
-                                    <dt class="font-semibold text-gray-900 dark:text-gray-50">Service Mode</dt>
-                                    <dd class="text-gray-500 dark:text-gray-400">{{$shipment->serviceMode?->name}}</dd>
+                                <p id="copyFromSuccess" style="display: none" class="mt-1 text-xs text-green-500 dark:text-green-400">¡Dirección copiada!</p>
+                                <p class="mt-2 whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">{{$shipment->ship_from}}</p>
+                                @if($shipment->ship_from_link)
+                                    <a href="{{$shipment->ship_from_link}}" target="_blank" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">{{$shipment->ship_from_link}}</a>
+                                @endif
+                            </div>
+                            <div class="md:col-span-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-sm font-semibold text-gray-900 dark:text-gray-50">{{__('shows.to')}}</span>
+                                    <button id="copyTo" data-tippy-content="Copiar dirección" class="size-6 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer">
+                                        <i class="fa-regular fa-copy text-xs"></i>
+                                    </button>
                                 </div>
-                                <div>
-                                    <dt class="font-semibold text-gray-900 dark:text-gray-50">Class Type</dt>
-                                    <dd class="text-gray-500 dark:text-gray-400">{{$shipment->classType?->name}}</dd>
+                                <p id="copyToSuccess" style="display: none" class="mt-1 text-xs text-green-500 dark:text-green-400">¡Dirección copiada!</p>
+                                <p class="mt-2 whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">{{$shipment->ship_to}}</p>
+                                @if($shipment->ship_to_link)
+                                    <a href="{{$shipment->ship_to_link}}" target="_blank" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">{{$shipment->ship_to_link}}</a>
+                                @endif
+                            </div>
+                            <div class="md:col-span-1">
+                                <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1.5">Servicio</div>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach([
+                                        'Service Class' => $shipment->serviceClass?->code,
+                                        'Service Mode' => $shipment->serviceMode?->code,
+                                        'Class Type' => $shipment->classType?->code,
+                                        'Service Level' => $shipment->serviceLevel?->code,
+                                    ] as $label => $code)
+                                        @if($code)
+                                            <span data-tippy-content="{{ $label }}" class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:cursor-help">{{ $code }}</span>
+                                        @endif
+                                    @endforeach
                                 </div>
-                                <div>
-                                    <dt class="font-semibold text-gray-900 dark:text-gray-50">Service Level</dt>
-                                    <dd class="text-gray-500 dark:text-gray-400">{{$shipment->serviceLevel?->name}}</dd>
-                                </div>
-                            </dl>
-                            <dl class="grid grid-cols-1 text-sm/6 sm:grid-cols-2 pb-4">
-                                <div>
-                                    <dt class="font-semibold text-gray-900 dark:text-gray-50 flex gap-2 items-center">
-                                        <p class="font-semibold text-gray-900 dark:text-gray-50">{{__('shows.from')}}</p>
-                                        <button id="copyFrom" data-tippy-content="Copiar dirección" class="py-0.5 px-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer">
-                                            <i class="fa-regular fa-copy"></i>
-                                        </button>
-                                    </dt>
-                                    <dd id="copyFromSuccess" style="display: none" class="mt-1 text-green-500 dark:text-green-400 text-xs">¡Dirección copiada!</dd>
-                                    <dd class="mt-2">
-                                        <p class="whitespace-pre-wrap text-xs text-gray-900 dark:text-gray-50">{{$shipment->ship_from}}</p>
-                                    </dd>
-                                    @if($shipment->ship_from_link)
-                                    <a href="{{$shipment->ship_from_link}}" target="_blank" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800">
-                                        {{$shipment->ship_from_link}}
-                                    </a>
-                                    @endif
-                                </div>
-                                <div>
-                                    <dt class="font-semibold text-gray-900 dark:text-gray-50 flex gap-2 items-center">
-                                        <p class="font-semibold text-gray-900 dark:text-gray-50">{{__('shows.to')}}</p>
-                                        <button id="copyTo" data-tippy-content="Copiar dirección" class="py-0.5 px-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer">
-                                            <i class="fa-regular fa-copy"></i>
-                                        </button>
-                                    </dt>
-                                    <dd id="copyToSuccess" style="display: none" class="mt-1 text-green-500 dark:text-green-400 text-xs">¡Dirección copiada!</dd>
-                                    <dd class="mt-2">
-                                        <p class="whitespace-pre-wrap text-xs text-gray-900 dark:text-gray-50">{{$shipment->ship_to}}</p>
-                                    </dd>
-                                    @if($shipment->ship_to_link)
-                                        <a href="{{$shipment->ship_to_link}}" target="_blank" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800">
-                                            {{$shipment->ship_to_link}}
-                                        </a>
-                                    @endif
-                                </div>
-                            </dl>
-                            <livewire:shipment-handling :$shipment />
-                            <dl class="grid grid-cols-1 text-sm/6 pb-4">
-                                <dt class="font-semibold text-gray-900 dark:text-gray-50">{{__('shows.comments')}}</dt>
-                                <dd class="mt-2 text-gray-500 dark:text-gray-400">
-                                    {{ $shipment->comments == null || $shipment->comments == "" ? "Sin comentarios" : $shipment->comments }}
-                                </dd>
-                            </dl>
-                            @can('create', \App\Models\Order::class)
-                            <div class="pb-4">
+                            </div>
+                            <div class="md:col-span-1">
+                                <livewire:shipment-handling :$shipment />
+                            </div>
+                        </div>
+
+                        @can('create', \App\Models\Order::class)
+                            <div class="pt-6 border-t border-gray-200 dark:border-lits-blue-450/60">
                                 <x-cards.transports-section
                                     :order="$order"
                                     :shipment="$shipment"
                                     :statuses="$transportationStatuses"
                                 />
                             </div>
-                            @endcan
-                            <div class="pb-4">
-                                <livewire:products-section :order="$shipment" />
-                            </div>
+                        @endcan
+
+                        <div class="pt-6 border-t border-gray-200 dark:border-lits-blue-450/60">
+                            <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">{{__('shows.comments')}}</div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ $shipment->comments == null || $shipment->comments == "" ? "Sin comentarios" : $shipment->comments }}
+                            </p>
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-200 dark:border-lits-blue-450/60">
+                            <livewire:products-section :order="$shipment" />
                         </div>
                     </div>
                 </div>
@@ -659,360 +665,434 @@
                     <div class="border-b border-gray-300 dark:border-gray-600 w-full"></div>
                     <livewire:documents :order="$shipment" />
                 </div>
-                <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 2">
-                    <div class="px-4 py-5 sm:px-6">
-                        <div class="flow-root">
-                            <div class="px-4 md:px-8">
-                                <div x-data="{ mode: 1, showMap: @js($shipment->show_map) }" x-init="$watch('showMap', value => initGoogleMapsMap(value)); $watch('mode', val => initAutocompletesMap(val))">
-                                    <div x-cloak x-show.transition.in.opacity.duration.600="mode === 1">
-                                        <div class="space-y-4">
-                                            <div class="sm:flex justify-start items-center p-3 border border-gray-200 dark:border-lits-blue-450 rounded space-x-3">
-                                                <p class="text-gray-900 dark:text-gray-50 font-semibold">Seguimiento de embarque</p>
-                                                <i class="fa-solid fa-chevron-right text-lg"></i>
-                                                <p class="text-gray-900 dark:text-gray-50 font-semibold">{{$shipment->tracking_number}}</p>
-                                            </div>
-                                            @can('update', $shipment)
-                                            <div class="w-full flex justify-start gap-2">
-                                                @isset($shipment->latestLocation)
-                                                    <a
-                                                        href="https://wa.me/?text={{ $whatsapp }}"
-                                                        target="_blank"
-                                                        data-tippy-content="Compartir"
-                                                        class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
-                                                    >
-                                                        <i class="fa-brands fa-whatsapp text-lg"></i>
-                                                    </a>
-                                                    <button
-                                                        id="copyMailButton"
-                                                        data-tippy-content="Copiar correo"
-                                                        class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
-                                                    >
-                                                        <i class="fa-regular fa-envelope-open-text"></i>
-                                                    </button>
-
-                                                    <form action="{{route('orders.shipments.notify', ['order' => $order->id, 'shipment' => $shipment->id])}}" method="POST">
-                                                        @csrf
-                                                        <button
-                                                            type="submit"
-                                                            class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
-                                                            data-tippy-content="Notificar al cliente"
-                                                        >
-                                                            <i class="fa-regular fa-envelope"></i>
-                                                            Notificar
-                                                        </button>
-                                                    </form>
-                                                @endisset
-                                                <button data-tippy-content="Agregar geolocalización" @click="mode = 2" class="inline-flex items-center justify-center gap-x-1.5 rounded-md bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">
-                                                    <i class="fa-regular fa-location-dot"></i>
-                                                    Agregar
+                <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 2" class="pt-2">
+                    <div x-data="{ mode: 1, showMap: @js($shipment->show_map) }" x-init="$watch('showMap', value => initGoogleMapsMap(value)); $watch('mode', val => initAutocompletesMap(val))">
+                        <div x-cloak x-show.transition.in.opacity.duration.600="mode === 1">
+                            <div class="flex flex-col gap-6">
+                                <div class="flex items-center justify-between gap-3 flex-wrap">
+                                    <div>
+                                        <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-50">Seguimiento de embarque</h2>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{$shipment->tracking_number}}</p>
+                                    </div>
+                                    @can('update', $shipment)
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            @isset($shipment->latestLocation)
+                                                <a
+                                                    href="https://wa.me/?text={{ $whatsapp }}"
+                                                    target="_blank"
+                                                    data-tippy-content="Compartir por WhatsApp"
+                                                    class="inline-flex items-center justify-center size-9 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
+                                                >
+                                                    <i class="fa-brands fa-whatsapp"></i>
+                                                </a>
+                                                <button
+                                                    id="copyMailButton"
+                                                    data-tippy-content="Copiar correo"
+                                                    class="inline-flex items-center justify-center size-9 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
+                                                >
+                                                    <i class="fa-regular fa-envelope-open-text"></i>
                                                 </button>
-                                            </div>
-                                            @endcan
-                                            <div class="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-4">
-                                                <div class="col-span-1">
-                                                    <div class="rounded border border-gray-200 dark:border-lits-blue-450">
-                                                        <div class="p-3">
-                                                            <div class="flex space-x-2 items-center justify-between">
-                                                                <p class="text-xs font-semibold">
-                                                                    {{$shipment->originCity->name}}, {{$shipment->originState->short_name}}, {{$shipment->originCountry->code}}
-                                                                </p>
-                                                                <i class="fa-solid fa-arrow-right"></i>
-                                                                <p class="text-xs font-semibold">
-                                                                    {{$shipment->destinationCity->name}}, {{$shipment->destinationState->short_name}}, {{$shipment->destinationCountry->code}}
-                                                                </p>
+                                                <form action="{{route('orders.shipments.notify', ['order' => $order->id, 'shipment' => $shipment->id])}}" method="POST">
+                                                    @csrf
+                                                    <button
+                                                        type="submit"
+                                                        data-tippy-content="Notificar al cliente"
+                                                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
+                                                    >
+                                                        <i class="fa-regular fa-envelope"></i>
+                                                        Notificar
+                                                    </button>
+                                                </form>
+                                            @endisset
+                                            <button data-tippy-content="Agregar geolocalización" @click="mode = 2" class="inline-flex items-center gap-1.5 rounded-lg bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">
+                                                <i class="fa-regular fa-location-dot"></i>
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    @endcan
+                                </div>
+
+                                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                                    <div class="lg:col-span-5">
+                                        <div class="rounded-lg border border-gray-200 dark:border-lits-blue-450 p-4">
+                                            @php
+                                                $locations = $shipment->locations;
+                                                $total = $locations->count();
+                                                $newest = $locations->last();
+                                                $oldest = $total > 1 ? $locations->first() : null;
+                                                $middle = $total > 2 ? $locations->slice(1, $total - 2) : collect();
+                                            @endphp
+                                            <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-4">
+                                                {{ $total }} {{ $total == 1 ? 'evento' : 'eventos' }}
+                                            </p>
+                                            <ul role="list" x-data="{ expanded: false }">
+                                                @if($newest)
+                                                    <li class="relative flex gap-x-2 @if($total > 1) pb-6 @endif">
+                                                        @if($total > 1)
+                                                            <div class="absolute top-0 -bottom-0 left-0 flex w-6 justify-center">
+                                                                <div class="w-px bg-gray-200 dark:bg-lits-blue-450"></div>
                                                             </div>
-                                                            <p class="text-sm pt-2">
-                                                                {{$order->client->trade_name}}
-                                                            </p>
-                                                        </div>
-                                                        <div class="h-5 bg-gray-50 dark:bg-gray-800/60 border-t border-b border-gray-200 dark:border-lits-blue-450">
-
-                                                        </div>
-                                                        <div x-data="{ collapsed: false }" @collapse="collapsed = !collapsed" class="flex items-center gap-x-2 pb-0 p-3">
-                                                            <button
-                                                                @click="$dispatch('collapse', !collapsed)"
-                                                                class="rounded-sm bg-white dark:bg-lits-blue-550 px-2 py-1 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                                                                x-text="collapsed ? 'Todos los estatus' : 'Último estatus'"
-                                                            ></button>
-
-                                                            @can('create', \App\Models\Order::class)
-                                                                @if($mapAvailable)
-                                                                    <div class="rounded-sm bg-white dark:bg-lits-blue-550 px-2 py-1 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 flex items-center gap-x-2">
-                                                                        <p>Maps</p>
-                                                                        <div class="group relative inline-flex w-9 shrink-0 rounded-full bg-red-600 p-0.5 inset-ring inset-ring-gray-900/5 outline-offset-2 outline-green-600 transition-colors duration-200 ease-in-out has-checked:bg-green-600 has-focus-visible:outline-2">
-                                                                    <span class="relative size-4 rounded-full bg-white dark:bg-lits-blue-550 shadow-xs ring-1 ring-gray-900/5 dark:ring-white/10 transition-transform duration-200 ease-in-out group-has-checked:translate-x-4">
-                                                                        <span
-                                                                            aria-hidden="true"
-                                                                            class="absolute inset-0 flex size-full items-center justify-center opacity-100 transition-opacity duration-200 ease-in group-has-checked:opacity-0 group-has-checked:duration-100 group-has-checked:ease-out text-red-600 dark:text-red-400 text-[0.5rem]"
+                                                        @endif
+                                                        @if ($newest->service_type_status_id == 20)
+                                                            <div class="relative flex size-6 flex-none items-center justify-center bg-body dark:bg-lits-blue-600">
+                                                                <i class="fa-solid fa-circle-check text-lg text-indigo-600 dark:text-indigo-400"></i>
+                                                            </div>
+                                                        @else
+                                                            <div class="relative flex size-6 flex-none items-center justify-center bg-body dark:bg-lits-blue-600">
+                                                                <div class="size-1.5 rounded-full bg-entity-shipments shadow-[0_0_8px_2px_#0891B2]"></div>
+                                                            </div>
+                                                        @endif
+                                                        <div class="flex-1 min-w-0">
+                                                            <div class="flex items-center gap-x-1 text-gray-500 dark:text-gray-400 flex-wrap">
+                                                                <p class="text-sm/6 text-gray-900 dark:text-gray-50 font-medium">
+                                                                    {{$newest->status->name}}
+                                                                </p>
+                                                                @hasanyrole([App\Enums\RolesEnum::OPERATORADMIN, App\Enums\RolesEnum::OPERATOR])
+                                                                    <button @click="mode = 3; editLocation({{$newest}})" data-tippy-content="Editar estatus" class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200">
+                                                                        <i class="fa-regular fa-pen-to-square text-xs"></i>
+                                                                    </button>
+                                                                @endhasanyrole
+                                                                @can('delete', $shipment)
+                                                                    <button @click="mode = 3; editLocation({{$newest}})" data-tippy-content="Editar estatus" class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200">
+                                                                        <i class="fa-regular fa-pen-to-square text-xs"></i>
+                                                                    </button>
+                                                                    <div
+                                                                        class="relative inline-block text-left"
+                                                                        x-data="{ openCancel: false }"
+                                                                    >
+                                                                        <button
+                                                                            type="button"
+                                                                            @click="openCancel = true"
+                                                                            data-tippy-content="Eliminar estatus"
+                                                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400 hover:cursor-pointer"
                                                                         >
-                                                                            <i class="fa-solid fa-xmark"></i>
-                                                                        </span>
-                                                                        <span
-                                                                            aria-hidden="true"
-                                                                            class="absolute inset-0 flex size-full items-center justify-center opacity-0 transition-opacity duration-100 ease-out group-has-checked:opacity-100 group-has-checked:duration-200 group-has-checked:ease-in text-green-600 dark:text-green-400 text-[0.5rem]"
-                                                                        >
-                                                                            <i class="fa-solid fa-check"></i>
-                                                                        </span>
-                                                                    </span>
-                                                                            <input
-                                                                                name="setting"
-                                                                                type="checkbox"
-                                                                                x-model="showMap"
-                                                                                aria-label="Use setting"
-                                                                                class="absolute inset-0 size-full appearance-none focus:outline-hidden"
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                @endif
-                                                            @endcan
-                                                        </div>
-                                                        <ul role="list" class="space-y-2 overflow-y-auto flex-1 pt-3 pb-5 px-3" x-data="{ collapsed: false }" @collapse.window="collapsed = $event.detail">
-                                                            @forelse($shipment->locations as $location)
-                                                                <li class="relative flex gap-x-2" @if (!$loop->last) x-cloak x-show.transition.in.opacity.duration.600="collapsed === false" @click="collapsed = true" @endif>
-                                                                    @if (!$loop->last)
-                                                                        <div class="absolute top-0 -bottom-6 left-0 flex w-6 justify-center">
-                                                                            <div class="w-px bg-gray-300"></div>
-                                                                        </div>
-                                                                    @endif
-                                                                    @if ($location->service_type_status_id == 20)
-                                                                        <div class="relative flex size-6 flex-none items-center justify-center bg-white dark:bg-lits-blue-550">
-                                                                            <i class="fa-solid fa-circle-check text-lg text-indigo-600 dark:text-indigo-400"></i>
-                                                                        </div>
-                                                                    @else
-                                                                        <div class="relative flex size-6 flex-none items-center justify-center bg-white dark:bg-lits-blue-550">
-                                                                            <div class="size-1.5 rounded-full bg-gray-500 ring ring-gray-500"></div>
-                                                                        </div>
-                                                                    @endif
-                                                                    <div x-data="{ collapsed: false }" @collapse.window="collapsed = $event.detail">
-                                                                        <div class="flex items-center gap-x-1.5 text-gray-500 dark:text-gray-400 flex-wrap">
-                                                                            <p class="text-sm/6 text-gray-900 dark:text-gray-50">
-                                                                                {{$location->status->name}}
-                                                                            </p>
-                                                                            @hasanyrole([App\Enums\RolesEnum::OPERATORADMIN, App\Enums\RolesEnum::OPERATOR])
-                                                                            @if ($loop->last)
-                                                                                <button @click="mode = 3; editLocation({{$location}})" class="rounded-md p-1 bg-green-100 dark:bg-green-500/15 flex items-center justify-center text-sm font-semibold text-green-500 dark:text-green-400 hover:text-green-800 hover:bg-green-200">
-                                                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                                                </button>
-                                                                            @endif
-                                                                            @endhasanyrole
-                                                                            @can('delete', $shipment)
-                                                                                <button @click="mode = 3; editLocation({{$location}})" class="rounded-md p-1 bg-green-100 dark:bg-green-500/15 flex items-center justify-center text-sm font-semibold text-green-500 dark:text-green-400 hover:text-green-800 hover:bg-green-200">
-                                                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                                                </button>
-                                                                                <div
-                                                                                    class="relative inline-block text-left"
-                                                                                    x-data="{ openCancel: false }"
-                                                                                >
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        @click="openCancel = true"
-                                                                                        data-tippy-content="Eliminar estatus"
-                                                                                        class="rounded-md p-1 bg-red-100 dark:bg-red-500/15 flex items-center justify-center text-sm font-semibold text-red-500 dark:text-red-400 hover:text-red-800 hover:bg-red-200"
+                                                                            <i class="fa-regular fa-trash-can text-xs"></i>
+                                                                        </button>
+                                                                        <div x-cloak x-show="openCancel" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                                                                            <div
+                                                                                class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
+                                                                                aria-hidden="true"
+                                                                                x-show="openCancel"
+                                                                                x-transition:enter="ease-out duration-300"
+                                                                                x-transition:enter-start="opacity-0"
+                                                                                x-transition:enter-end="opacity-100"
+                                                                                x-transition:leave="ease-in duration-200"
+                                                                                x-transition:leave-start="opacity-100"
+                                                                                x-transition:leave-end="opacity-0"
+                                                                            ></div>
+
+                                                                            <div class="fixed inset-0 z-100 w-screen overflow-y-auto">
+                                                                                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                                                                                    <div
+                                                                                        x-show="openCancel"
+                                                                                        x-transition:enter="ease-out duration-300"
+                                                                                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                                                                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                                                                        x-transition:leave="ease-in duration-200"
+                                                                                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                                                                                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                                                                        class="relative transform overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
                                                                                     >
-                                                                                        <i class="fa-regular fa-trash-can"></i>
-                                                                                    </button>
-                                                                                    <div x-cloak x-show="openCancel" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                                                                                        <div
-                                                                                            class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
-                                                                                            aria-hidden="true"
-                                                                                            x-show="openCancel"
-                                                                                            x-transition:enter="ease-out duration-300"
-                                                                                            x-transition:enter-start="opacity-0"
-                                                                                            x-transition:enter-end="opacity-100"
-                                                                                            x-transition:leave="ease-in duration-200"
-                                                                                            x-transition:leave-start="opacity-100"
-                                                                                            x-transition:leave-end="opacity-0"
-                                                                                        ></div>
-
-                                                                                        <div class="fixed inset-0 z-100 w-screen overflow-y-auto">
-                                                                                            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                                                                                                <div
-                                                                                                    x-show="openCancel"
-                                                                                                    x-transition:enter="ease-out duration-300"
-                                                                                                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                                                                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                                                                                                    x-transition:leave="ease-in duration-200"
-                                                                                                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                                                                                                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                                                                    class="relative transform overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
-                                                                                                >
-                                                                                                    <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-                                                                                                        <button type="button" @click="openCancel = false" class="rounded-md bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
-                                                                                                            <span class="sr-only">Close</span>
-                                                                                                            <i class="fa-regular fa-xmark"></i>
-                                                                                                        </button>
-                                                                                                    </div>
-                                                                                                    <div class="sm:flex sm:items-start">
-                                                                                                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/15 sm:mx-0 sm:size-10">
-                                                                                                            <i class="fa-regular fa-triangle-exclamation text-lg text-red-600 dark:text-red-400"></i>
-                                                                                                        </div>
-                                                                                                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left whitespace-normal">
-                                                                                                            <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Eliminar estatus</h3>
-                                                                                                            <div class="mt-2">
-                                                                                                                <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">¿Estás seguro de eliminar el estatus?</p>
-                                                                                                                <p class="text-sm text-red-500 dark:text-red-400 font-medium">{{$location->status->name}}</p>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                                                                                        <form action="{{route('orders.shipments.locations.destroy', ['order' => $shipment->order->id, 'shipment' => $shipment->id, 'location' => $location])}}" method="POST">
-                                                                                                            @csrf
-                                                                                                            @method('DELETE')
-                                                                                                            <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Eliminar</button>
-                                                                                                        </form>
-                                                                                                        <button type="button" @click="openCancel = false" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs ring-1 ring-gray-300 dark:ring-gray-600 ring-inset hover:bg-gray-50 dark:hover:bg-gray-800 sm:mt-0 sm:w-auto">Regresar</button>
-                                                                                                    </div>
+                                                                                        <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
+                                                                                            <button type="button" @click="openCancel = false" class="rounded-md bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
+                                                                                                <span class="sr-only">Close</span>
+                                                                                                <i class="fa-regular fa-xmark"></i>
+                                                                                            </button>
+                                                                                        </div>
+                                                                                        <div class="sm:flex sm:items-start">
+                                                                                            <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/15 sm:mx-0 sm:size-10">
+                                                                                                <i class="fa-regular fa-triangle-exclamation text-lg text-red-600 dark:text-red-400"></i>
+                                                                                            </div>
+                                                                                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left whitespace-normal">
+                                                                                                <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Eliminar estatus</h3>
+                                                                                                <div class="mt-2">
+                                                                                                    <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">¿Estás seguro de eliminar el estatus?</p>
+                                                                                                    <p class="text-sm text-red-500 dark:text-red-400 font-medium">{{$newest->status->name}}</p>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
+                                                                                        <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                                                                            <form action="{{route('orders.shipments.locations.destroy', ['order' => $shipment->order->id, 'shipment' => $shipment->id, 'location' => $newest])}}" method="POST">
+                                                                                                @csrf
+                                                                                                @method('DELETE')
+                                                                                                <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Eliminar</button>
+                                                                                            </form>
+                                                                                            <button type="button" @click="openCancel = false" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs ring-1 ring-gray-300 dark:ring-gray-600 ring-inset hover:bg-gray-50 dark:hover:bg-gray-800 sm:mt-0 sm:w-auto">Regresar</button>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
-                                                                            @endcan
-                                                                        </div>
-                                                                        <div>
-                                                                            <div class="flex items-start gap-x-1">
-                                                                                <i class="fa-regular fa-calendar-clock text-gray-500 dark:text-gray-400 text-lg"></i>
-                                                                                <p class="py-0.5 text-xs/5 text-gray-500 dark:text-gray-400 text-left"><time datetime="{{$location->location_date->isoFormat('YYYY-MM-DD')}}">{{$location->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$location->location_date->isoFormat('h:mm a')}}</time></p>
-                                                                            </div>
-                                                                            @if($location->name != null)
-                                                                                <div class="flex items-start gap-x-1">
-                                                                                    <i class="fa-regular fa-location-dot text-gray-500 dark:text-gray-400 text-lg"></i>
-                                                                                    <button
-                                                                                        class="hover:underline hover:cursor-pointer py-0.5 text-xs/5 text-blue-700 dark:text-blue-400 hover:text-blue-500 text-left"
-                                                                                        x-cloak x-show="showMap"
-                                                                                        @click="showMap = true; openMarker({{$loop->index}})"
-                                                                                    >
-                                                                                        {{$location->name}}
-                                                                                    </button>
-                                                                                    <p class="text-gray-500 dark:text-gray-400 text-xs/5" x-cloak x-show="!showMap">{{$location->name}}</p>
-                                                                                </div>
-                                                                            @endif
-                                                                            @isset($location->comments)
-                                                                                <div class="flex items-start gap-x-1">
-                                                                                    <i class="fa-regular fa-message-lines text-gray-500 dark:text-gray-400 text-lg"></i>
-                                                                                    <p class="py-0.5 text-xs/5 text-gray-500 dark:text-gray-400 text-left">
-                                                                                        {{$location->comments}}
-                                                                                    </p>
-                                                                                </div>
-                                                                            @endisset
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            @empty
-                                                                <li>
-                                                                    <div class="bg-yellow-50 dark:bg-yellow-500/10 p-3 mb-4">
-                                                                        <div class="flex">
-                                                                            <div class="shrink-0">
-                                                                                <i class="fa-solid fa-triangle-exclamation text-yellow-400"></i>
-                                                                            </div>
-                                                                            <div class="ml-3">
-                                                                                <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-400">Sin actualizaciones</h3>
-                                                                                <div class="mt-2 text-sm text-yellow-700 dark:text-yellow-400">
-                                                                                    <p>Aún no se han agregado actualizaciones de estatus.</p>
-                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                </li>
-                                                            @endforelse
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="col-span-3">
-                                                    <div class="w-full" x-cloak x-show="showMap">
-                                                        <div class="h-60 w-full mb-3" id="map"></div>
-                                                    </div>
-                                                    <div class="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-3">
-                                                        <div class="rounded border border-gray-200 dark:border-lits-blue-450 col-span-2 divide-y divide-gray-200 dark:divide-gray-700">
-                                                            <div class="flex flex-1 items-center gap-x-2 p-3">
-                                                                <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-10 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
-                                                                <div>
-                                                                    <h1 class="mt-1 text-sm font-semibold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</h1>
-                                                                    <p class="text-xs/5 text-gray-700 dark:text-gray-300">{{$order->contact->name}}</p>
+                                                                @endcan
+                                                            </div>
+                                                            <div class="mt-1">
+                                                                <div class="flex items-start gap-x-1">
+                                                                    <i class="fa-regular fa-calendar-clock text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                    <p class="text-xs text-gray-500 dark:text-gray-400 text-left"><time datetime="{{$newest->location_date->isoFormat('YYYY-MM-DD')}}">{{$newest->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$newest->location_date->isoFormat('h:mm a')}}</time></p>
+                                                                </div>
+                                                                @if($newest->name != null)
+                                                                    <div class="flex items-start gap-x-1 mt-0.5">
+                                                                        <i class="fa-regular fa-location-dot text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                        <button
+                                                                            class="hover:underline hover:cursor-pointer text-xs text-blue-700 dark:text-blue-400 hover:text-blue-500 text-left"
+                                                                            x-cloak x-show="showMap"
+                                                                            @click="showMap = true; openMarker({{ $total - 1 }})"
+                                                                        >
+                                                                            {{$newest->name}}
+                                                                        </button>
+                                                                        <p class="text-gray-500 dark:text-gray-400 text-xs" x-cloak x-show="!showMap">{{$newest->name}}</p>
+                                                                    </div>
+                                                                @endif
+                                                                @isset($newest->comments)
+                                                                    <div class="flex items-start gap-x-1 mt-0.5">
+                                                                        <i class="fa-regular fa-message-lines text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                        <p class="text-xs text-gray-500 dark:text-gray-400 text-left">
+                                                                            {{$newest->comments}}
+                                                                        </p>
+                                                                    </div>
+                                                                @endisset
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                @else
+                                                    <li>
+                                                        <div class="rounded-md bg-yellow-50 dark:bg-yellow-500/10 p-3">
+                                                            <div class="flex">
+                                                                <div class="shrink-0">
+                                                                    <i class="fa-solid fa-triangle-exclamation text-yellow-400"></i>
+                                                                </div>
+                                                                <div class="ml-3">
+                                                                    <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-400">Sin actualizaciones</h3>
+                                                                    <div class="mt-1 text-sm text-yellow-700 dark:text-yellow-400">
+                                                                        <p>Aún no se han agregado actualizaciones de estatus.</p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="flex flex-1 items-center justify-end bg-gray-50 dark:bg-gray-800/60 py-1 p-3">
-                                                                <p class="text-xs/5 text-gray-500 dark:text-gray-400">
-                                                                    Última actualización: @if ($shipment->latestLocation) <span><time datetime="{{$shipment->latestLocation->location_date->isoFormat('YYYY-MM-DD')}}">{{$shipment->latestLocation->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$shipment->latestLocation->location_date->isoFormat('h:mm a')}}</time></span>@else Sin estatus @endif
-                                                                </p>
+                                                        </div>
+                                                    </li>
+                                                @endif
+
+                                                @if($middle->isNotEmpty())
+                                                    <li class="relative flex gap-x-2 pb-6">
+                                                        <div class="absolute top-0 -bottom-0 left-0 flex w-6 justify-center">
+                                                            <div class="w-px bg-gray-200 dark:bg-lits-blue-450"></div>
+                                                        </div>
+                                                        <div class="relative flex size-6 flex-none items-center justify-center bg-body dark:bg-lits-blue-600">
+                                                            <div class="size-1.5 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            @click="expanded = !expanded"
+                                                            class="flex-1 min-w-0 flex items-center gap-1.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
+                                                        >
+                                                            <i class="fa-regular text-[10px]" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                                            <span x-text="expanded ? 'Ocultar {{ $middle->count() }} {{ $middle->count() == 1 ? 'estatus intermedio' : 'estatus intermedios' }}' : 'Ver {{ $middle->count() }} {{ $middle->count() == 1 ? 'estatus intermedio' : 'estatus intermedios' }}'"></span>
+                                                        </button>
+                                                    </li>
+                                                    @foreach($middle->reverse() as $index => $location)
+                                                        <li x-cloak x-show="expanded" x-transition class="relative flex gap-x-2 pb-6">
+                                                            <div class="absolute top-0 -bottom-0 left-0 flex w-6 justify-center">
+                                                                <div class="w-px bg-gray-200 dark:bg-lits-blue-450"></div>
                                                             </div>
-                                                            <div class="flex space-x-2 items-center justify-around p-3">
-                                                                <p class="text-sm">
-                                                                    {{$shipment->originCity->name}}, {{$shipment->originState->short_name}}, {{$shipment->originCountry->code}}
-                                                                </p>
-                                                                <i class="fa-solid fa-arrow-right"></i>
-                                                                <p class="text-sm">
-                                                                    {{$shipment->destinationCity->name}}, {{$shipment->destinationState->short_name}}, {{$shipment->destinationCountry->code}}
-                                                                </p>
-                                                            </div>
-                                                            @if($shipment->latestLocation)
-                                                                <div class="p-3 {{$shipment->latestLocation->status->color}}">
-                                                                    <p class="text-center text-sm font-semibold">
-                                                                        {{$shipment->latestLocation->status->name}}
-                                                                    </p>
-                                                                    <p class="text-center text-xs">
-                                                                        {{$shipment->latestLocation->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$shipment->latestLocation->location_date->isoFormat('h:mm a')}}
-                                                                    </p>
+                                                            @if ($location->service_type_status_id == 20)
+                                                                <div class="relative flex size-6 flex-none items-center justify-center bg-body dark:bg-lits-blue-600">
+                                                                    <i class="fa-solid fa-circle-check text-lg text-indigo-600 dark:text-indigo-400"></i>
+                                                                </div>
+                                                            @else
+                                                                <div class="relative flex size-6 flex-none items-center justify-center bg-body dark:bg-lits-blue-600">
+                                                                    <div class="size-1.5 rounded-full bg-gray-400 dark:bg-gray-600"></div>
                                                                 </div>
                                                             @endif
-                                                            <div class="grid grid-cols-1 md:grid-cols-2 p-3 gap-y-2 gap-x-3">
-                                                                <div class="col-span-1">
-                                                                    <p class="text-xs/5 text-gray-500 dark:text-gray-400">Estimated Time of Departure</p>
-                                                                    <p class="text-sm/6 text-gray-900 dark:text-gray-50">{{ $shipment->estimated_time_departure?->isoFormat('DD/MM/YYYY') }}</p>
-                                                                </div>
-                                                                <div class="col-span-1">
-                                                                    <p class="text-xs/5 text-gray-500 dark:text-gray-400">Estimated Time of Arrival</p>
-                                                                    <p class="text-sm/6 text-gray-900 dark:text-gray-50">{{ $shipment->estimated_time_arrival?->isoFormat('DD/MM/YYYY') }}</p>
-                                                                </div>
-                                                                <div class="col-span-1">
-                                                                    <p class="text-xs/5 text-gray-500 dark:text-gray-400">Actual Time of Departure</p>
-                                                                    <p class="text-sm/6 text-gray-900 dark:text-gray-50">
-                                                                        @if($shipment->start_date)
-                                                                            {{ $shipment->start_date?->isoFormat('DD/MM/YYYY') }}
-                                                                        @else
-                                                                            Pendiente
-                                                                        @endif
-                                                                    </p>
-                                                                </div>
-                                                                <div class="col-span-1">
-                                                                    <p class="text-xs/5 text-gray-500 dark:text-gray-400">Actual Time of Arrival</p>
-                                                                    <p class="text-sm/6 text-gray-900 dark:text-gray-50">
-                                                                        @if($shipment->end_date)
-                                                                            {{ $shipment->end_date?->isoFormat('DD/MM/YYYY') }}
-                                                                        @else
-                                                                            Pendiente
-                                                                        @endif
-                                                                    </p>
+                                                            <div class="flex-1 min-w-0">
+                                                                <p class="text-sm/6 text-gray-900 dark:text-gray-50 font-medium">{{$location->status->name}}</p>
+                                                                <div class="mt-1">
+                                                                    <div class="flex items-start gap-x-1">
+                                                                        <i class="fa-regular fa-calendar-clock text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                        <p class="text-xs text-gray-500 dark:text-gray-400 text-left"><time datetime="{{$location->location_date->isoFormat('YYYY-MM-DD')}}">{{$location->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$location->location_date->isoFormat('h:mm a')}}</time></p>
+                                                                    </div>
+                                                                    @if($location->name != null)
+                                                                        <div class="flex items-start gap-x-1 mt-0.5">
+                                                                            <i class="fa-regular fa-location-dot text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                            <button
+                                                                                class="hover:underline hover:cursor-pointer text-xs text-blue-700 dark:text-blue-400 hover:text-blue-500 text-left"
+                                                                                x-cloak x-show="showMap"
+                                                                                @click="showMap = true; openMarker({{ $index }})"
+                                                                            >
+                                                                                {{$location->name}}
+                                                                            </button>
+                                                                            <p class="text-gray-500 dark:text-gray-400 text-xs" x-cloak x-show="!showMap">{{$location->name}}</p>
+                                                                        </div>
+                                                                    @endif
+                                                                    @isset($location->comments)
+                                                                        <div class="flex items-start gap-x-1 mt-0.5">
+                                                                            <i class="fa-regular fa-message-lines text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                            <p class="text-xs text-gray-500 dark:text-gray-400 text-left">
+                                                                                {{$location->comments}}
+                                                                            </p>
+                                                                        </div>
+                                                                    @endisset
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="rounded border border-gray-200 dark:border-lits-blue-450 col-span-1 p-3">
-                                                            <p class="text-sm font-semibold pb-2">
-                                                                Notas
-                                                            </p>
-                                                            <ul class="space-y-3">
-                                                                @forelse(collect($shipment->locations)->whereNotNull('comments') as $location)
-                                                                    <li>
-                                                                        <p class="text-sm">{{$location->comments}}</p>
-                                                                        <p class="text-xs/5 text-gray-500 dark:text-gray-400"><time datetime="{{$location->location_date->isoFormat('YYYY-MM-DD')}}">{{$location->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$location->location_date->isoFormat('h:mm a')}}</time></p>
-                                                                    </li>
-                                                                @empty
-                                                                    <li>
-                                                                        <p class="text-gray-200">No hay observaciones en los estatus del embarque.</p>
-                                                                    </li>
-                                                                @endforelse
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-span-1">
+                                                        </li>
+                                                    @endforeach
+                                                @endif
 
-                                                </div>
-                                            </div>
-                                            <div>
-                                            </div>
+                                                @if($oldest)
+                                                    <li class="relative flex gap-x-2">
+                                                        @if ($oldest->service_type_status_id == 20)
+                                                            <div class="relative flex size-6 flex-none items-center justify-center bg-body dark:bg-lits-blue-600">
+                                                                <i class="fa-solid fa-circle-check text-lg text-indigo-600 dark:text-indigo-400"></i>
+                                                            </div>
+                                                        @else
+                                                            <div class="relative flex size-6 flex-none items-center justify-center bg-body dark:bg-lits-blue-600">
+                                                                <div class="size-1.5 rounded-full bg-gray-400 dark:bg-gray-600"></div>
+                                                            </div>
+                                                        @endif
+                                                        <div class="flex-1 min-w-0">
+                                                            <p class="text-sm/6 text-gray-900 dark:text-gray-50 font-medium">{{$oldest->status->name}}</p>
+                                                            <div class="mt-1">
+                                                                <div class="flex items-start gap-x-1">
+                                                                    <i class="fa-regular fa-calendar-clock text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                    <p class="text-xs text-gray-500 dark:text-gray-400 text-left"><time datetime="{{$oldest->location_date->isoFormat('YYYY-MM-DD')}}">{{$oldest->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$oldest->location_date->isoFormat('h:mm a')}}</time></p>
+                                                                </div>
+                                                                @if($oldest->name != null)
+                                                                    <div class="flex items-start gap-x-1 mt-0.5">
+                                                                        <i class="fa-regular fa-location-dot text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                        <button
+                                                                            class="hover:underline hover:cursor-pointer text-xs text-blue-700 dark:text-blue-400 hover:text-blue-500 text-left"
+                                                                            x-cloak x-show="showMap"
+                                                                            @click="showMap = true; openMarker(0)"
+                                                                        >
+                                                                            {{$oldest->name}}
+                                                                        </button>
+                                                                        <p class="text-gray-500 dark:text-gray-400 text-xs" x-cloak x-show="!showMap">{{$oldest->name}}</p>
+                                                                    </div>
+                                                                @endif
+                                                                @isset($oldest->comments)
+                                                                    <div class="flex items-start gap-x-1 mt-0.5">
+                                                                        <i class="fa-regular fa-message-lines text-gray-400 dark:text-gray-500 text-xs mt-0.5"></i>
+                                                                        <p class="text-xs text-gray-500 dark:text-gray-400 text-left">
+                                                                            {{$oldest->comments}}
+                                                                        </p>
+                                                                    </div>
+                                                                @endisset
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                @endif
+                                            </ul>
                                         </div>
                                     </div>
+
+                                    <div class="lg:col-span-7 flex flex-col gap-6">
+                                        <div class="rounded-lg border border-gray-200 dark:border-lits-blue-450 divide-y divide-gray-200 dark:divide-lits-blue-450">
+                                            <div class="flex items-center gap-x-2 p-4">
+                                                <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-10 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
+                                                <div>
+                                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-50">{{$order->client->trade_name}}</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{$order->contact->name}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="p-4">
+                                                <div class="flex items-center justify-between text-xs font-semibold text-gray-700 dark:text-gray-300 gap-2">
+                                                    <span>{{$shipment->originCity->name}}, {{$shipment->originState->short_name}}, {{$shipment->originCountry->code}}</span>
+                                                    <i class="fa-solid fa-arrow-right text-gray-300 dark:text-gray-600 shrink-0"></i>
+                                                    <span class="text-right">{{$shipment->destinationCity->name}}, {{$shipment->destinationState->short_name}}, {{$shipment->destinationCountry->code}}</span>
+                                                </div>
+                                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-3">
+                                                    Última actualización: @if ($shipment->latestLocation) <time datetime="{{$shipment->latestLocation->location_date->isoFormat('YYYY-MM-DD')}}">{{$shipment->latestLocation->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$shipment->latestLocation->location_date->isoFormat('h:mm a')}}</time>@else Sin estatus @endif
+                                                </p>
+                                            </div>
+                                            @if($shipment->latestLocation)
+                                                <div class="p-3 {{$shipment->latestLocation->status->color}}">
+                                                    <p class="text-center text-sm font-semibold">
+                                                        {{$shipment->latestLocation->status->name}}
+                                                    </p>
+                                                    <p class="text-center text-xs">
+                                                        {{$shipment->latestLocation->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$shipment->latestLocation->location_date->isoFormat('h:mm a')}}
+                                                    </p>
+                                                </div>
+                                            @endif
+                                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-y-3 gap-x-3 p-4">
+                                                <div>
+                                                    <p class="text-[11px] text-gray-400 dark:text-gray-500">ETD</p>
+                                                    <p class="text-sm text-gray-900 dark:text-gray-50">{{ $shipment->estimated_time_departure?->isoFormat('DD/MM/YYYY') ?? '—' }}</p>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[11px] text-gray-400 dark:text-gray-500">ETA</p>
+                                                    <p class="text-sm text-gray-900 dark:text-gray-50">{{ $shipment->estimated_time_arrival?->isoFormat('DD/MM/YYYY') ?? '—' }}</p>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[11px] text-gray-400 dark:text-gray-500">ATD</p>
+                                                    <p class="text-sm text-gray-900 dark:text-gray-50">{{ $shipment->start_date?->isoFormat('DD/MM/YYYY') ?? 'Pendiente' }}</p>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[11px] text-gray-400 dark:text-gray-500">ATA</p>
+                                                    <p class="text-sm text-gray-900 dark:text-gray-50">{{ $shipment->end_date?->isoFormat('DD/MM/YYYY') ?? 'Pendiente' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="rounded-lg border border-gray-200 dark:border-lits-blue-450 p-4">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <p class="text-sm font-semibold text-gray-900 dark:text-gray-50">Mapa</p>
+                                                @can('create', \App\Models\Order::class)
+                                                    @if($mapAvailable)
+                                                        <label class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                                            Mostrar mapa
+                                                            <div class="group relative inline-flex w-9 shrink-0 rounded-full bg-red-600 p-0.5 inset-ring inset-ring-gray-900/5 outline-offset-2 outline-green-600 transition-colors duration-200 ease-in-out has-checked:bg-green-600 has-focus-visible:outline-2">
+                                                                <span class="relative size-4 rounded-full bg-white dark:bg-lits-blue-550 shadow-xs ring-1 ring-gray-900/5 dark:ring-white/10 transition-transform duration-200 ease-in-out group-has-checked:translate-x-4">
+                                                                    <span
+                                                                        aria-hidden="true"
+                                                                        class="absolute inset-0 flex size-full items-center justify-center opacity-100 transition-opacity duration-200 ease-in group-has-checked:opacity-0 group-has-checked:duration-100 group-has-checked:ease-out text-red-600 dark:text-red-400 text-[0.5rem]"
+                                                                    >
+                                                                        <i class="fa-solid fa-xmark"></i>
+                                                                    </span>
+                                                                    <span
+                                                                        aria-hidden="true"
+                                                                        class="absolute inset-0 flex size-full items-center justify-center opacity-0 transition-opacity duration-100 ease-out group-has-checked:opacity-100 group-has-checked:duration-200 group-has-checked:ease-in text-green-600 dark:text-green-400 text-[0.5rem]"
+                                                                    >
+                                                                        <i class="fa-solid fa-check"></i>
+                                                                    </span>
+                                                                </span>
+                                                                <input
+                                                                    name="setting"
+                                                                    type="checkbox"
+                                                                    x-model="showMap"
+                                                                    aria-label="Use setting"
+                                                                    class="absolute inset-0 size-full appearance-none focus:outline-hidden"
+                                                                />
+                                                            </div>
+                                                        </label>
+                                                    @endif
+                                                @endcan
+                                            </div>
+                                            <div x-cloak x-show="showMap">
+                                                <div class="h-60 w-full rounded-md overflow-hidden" id="map"></div>
+                                            </div>
+                                            <p x-cloak x-show="!showMap" class="text-xs text-gray-400 dark:text-gray-500 text-center py-8">El mapa está oculto. Actívalo con el switch de arriba.</p>
+                                        </div>
+
+                                        <div class="rounded-lg border border-gray-200 dark:border-lits-blue-450 p-4">
+                                            <p class="text-sm font-semibold text-gray-900 dark:text-gray-50 mb-3">Notas</p>
+                                            <ul class="divide-y divide-gray-200 dark:divide-lits-blue-450">
+                                                @forelse(collect($shipment->locations)->whereNotNull('comments') as $location)
+                                                    <li class="@if(!$loop->first) pt-3 @endif @if(!$loop->last) pb-3 @endif">
+                                                        <p class="text-sm text-gray-700 dark:text-gray-300">{{$location->comments}}</p>
+                                                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5"><time datetime="{{$location->location_date->isoFormat('YYYY-MM-DD')}}">{{$location->location_date->isoFormat('D MMM YYYY')}}&nbsp;&nbsp;{{$location->location_date->isoFormat('h:mm a')}}</time></p>
+                                                    </li>
+                                                @empty
+                                                    <li>
+                                                        <p class="text-sm text-gray-400 dark:text-gray-500">No hay observaciones en los estatus del embarque.</p>
+                                                    </li>
+                                                @endforelse
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                                     @can('update', $shipment)
                                         <div x-cloak x-show.transition.in.opacity.duration.600="mode === 2">
                                             <form action="{{ route('orders.shipments.locations.store', ['order' => $order->id, 'shipment' => $shipment->id]) }}" method="POST" class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-4" autocomplete="off">
@@ -1145,11 +1225,8 @@
                                         </div>
                                         @endisset
                                     @endcan
-                                </div>
-                            </div>
                         </div>
                     </div>
-                </div>
                 @can('checklist', $shipment)
                 <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 3">
                     <div class="px-4 py-5 sm:px-6">
@@ -1249,7 +1326,7 @@
                         </div>
                         <div class="mt-8">
                             <div class="-mx-4 sm:mx-0 overflow-auto">
-                                <div class="bg-white dark:bg-lits-blue-550 shadow-lits-card w-fit h-fit mx-auto border" style="width: 816px;padding: 48px;">
+                                <div class="bg-white shadow-lits-card w-fit h-fit mx-auto border border-gray-200" style="width: 816px;padding: 25px;">
                                     <x-cards.checklist :order="$order" :service="$shipment" :documentTypes="$documentTypes" :milestones="$milestones" />
                                 </div>
                             </div>
@@ -1266,6 +1343,5 @@
                 </div>
                 @endcan
             </div>
-        </div>
     </div>
 </x-layout-app>

@@ -11,7 +11,7 @@
                         {{__('Urgent')}}
                     </span>
                 @endif
-                <h1 class="font-mono text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">{{$order->code}}</h1>
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">{{$order->code}}</h1>
                 <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $order->order_status_id->textColor() }}">
                     <span class="size-1.5 rounded-full {{ $order->order_status_id->dotColor() }}"></span>
                     {{ $order->order_status_id->label() }}
@@ -79,7 +79,7 @@
             <x-alerts.error :message="__('order_errors')" :errors="$errors" class="my-4" />
         @endif
 
-        <div class="mt-5 flex items-center justify-between gap-4 flex-wrap py-4 border-t border-b border-gray-200 dark:border-lits-blue-450">
+        <div class="mt-5 flex items-start justify-between gap-4 flex-wrap py-4 border-t border-b border-gray-200 dark:border-lits-blue-450">
             <div class="flex items-center gap-3">
                 <img src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $order->client->image))]) }}" alt="{{$order->client->trade_name}}" class="object-contain size-11 flex-none rounded-full bg-gray-200 dark:bg-gray-700 outline -outline-offset-1 outline-black/5" />
                 <div>
@@ -87,7 +87,7 @@
                     <div class="text-xs text-gray-500 dark:text-gray-400">{{$order->contact->name}}</div>
                 </div>
             </div>
-            <div class="flex items-center gap-6 flex-wrap">
+            <div class="flex items-start gap-6 flex-wrap">
                 <div>
                     <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
                     <div class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-xs break-words">{{$order->reference}}</div>
@@ -160,7 +160,7 @@
                                 ">{{ $entityLabel }}</div>
                                 <a
                                     href="{{route($service->route . 'show', ['order' => $service->service->order->id, $service->slug => $service->service->id])}}"
-                                    class="font-mono text-sm font-semibold text-gray-900 dark:text-gray-50 hover:text-lits-red-500 mt-0.5 inline-block"
+                                    class="text-sm font-semibold text-gray-900 dark:text-gray-50 hover:text-lits-red-500 mt-0.5 inline-block"
                                 >
                                     @if($service->serviceType == 'Embarque')
                                         @can('create', \App\Models\Order::class)
@@ -175,9 +175,14 @@
                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-xs break-words">{{ $service->service->reference }}</div>
                                 <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{__('shows.created_at')}} {{ $service->service->created_at->isoFormat('DD/MM/YYYY') }}</div>
                                 <div class="flex gap-1 mt-2">
-                                    @foreach([$service->service->serviceClass?->code, $service->service->serviceMode?->code, $service->service->classType?->code, $service->service->serviceLevel?->code] as $code)
+                                    @foreach([
+                                        'Service Class' => $service->service->serviceClass?->code,
+                                        'Service Mode' => $service->service->serviceMode?->code,
+                                        'Class Type' => $service->service->classType?->code,
+                                        'Service Level' => $service->service->serviceLevel?->code,
+                                    ] as $label => $code)
                                         @if($code)
-                                            <span class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500">{{ $code }}</span>
+                                            <span data-tippy-content="{{ $label }}" class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:cursor-help">{{ $code }}</span>
                                         @endif
                                     @endforeach
                                 </div>

@@ -1,12 +1,12 @@
-<div class="flow-root sm:col-span-2">
-    <div class="flex flex-wrap items-center justify-between sm:flex-nowrap mb-8">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-50">Transportes</h3>
+<div class="flow-root">
+    <div class="flex flex-wrap items-center justify-between sm:flex-nowrap mb-3">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-50">Transportes</h3>
         <div class="flex space-x-2">
             @can('update', $shipment)
                 <a
                     type="button"
                     href="{{route('orders.shipments.transportations.create', ['order' => $order->id, 'shipment' => $shipment->id])}}"
-                    class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                     <i class="fa-regular fa-plus"></i>
                     Agregar transporte
@@ -14,28 +14,28 @@
             @endcan
         </div>
     </div>
-    <div class="overflow-x-auto border border-gray-300 dark:border-gray-600 rounded">
+    <div class="overflow-x-auto border border-gray-200 dark:border-lits-blue-450 rounded-lg">
         <div class="inline-block min-w-full align-middle">
-            <table class="relative min-w-full divide-y divide-gray-300 dark:divide-gray-600">
+            <table class="relative min-w-full divide-y divide-gray-200 dark:divide-lits-blue-450">
                 <thead>
-                <tr class="divide-x divide-gray-200 dark:divide-gray-700">
-                    <th scope="col" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-3">Proveedor</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">Unit Eco. Number</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">Tipo de transporte</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">Placas</th>
-                    <th scope="col" class="py-3.5 pr-4 pl-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pr-3">Acciones</th>
+                <tr>
+                    <th scope="col" class="py-2.5 pr-3 pl-4 text-left text-[11px] font-medium text-gray-500 dark:text-gray-400 sm:pl-3 bg-gray-50 dark:bg-white/[0.02]">Proveedor</th>
+                    <th scope="col" class="px-3 py-2.5 text-left text-[11px] font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02]">Unit Eco. Number</th>
+                    <th scope="col" class="px-3 py-2.5 text-left text-[11px] font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02]">Tipo de transporte</th>
+                    <th scope="col" class="px-3 py-2.5 text-left text-[11px] font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02]">Placas</th>
+                    <th scope="col" class="py-2.5 pr-4 pl-3 text-center text-[11px] font-medium text-gray-500 dark:text-gray-400 sm:pr-3 bg-gray-50 dark:bg-white/[0.02]">Acciones</th>
                 </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-lits-blue-550 divide-y divide-gray-300 dark:divide-gray-600">
+                <tbody class="divide-y divide-gray-200 dark:divide-lits-blue-450">
                 @forelse($shipment->transportations as $transportation)
-                    <tr class="even:bg-gray-50 divide-x divide-gray-200 dark:divide-gray-700">
+                    <tr class="even:bg-gray-50 dark:even:bg-white/[0.02]">
                         <td class="py-4 pr-3 pl-4 text-xs text-gray-500 dark:text-gray-400 sm:pl-3">
                             {{$transportation->agency->company_name}}
                         </td>
                         <td class="px-3 py-4 text-xs text-gray-500 dark:text-gray-400">{{$transportation->unit_eco_number}}</td>
                         <td class="px-3 py-4 text-xs text-gray-500 dark:text-gray-400">{{$transportation->transportation_type}}</td>
                         <td class="px-3 py-4 text-xs text-gray-500 dark:text-gray-400">{{$transportation->plates}}</td>
-                        <td class="py-4 pr-4 pl-3 text-right text-xs font-medium whitespace-nowrap sm:pr-3">
+                        <td class="py-4 pr-4 pl-3 text-center text-xs font-medium whitespace-nowrap sm:pr-3">
                             <div class="flex items-center justify-center gap-x-1">
                                 {{--<a
                                     href='{{route('orders.shipments.transportations.show', [ 'order' => $order->id, 'shipment' => $shipment->id, 'transportation' => $transportation->id ])}}'
@@ -53,7 +53,7 @@
                                         type="button"
                                         @click="openWatch = true"
                                         data-tippy-content="Ver unidad"
-                                        class="size-7 shrink-0 rounded-md bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center font-semibold text-blue-500 dark:text-blue-400 hover:text-blue-800 hover:bg-blue-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
                                     >
                                         <i class="fa-regular fa-eye"></i>
                                     </button>
@@ -142,7 +142,7 @@
                                         target="_blank"
                                         data-tippy-content="Ver enlace"
                                         role="button"
-                                        class="size-7 shrink-0 rounded-md bg-indigo-100 dark:bg-indigo-500/15 flex items-center justify-center font-semibold text-indigo-500 dark:text-indigo-400 hover:text-indigo-800 hover:bg-indigo-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
                                     >
                                         <i class="fa-regular fa-link"></i>
                                     </a>
@@ -152,7 +152,7 @@
                                         href='{{route('orders.shipments.transportations.edit', [ 'order' => $order->id, 'shipment' => $shipment->id, 'transportation' => $transportation->id ])}}'
                                         data-tippy-content="Editar"
                                         role="button"
-                                        class="size-7 shrink-0 rounded-md bg-green-100 dark:bg-green-500/15 flex items-center justify-center font-semibold text-green-500 dark:text-green-400 hover:text-green-800 hover:bg-green-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
                                     </a>
@@ -166,7 +166,7 @@
                                             type="button"
                                             @click="openCancel = true"
                                             data-tippy-content="Cancelar"
-                                            class="size-7 shrink-0 rounded-md bg-red-100 dark:bg-red-500/15 flex items-center justify-center font-semibold text-red-500 dark:text-red-400 hover:text-red-800 hover:bg-red-200 hover:cursor-pointer"
+                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400 hover:cursor-pointer"
                                         >
                                             <i class="fa-regular fa-trash-can"></i>
                                         </button>
