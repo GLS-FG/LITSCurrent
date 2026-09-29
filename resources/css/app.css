@@ -1,6 +1,16 @@
 @import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant user-invalid (&:user-invalid);
+/*
+ * :user-invalid alone only fires once a field's value has actually been
+ * changed and then left empty again (Chrome's interpretation of "the user
+ * interacted with it"). Tabbing or clicking into an empty required field and
+ * leaving it untouched does NOT count as interaction there, so it never
+ * turns red. [data-touched] is set by a small blur/invalid listener in each
+ * drawer's script to cover that case too.
+ */
+@custom-variant touched-invalid (&[data-touched]:invalid);
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

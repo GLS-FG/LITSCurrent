@@ -33,6 +33,16 @@
         {{ $slot }}
         @livewireScripts
         @yield('custom_script')
+        {{--
+            Components (e.g. the drawers in resources/views/components/drawers/)
+            use @push('custom_script') here instead of @section('custom_script'),
+            because a page that already defines its own @section('custom_script')
+            (several show/edit pages do, for maps/tooltips/etc.) would otherwise
+            have that content silently overwritten by the last @section to run.
+            @push always appends, so it's safe to use from a component embedded
+            in any page regardless of what that page defines.
+        --}}
+        @stack('custom_script')
         <script>
             document.addEventListener('alpine:init', () => {
                 Alpine.data('sidebar', function () {

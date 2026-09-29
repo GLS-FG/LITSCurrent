@@ -19,6 +19,7 @@ use App\Models\OrderImport;
 use App\Models\OrderProduct;
 use App\Models\OrderShipment;
 use App\Models\OrderStatus;
+use App\Models\ServiceClass;
 use App\Models\WarehouseStorage;
 use App\Notifications\OrderUpdate;
 use App\View\Helpers\Service;
@@ -291,7 +292,11 @@ class OrderController extends Controller
         return view('order.show', [
             'order' => $order,
             'statuses' => OrderStatus::all(),
-            'services' => $this->getOrderServices($order)
+            'services' => $this->getOrderServices($order),
+            'serviceClasses' => ServiceClass::where('service_type_id', 1)->get(),
+            'defaultServiceClass' => ServiceClass::where('service_type_id', 1)->first(),
+            'instructionsOne' => "*no chain allowed, use belt/strap to secure cargo ** please make loading appointment & confirm with supplier NON‐HAZ. Included",
+            'instructionsTwo' => '** Truck/Driver must meet security requirement for delivery to site*** need 24 hr alert before delivery ** can go straight to site through "Caseta de Vigilancia ** NO TAX APPLICABLE WHEN BILL TO GLS GROUP MEXICO',
         ]);
     }
 

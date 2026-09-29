@@ -271,7 +271,9 @@ class OrderShipmentController extends Controller
             'documentTypes' => $documentTypes,
             'transportationStatuses' => TransportationStatus::all(),
             'mapAvailable' => $mapAvailable,
-            'mapLocations' => $mapLocations
+            'mapLocations' => $mapLocations,
+            'serviceClasses' => ServiceClass::where('service_type_id', 1)->get(),
+            'defaultServiceClass' => ServiceClass::where('service_type_id', 1)->first(),
         ]);
     }
 

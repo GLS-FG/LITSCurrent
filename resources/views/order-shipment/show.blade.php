@@ -390,15 +390,15 @@
             </div>
             <div class="flex items-center gap-1.5 flex-wrap">
                 @can('update', $shipment)
-                    <a
-                        href="{{route('orders.shipments.edit', [ 'order' => $order->id, 'shipment' => $shipment->id ])}}"
+                    <button
+                        type="button"
+                        @click="window.dispatchEvent(new CustomEvent('open-edit-shipment-drawer'))"
                         data-tippy-content="{{__('shows.edit_service')}}"
-                        role="button"
-                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
                     >
                         <i class="fa-regular fa-pen-to-square"></i>
                         {{__('shows.edit')}}
-                    </a>
+                    </button>
                 @endcan
                 @can('attach', $shipment)
                     <a
@@ -1344,4 +1344,12 @@
                 @endcan
             </div>
     </div>
+    @can('update', $shipment)
+        <x-drawers.edit-shipment
+            :order="$order"
+            :shipment="$shipment"
+            :serviceClasses="$serviceClasses"
+            :defaultServiceClass="$defaultServiceClass"
+        />
+    @endcan
 </x-layout-app>

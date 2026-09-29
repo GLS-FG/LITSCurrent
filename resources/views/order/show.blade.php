@@ -75,7 +75,14 @@
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
-        @if ($errors->any())
+        {{--
+            Errors from the "Agregar embarque" drawer's form also land in this
+            page's $errors bag (Laravel redirects failed validation back to the
+            referring page). The drawer already shows them itself, so this
+            page's own generic alert is suppressed for that case to avoid
+            showing the same errors twice.
+        --}}
+        @if ($errors->any() && ! ($errors->has('ship_from') || $errors->has('service_class_id')))
             <x-alerts.error :message="__('order_errors')" :errors="$errors" class="my-4" />
         @endif
 
@@ -264,4 +271,13 @@
             </div>
         </div>
     </div>
+    @can('update', $order)
+        <x-drawers.add-shipment
+            :order="$order"
+            :serviceClasses="$serviceClasses"
+            :defaultServiceClass="$defaultServiceClass"
+            :instructionsOne="$instructionsOne"
+            :instructionsTwo="$instructionsTwo"
+        />
+    @endcan
 </x-layout-app>

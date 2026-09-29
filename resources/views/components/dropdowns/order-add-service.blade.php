@@ -57,10 +57,17 @@
         x-transition:leave-end="transform opacity-0 scale-95"
     >
         <div class="py-1" role="none">
-            <a href="{{route('orders.shipments.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1" id="menu-item-1">
+            <button
+                type="button"
+                @click="closeDropdown(); window.dispatchEvent(new CustomEvent('open-add-shipment-drawer'))"
+                class="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer"
+                role="menuitem"
+                tabindex="-1"
+                id="menu-item-1"
+            >
                 <i class="fa-regular fa-route text-lg mr-3"></i>
                 {{__('Shipment')}}
-            </a>
+            </button>
             <a href="{{route('orders.imports.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1" id="menu-item-1">
                 <i class="fa-regular fa-person-military-pointing text-lg mr-3"></i>
                 {{__('Custom')}}
