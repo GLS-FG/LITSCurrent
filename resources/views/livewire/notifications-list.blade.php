@@ -85,10 +85,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <ul role="list" class="bg-gray-100 dark:bg-gray-800 flex-1 overflow-y-auto p-4 space-y-2">
+                            <ul role="list" class="flex-1 overflow-y-auto">
                                 @forelse ($notifications as $notification)
-                                    <li class="bg-white dark:bg-lits-blue-550 border rounded-lg border-gray-300 dark:border-gray-600 py-2 px-3 space-y-1">
-                                        <a href="{{route('orders.shipments.show', ['order' => $notification->orderId, 'shipment' => $notification->id])}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 text-sm">{{ $notification->orderCode }}</a>
+                                    <li class="border-b border-gray-100 dark:border-lits-blue-450/60 px-6 py-3.5 space-y-1.5 hover:bg-gray-50 dark:hover:bg-white/5">
+                                        <a href="{{route('orders.shipments.show', ['order' => $notification->orderId, 'shipment' => $notification->id])}}" class="tabular-nums text-sm font-semibold text-gray-900 dark:text-gray-50 hover:text-lits-red-500">{{ $notification->orderCode }}</a>
                                         <div class="flex items-start text-sm">
                                             <div class="size-8 shrink-0 flex items-center justify-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                                                 <img alt="{{$notification->clientName}}" src="{{ route('clients.logos', [ 'filename' => str_replace(".","_",str_replace("logos/", "", $notification->clientImage))]) }}" />
@@ -96,18 +96,18 @@
                                             <p class="ml-2 text-gray-500 dark:text-gray-400 text-xs line-clamp-2">{{ $notification->contactName }}</p>
                                         </div>
                                         <div x-data="{ isExpanded: false }">
-                                            <button type="button" class="flex items-center justify-start gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 text-sm" x-on:click="isExpanded = ! isExpanded">
+                                            <button type="button" class="flex items-center justify-start gap-1 text-lits-red-500 hover:text-lits-red-600 text-sm hover:cursor-pointer" x-on:click="isExpanded = ! isExpanded">
                                                 Eventos ({{ $notification->pending }})
                                                 <i class="fa-regular fa-angle-down shrink-0 transition" x-bind:class="isExpanded  ?  'rotate-180'  :  ''"></i>
                                             </button>
                                             <ul x-cloak x-show="isExpanded" class="space-y-1.5 mt-1.5">
                                                 @foreach($notification->events as $event)
-                                                    <li class="bg-gray-100 dark:bg-gray-800 rounded py-1 px-2 flex space-x-2 text-sm items-center">
+                                                    <li class="bg-gray-50 dark:bg-lits-blue-600/40 rounded py-1 px-2 flex space-x-2 text-sm items-center">
                                                         @if($event->done)
                                                             <i class="fa-solid fa-square-check text-green-500 dark:text-green-400"></i>
                                                             <p class="line-through text-gray-500 dark:text-gray-400">{{$event->title}}</p>
                                                         @else
-                                                            <i class="fa-regular fa-square"></i>
+                                                            <i class="fa-regular fa-square text-gray-400 dark:text-gray-500"></i>
                                                             <a href="{{route('orders.shipments.show', ['order' => $notification->orderId, 'shipment' => $notification->id, 'activeTab' => 2])}}" class="text-gray-900 dark:text-gray-50 hover:text-gray-700 hover:underline">{{ $event->title }}</a>
                                                         @endif
                                                     </li>
@@ -127,7 +127,7 @@
                                         </div>--}}
                                     </li>
                                 @empty
-                                    <li class="text-center">
+                                    <li class="text-center px-6 py-10">
                                         <i class="mt-2 text-5xl fa-regular fa-mailbox-open-empty"></i>
                                         <p class="mt-2 text-xl text-gray-900 dark:text-gray-50 font-semibold">
                                             Estás al día

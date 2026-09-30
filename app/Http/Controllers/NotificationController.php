@@ -130,8 +130,19 @@ class NotificationController extends Controller
                 $notifications[] = $notification;
             }
         }
+        // Same Activas / Urgentes tabs as the other lists: the counts are taken
+        // before the urgent filter so both tabs always show their own total.
+        $activeCount = count($notifications);
+        $urgentCount = count(array_filter($notifications, fn ($notification) => $notification->service->urgent));
+        $onlyUrgent = $request->boolean('urgent');
+        if ($onlyUrgent) {
+            $notifications = array_values(array_filter($notifications, fn ($notification) => $notification->service->urgent));
+        }
         return view('notification.index', [
-            'notifications' => $notifications
+            'notifications' => $notifications,
+            'activeCount' => $activeCount,
+            'urgentCount' => $urgentCount,
+            'onlyUrgent' => $onlyUrgent,
         ]);
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Requests\OrderProductPostRequest;
 use App\Http\Requests\OrderShipmentPostRequest;
 use App\Http\Requests\OrderShipmentPutRequest;
 use App\Http\Requests\OrderShipmentStatusPutRequest;
+use App\Models\Client;
 use App\Models\Custom;
 use App\Models\CustomAgent;
 use App\Models\DocumentType;
@@ -311,6 +312,7 @@ class OrderShipmentController extends Controller
         return view('order-shipment.show', [
             'order' => $order,
             'shipment' => $shipment,
+            'clients' => Client::select('id', 'name', 'last_name', 'company_name', 'trade_name')->get(),
             'now' => $now,
             'milestones' => $milestones,
             'whatsapp' => urlencode($whatsapp),

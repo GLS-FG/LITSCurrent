@@ -14,6 +14,7 @@ use App\Http\Requests\OrderStatusPutRequest;
 use App\Http\Requests\ProductsCopyPostRequest;
 use App\Models\Client;
 use App\Models\Order;
+use App\Models\OrderCopy;
 use App\Models\OrderExport;
 use App\Models\OrderImport;
 use App\Models\OrderProduct;
@@ -311,7 +312,21 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         Gate::authorize('view', $order);
+
+        // "Duplicar" step 2: CloneController@storeOrder sends the user here with
+        // ?clone_from=<shipment id>. It is honoured only if this order was really
+        // created as a copy of that shipment and the user may clone it.
+        $cloneFrom = null;
+        if (request()->filled('clone_from')) {
+            $source = OrderShipment::find(request('clone_from'));
+            if ($source && Gate::allows('clone', $source)
+                && OrderCopy::where('order_shipment_id', $source->id)->where('order_id', $order->id)->exists()) {
+                $cloneFrom = $source;
+            }
+        }
+
         return view('order.show', [
+            'cloneFrom' => $cloneFrom,
             'order' => $order,
             'statuses' => OrderStatus::all(),
             'clients' => Client::select('id', 'name', 'last_name', 'company_name', 'trade_name')->get(),

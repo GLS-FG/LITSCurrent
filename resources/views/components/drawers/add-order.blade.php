@@ -1,9 +1,25 @@
-@props(['clients'])
+@props(['clients', 'from' => null])
 @php
     // "_drawer" tells this drawer's failed validation apart from any other form
     // that redirects back to the same page.
-    $mine = old('_drawer') === 'order-create';
-    $old = fn ($key) => $mine ? old($key) : null;
+    //
+    // With $from (the closed shipment being duplicated) the drawer is the first
+    // step of "Duplicar": the order data comes prefilled from the source order and
+    // the form posts to the clone route, which creates the new order and then
+    // sends the user on to fill the shipment.
+    $isClone = ! is_null($from);
+    $drawerKey = $isClone ? 'order-clone' : 'order-create';
+    $openEvent = $isClone ? 'open-clone-order-drawer' : 'open-add-order-drawer';
+    $closedEvent = $isClone ? 'clone-order-drawer-closed' : 'add-order-drawer-closed';
+    $prefill = $isClone ? [
+        'client_id' => $from->order->client_id,
+        'contact_id' => $from->order->contact_id,
+        'reference' => $from->order->reference,
+        'carbon_copy' => $from->order->carbon_copy,
+    ] : [];
+
+    $mine = old('_drawer') === $drawerKey;
+    $old = fn ($key) => $mine ? old($key) : ($prefill[$key] ?? null);
 
     $inputBase = 'block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600';
     $required = 'user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400';
@@ -13,14 +29,14 @@
 <div
     class="relative"
     x-data="{ open: {{ $mine && $errors->any() ? 'true' : 'false' }} }"
-    x-init="$watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('add-order-drawer-closed')) })"
-    x-on:open-add-order-drawer.window="open = true"
+    x-init="$watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('{{ $closedEvent }}')) })"
+    x-on:{{ $openEvent }}.window="open = true"
     x-on:keydown.escape.window="open = false"
     x-trap.inert.noscroll="open"
 >
-    <form id="order-create-form" action="{{ route('orders.store') }}" method="POST" class="hidden">
+    <form id="order-create-form" action="{{ $isClone ? route('clone.order.store', ['shipment' => $from]) : route('orders.store') }}" method="POST" class="hidden">
         @csrf
-        <input type="hidden" name="_drawer" value="order-create">
+        <input type="hidden" name="_drawer" value="{{ $drawerKey }}">
     </form>
 
     <div
@@ -53,8 +69,8 @@
                     <i class="fa-regular fa-clipboard-list"></i>
                 </div>
                 <div>
-                    <div class="text-base font-semibold text-gray-900 dark:text-gray-50">Nueva orden de servicio</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Después podrás agregarle embarques, aduanas y almacenes.</div>
+                    <div class="text-base font-semibold text-gray-900 dark:text-gray-50">{{ $isClone ? 'Duplicar embarque' : 'Nueva orden de servicio' }}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $isClone ? 'Paso 1 de 2: se crea la orden nueva de ' . $from->tracking_code . '. Después completas el embarque.' : 'Después podrás agregarle embarques, aduanas y almacenes.' }}</div>
                 </div>
             </div>
             <button type="button" @click="open = false" class="rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
@@ -73,6 +89,10 @@
                 <div class="mt-1 grid grid-cols-1">
                     <select id="order_create_client_id" form="order-create-form" name="client_id" autocomplete="off" required class="{{ $outline('client_id') }} {{ $required }} {{ $selectBase }}">
                         <option value="">Selecciona un cliente</option>
+                        @if($isClone && ! $clients->contains('id', $from->order->client_id))
+                            {{-- The source order's client is no longer in the active list (e.g. deleted): keep it selectable. --}}
+                            <option value="{{ $from->order->client_id }}" @selected($old('client_id') == $from->order->client_id)>{{ $from->order->client->company_name }} / {{ $from->order->client->trade_name }}</option>
+                        @endif
                         @foreach($clients as $client)
                             <option value="{{ $client->id }}" @selected($old('client_id') == $client->id)>{{ $client->company_name }} / {{ $client->trade_name }}</option>
                         @endforeach
@@ -123,12 +143,12 @@
 
         <div class="flex items-center justify-end gap-3 border-t border-gray-200 dark:border-lits-blue-450 px-6 py-4">
             <button type="button" @click="open = false" class="text-sm font-semibold text-gray-900 dark:text-gray-50 hover:cursor-pointer">Cancelar</button>
-            <button type="submit" form="order-create-form" class="rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">Crear orden</button>
+            <button type="submit" form="order-create-form" class="rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">{{ $isClone ? 'Crear orden y continuar' : 'Crear orden' }}</button>
         </div>
     </div>
 </div>
 
-<x-drawers.email-list-validation id="order_create_carbon_copy" :events="['add-order-drawer-closed']" />
+<x-drawers.email-list-validation id="order_create_carbon_copy" :events="[$closedEvent]" />
 
 @push('custom_script')
     <script type="module">
@@ -203,7 +223,7 @@
                 reference: $('#order_create_reference').val(),
                 carbon_copy: $('#order_create_carbon_copy').val(),
             };
-            window.addEventListener('add-order-drawer-closed', function () {
+            window.addEventListener(@js($closedEvent), function () {
                 $client.val(snapshot.client_id);
                 $('#order_create_reference').val(snapshot.reference);
                 $('#order_create_carbon_copy').val(snapshot.carbon_copy);

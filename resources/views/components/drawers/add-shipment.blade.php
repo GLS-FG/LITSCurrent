@@ -1,7 +1,24 @@
-@props(['order', 'serviceClasses', 'defaultServiceClass', 'instructionsOne', 'instructionsTwo'])
+@props(['order', 'serviceClasses', 'defaultServiceClass', 'instructionsOne', 'instructionsTwo', 'cloneFrom' => null])
+@php
+    // With $cloneFrom (the closed shipment being duplicated) the drawer is the
+    // second step of "Duplicar": it opens by itself on the new order, prefilled
+    // with the source shipment's data (dates stay blank), and posts to the clone
+    // route. Manejo especial is copied from the source and is not editable, like
+    // in every other shipment drawer. Without it the drawer is the plain
+    // "Agregar embarque" one and $prefill is empty, so old() behaves as before.
+    $isClone = ! is_null($cloneFrom);
+    $mine = $isClone && old('_drawer') === 'shipment-clone';
+    $prefill = $isClone ? collect([
+        'reference', 'comments',
+        'origin_country_id', 'origin_state_id', 'origin_city_id', 'ship_from_name', 'ship_from_id', 'ship_from', 'ship_from_link',
+        'destination_country_id', 'destination_state_id', 'destination_city_id', 'ship_to_name', 'ship_to_id', 'ship_to', 'ship_to_link',
+        'service_class_id', 'service_mode_id', 'class_type_id', 'service_level_id',
+        'oversize', 'hazardous_material', 'refrigerated', 'insurance', 'tarps',
+    ])->mapWithKeys(fn ($field) => [$field => $cloneFrom->{$field}])->all() : [];
+@endphp
 <div
     class="relative"
-    x-data="{ open: {{ ! old('_drawer') && ($errors->has('ship_from') || $errors->has('service_class_id')) ? 'true' : 'false' }} }"
+    x-data="{ open: {{ $isClone ? 'true' : (! old('_drawer') && ($errors->has('ship_from') || $errors->has('service_class_id')) ? 'true' : 'false') }} }"
     x-init="$watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('add-shipment-drawer-closed')) })"
     x-on:open-add-shipment-drawer.window="open = true"
     x-on:keydown.escape.window="open = false"
@@ -17,8 +34,11 @@
         Every field below is associated to this form via the `form` attribute
         instead of DOM nesting, which HTML5 supports natively.
     --}}
-    <form id="shipment-create-form" action="{{route('orders.shipments.store', ['order' => $order])}}" method="POST" class="hidden">
+    <form id="shipment-create-form" action="{{ $isClone ? route('clone.order.shipments.store', ['shipment' => $cloneFrom, 'order' => $order]) : route('orders.shipments.store', ['order' => $order]) }}" method="POST" class="hidden">
         @csrf
+        @if($isClone)
+            <input type="hidden" name="_drawer" value="shipment-clone">
+        @endif
     </form>
 
     <div
@@ -51,8 +71,8 @@
                                     <i class="fa-regular fa-route"></i>
                                 </div>
                                 <div>
-                                    <div class="text-base font-semibold text-gray-900 dark:text-gray-50">Agregar embarque</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{$order->code}} &middot; {{$order->client->trade_name}}</div>
+                                    <div class="text-base font-semibold text-gray-900 dark:text-gray-50">{{ $isClone ? 'Duplicar embarque' : 'Agregar embarque' }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $isClone ? 'Paso 2 de 2 · datos copiados de ' . $cloneFrom->tracking_code . ' · ' : '' }}{{$order->code}} &middot; {{$order->client->trade_name}}</div>
                                 </div>
                             </div>
                             <button type="button" @click="open = false" class="rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
@@ -62,7 +82,7 @@
                         </div>
 
                         <div class="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-6">
-                            @if ($errors->any())
+                            @if ($errors->any() && (! $isClone || $mine))
                                 <x-alerts.error :message="'Para crear el servicio soluciona los siguientes errores:'" :errors="$errors" />
                             @endif
 
@@ -70,7 +90,7 @@
                                 <label for="reference" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Referencia</label>
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Recuerda llenar sólo la información necesaria de la referencia.</p>
                                 <div class="mt-2">
-                                    <textarea id="reference" form="shipment-create-form" name="reference" rows="2" autocomplete="off" required class="@error('reference') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('reference')}}</textarea>
+                                    <textarea id="reference" form="shipment-create-form" name="reference" rows="2" autocomplete="off" required class="@error('reference') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('reference', $prefill['reference'] ?? null)}}</textarea>
                                     @error('reference')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                     @enderror
@@ -90,17 +110,17 @@
                                             <input id="origin_autocomplete" form="shipment-create-form" placeholder="Busca una dirección" name="origin_autocomplete" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
                                             <livewire:search-addresses type="origen" />
                                         </div>
-                                        <input id="origin_country_id" form="shipment-create-form" value="{{old('origin_country_id')}}" name="origin_country_id" type="hidden" />
-                                        <input id="origin_state_id" form="shipment-create-form" value="{{old('origin_state_id')}}" name="origin_state_id" type="hidden" />
-                                        <input id="origin_city_id" form="shipment-create-form" value="{{old('origin_city_id')}}" name="origin_city_id" type="hidden" />
-                                        <input id="ship_from_name" form="shipment-create-form" value="{{old('ship_from_name')}}" name="ship_from_name" type="hidden" />
-                                        <input id="ship_from_id" form="shipment-create-form" value="{{old('ship_from_id')}}" name="ship_from_id" type="hidden" />
+                                        <input id="origin_country_id" form="shipment-create-form" value="{{old('origin_country_id', $prefill['origin_country_id'] ?? null)}}" name="origin_country_id" type="hidden" />
+                                        <input id="origin_state_id" form="shipment-create-form" value="{{old('origin_state_id', $prefill['origin_state_id'] ?? null)}}" name="origin_state_id" type="hidden" />
+                                        <input id="origin_city_id" form="shipment-create-form" value="{{old('origin_city_id', $prefill['origin_city_id'] ?? null)}}" name="origin_city_id" type="hidden" />
+                                        <input id="ship_from_name" form="shipment-create-form" value="{{old('ship_from_name', $prefill['ship_from_name'] ?? null)}}" name="ship_from_name" type="hidden" />
+                                        <input id="ship_from_id" form="shipment-create-form" value="{{old('ship_from_id', $prefill['ship_from_id'] ?? null)}}" name="ship_from_id" type="hidden" />
 
                                         <div class="mt-3">
                                             <label for="ship_from" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Dirección de recolección</label>
                                             <div class="mt-1">
-                                                <textarea id="ship_from" form="shipment-create-form" rows="3" name="ship_from" autocomplete="off" required class="@error('ship_from') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('ship_from')}}</textarea>
-                                                <input id="ship_from_link" form="shipment-create-form" value="{{old('ship_from_link')}}" name="ship_from_link" type="hidden" />
+                                                <textarea id="ship_from" form="shipment-create-form" rows="3" name="ship_from" autocomplete="off" required class="@error('ship_from') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('ship_from', $prefill['ship_from'] ?? null)}}</textarea>
+                                                <input id="ship_from_link" form="shipment-create-form" value="{{old('ship_from_link', $prefill['ship_from_link'] ?? null)}}" name="ship_from_link" type="hidden" />
                                                 @error('ship_from')
                                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                                 @enderror
@@ -110,7 +130,7 @@
                                         <div class="mt-3">
                                             <label for="estimated_time_departure" class="block text-xs font-medium text-gray-900 dark:text-gray-50">ETD</label>
                                             <div class="mt-1">
-                                                <input id="estimated_time_departure" form="shipment-create-form" value="{{old('estimated_time_departure')}}" name="estimated_time_departure" type="text" autocomplete="off" placeholder="dd/mm/aaaa" required class="@error('estimated_time_departure') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+                                                <input id="estimated_time_departure" form="shipment-create-form" value="{{old('estimated_time_departure', $prefill['estimated_time_departure'] ?? null)}}" name="estimated_time_departure" type="text" autocomplete="off" placeholder="dd/mm/aaaa" required class="@error('estimated_time_departure') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
                                                 @error('estimated_time_departure')
                                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                                 @enderror
@@ -126,17 +146,17 @@
                                             <input id="destination_autocomplete" form="shipment-create-form" placeholder="Busca una dirección" name="destination_autocomplete" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
                                             <livewire:search-addresses type="destino" />
                                         </div>
-                                        <input id="destination_country_id" form="shipment-create-form" value="{{old('destination_country_id')}}" name="destination_country_id" type="hidden" />
-                                        <input id="destination_state_id" form="shipment-create-form" value="{{old('destination_state_id')}}" name="destination_state_id" type="hidden" />
-                                        <input id="destination_city_id" form="shipment-create-form" value="{{old('destination_city_id')}}" name="destination_city_id" type="hidden" />
-                                        <input id="ship_to_name" form="shipment-create-form" value="{{old('ship_to_name')}}" name="ship_to_name" type="hidden" />
-                                        <input id="ship_to_id" form="shipment-create-form" value="{{old('ship_to_id')}}" name="ship_to_id" type="hidden" />
+                                        <input id="destination_country_id" form="shipment-create-form" value="{{old('destination_country_id', $prefill['destination_country_id'] ?? null)}}" name="destination_country_id" type="hidden" />
+                                        <input id="destination_state_id" form="shipment-create-form" value="{{old('destination_state_id', $prefill['destination_state_id'] ?? null)}}" name="destination_state_id" type="hidden" />
+                                        <input id="destination_city_id" form="shipment-create-form" value="{{old('destination_city_id', $prefill['destination_city_id'] ?? null)}}" name="destination_city_id" type="hidden" />
+                                        <input id="ship_to_name" form="shipment-create-form" value="{{old('ship_to_name', $prefill['ship_to_name'] ?? null)}}" name="ship_to_name" type="hidden" />
+                                        <input id="ship_to_id" form="shipment-create-form" value="{{old('ship_to_id', $prefill['ship_to_id'] ?? null)}}" name="ship_to_id" type="hidden" />
 
                                         <div class="mt-3">
                                             <label for="ship_to" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Dirección de entrega</label>
                                             <div class="mt-1">
-                                                <textarea id="ship_to" form="shipment-create-form" rows="3" name="ship_to" autocomplete="off" required class="@error('ship_to') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('ship_to')}}</textarea>
-                                                <input id="ship_to_link" form="shipment-create-form" value="{{old('ship_to_link')}}" name="ship_to_link" type="hidden" />
+                                                <textarea id="ship_to" form="shipment-create-form" rows="3" name="ship_to" autocomplete="off" required class="@error('ship_to') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('ship_to', $prefill['ship_to'] ?? null)}}</textarea>
+                                                <input id="ship_to_link" form="shipment-create-form" value="{{old('ship_to_link', $prefill['ship_to_link'] ?? null)}}" name="ship_to_link" type="hidden" />
                                                 @error('ship_to')
                                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                                 @enderror
@@ -146,7 +166,7 @@
                                         <div class="mt-3">
                                             <label for="estimated_time_arrival" class="block text-xs font-medium text-gray-900 dark:text-gray-50">ETA</label>
                                             <div class="mt-1">
-                                                <input id="estimated_time_arrival" form="shipment-create-form" value="{{old('estimated_time_arrival')}}" name="estimated_time_arrival" type="text" autocomplete="off" placeholder="dd/mm/aaaa" required class="@error('estimated_time_arrival') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+                                                <input id="estimated_time_arrival" form="shipment-create-form" value="{{old('estimated_time_arrival', $prefill['estimated_time_arrival'] ?? null)}}" name="estimated_time_arrival" type="text" autocomplete="off" placeholder="dd/mm/aaaa" required class="@error('estimated_time_arrival') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
                                                 @error('estimated_time_arrival')
                                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                                 @enderror
@@ -166,7 +186,7 @@
                                         <div class="mt-1 grid grid-cols-1">
                                             <select id="service_class_id" form="shipment-create-form" name="service_class_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
                                                 @foreach($serviceClasses as $service)
-                                                    <option value='{{$service->id}}' @selected(old('service_class_id') == $service->id)>{{$service->name}}</option>
+                                                    <option value='{{$service->id}}' @selected(old('service_class_id', $prefill['service_class_id'] ?? null) == $service->id)>{{$service->name}}</option>
                                                 @endforeach
                                             </select>
                                             <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sm text-gray-500 dark:text-gray-400"></i>
@@ -199,12 +219,12 @@
                                 </div>
                             </div>
 
-                            {{-- Manejo especial: no longer editable from this drawer, always defaults to "No". --}}
-                            <input type="hidden" form="shipment-create-form" name="oversize" value="No" />
-                            <input type="hidden" form="shipment-create-form" name="hazardous_material" value="No" />
-                            <input type="hidden" form="shipment-create-form" name="refrigerated" value="No" />
-                            <input type="hidden" form="shipment-create-form" name="insurance" value="No" />
-                            <input type="hidden" form="shipment-create-form" name="tarps" value="No" />
+                            {{-- Manejo especial: not editable from this drawer. "No" by default, or the source shipment's value when duplicating. --}}
+                            <input type="hidden" form="shipment-create-form" name="oversize" value="{{ old('oversize', $prefill['oversize'] ?? 'No') }}" />
+                            <input type="hidden" form="shipment-create-form" name="hazardous_material" value="{{ old('hazardous_material', $prefill['hazardous_material'] ?? 'No') }}" />
+                            <input type="hidden" form="shipment-create-form" name="refrigerated" value="{{ old('refrigerated', $prefill['refrigerated'] ?? 'No') }}" />
+                            <input type="hidden" form="shipment-create-form" name="insurance" value="{{ old('insurance', $prefill['insurance'] ?? 'No') }}" />
+                            <input type="hidden" form="shipment-create-form" name="tarps" value="{{ old('tarps', $prefill['tarps'] ?? 'No') }}" />
 
                             <div>
                                 <details class="rounded-lg border border-gray-200 dark:border-lits-blue-450 group">
@@ -233,7 +253,7 @@
                                 <label for="comments" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Comentarios</label>
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Información adicional para el embarque.</p>
                                 <div class="mt-1">
-                                    <textarea rows="2" id="comments" form="shipment-create-form" name="comments" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('comments')}}</textarea>
+                                    <textarea rows="2" id="comments" form="shipment-create-form" name="comments" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('comments', $prefill['comments'] ?? null)}}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -244,6 +264,14 @@
                         </div>
     </div>
 </div>
+
+<x-drawers.service-type-cascade
+    prefix=""
+    :classTarget="old('service_class_id', $prefill['service_class_id'] ?? $defaultServiceClass->id)"
+    :modeTarget="old('service_mode_id', $prefill['service_mode_id'] ?? null)"
+    :typeTarget="old('class_type_id', $prefill['class_type_id'] ?? null)"
+    :levelTarget="old('service_level_id', $prefill['service_level_id'] ?? null)"
+/>
 
 @push('custom_script')
     <script type="module">
@@ -340,82 +368,6 @@
                 }
             }
         });
-        var serviceModes;
-        var hasServiceModeOld = false;
-        var hasClassTypeOld = false;
-        var hasServiceLevelOld = false;
-        @if (old('service_mode_id'))
-            hasServiceModeOld = true;
-        @endif
-        @if (old('class_type_id'))
-            hasClassTypeOld = true;
-        @endif
-        @if (old('service_level_id'))
-            hasServiceLevelOld = true;
-        @endif
-
-        const $serviceClass = $('#service_class_id');
-        const $serviceMode = $('#service_mode_id');
-        const $classType = $('#class_type_id');
-        const $serviceLevel = $('#service_level_id');
-        function fetchServiceTypes (service_type) {
-            $.ajax({
-                url: "{{ route('autocomplete.serviceTypes') }}",
-                type: 'GET',
-                dataType: "json",
-                data: { service_type },
-                success: function(data) {
-                    serviceModes = data;
-                    $serviceMode.empty();
-                    for (const serviceMode of serviceModes) {
-                        const serviceModeOption = new Option(serviceMode.name, serviceMode.id);
-                        $serviceMode.append(serviceModeOption);
-                    }
-                    if(hasServiceModeOld === true){
-                        hasServiceModeOld = false;
-                        $serviceMode.val('{{old('service_mode_id')}}').change();
-                    } else {
-                        const firstId = serviceModes[0].id;
-                        $serviceMode.val(firstId).change();
-                    }
-                }
-            });
-        }
-        fetchServiceTypes("{{old('service_class_id', $defaultServiceClass->id)}}")
-        $serviceClass.change(function() {
-            fetchServiceTypes($(this).val());
-        });
-        $serviceMode.change(function() {
-            $classType.empty();
-            const classTypes = serviceModes.find(m => m.id == $serviceMode.val()).class_types;
-            for (const classType of classTypes) {
-                const classTypeOption = new Option(classType.name, classType.id);
-                $classType.append(classTypeOption);
-            }
-            if(hasClassTypeOld === true){
-                hasClassTypeOld = false;
-                $classType.val("{{old('class_type_id')}}").change();
-            } else {
-                const firstId = classTypes[0].id;
-                $classType.val(firstId).change();
-            }
-
-        });
-        $classType.change(function() {
-            $serviceLevel.empty();
-            const serviceLevels = serviceModes.find(m => m.id == $serviceMode.val()).class_types.find(m => m.id == $classType.val()).service_levels;
-            for (const serviceLevel of serviceLevels) {
-                const serviceLevelOption = new Option(serviceLevel.name, serviceLevel.id);
-                $serviceLevel.append(serviceLevelOption);
-            }
-            if(hasServiceLevelOld === true){
-                hasServiceLevelOld = false;
-                $serviceLevel.val("{{old('service_level_id')}}").change();
-            } else {
-                const firstId = serviceLevels[0].id;
-                $serviceLevel.val(firstId).change();
-            }
-        });
         $('#shipment-create-form').on('submit', function(e) {
             const $submitButton = $(this).find('button[type="submit"]');
             if ($submitButton.prop('disabled')) {
@@ -435,10 +387,6 @@
             'destination_city_id', 'ship_to_name', 'ship_to_id', 'ship_to', 'ship_to_link', 'estimated_time_arrival',
             'instructions1', 'instructions2', 'comments'
         ].forEach(function (field) { createFormSnapshot[field] = $('#' + field).val(); });
-        var createCascadeTargets = {
-            cls: "{{old('service_class_id', $defaultServiceClass->id)}}",
-            mode: hasServiceModeOld, type: hasClassTypeOld, level: hasServiceLevelOld
-        };
         window.addEventListener('add-shipment-drawer-closed', function () {
             $('#origin_autocomplete').val('');
             $('#destination_autocomplete').val('');
@@ -448,11 +396,7 @@
             document.querySelectorAll('[form="shipment-create-form"][data-touched]').forEach(function (el) {
                 el.removeAttribute('data-touched');
             });
-            hasServiceModeOld = createCascadeTargets.mode;
-            hasClassTypeOld = createCascadeTargets.type;
-            hasServiceLevelOld = createCascadeTargets.level;
-            $serviceClass.val(createCascadeTargets.cls);
-            fetchServiceTypes(createCascadeTargets.cls);
+            window.dispatchEvent(new CustomEvent('cascade-reset'));
         });
         document.addEventListener('livewire:init', function() {
             Livewire.on('address-selected', (event) => {

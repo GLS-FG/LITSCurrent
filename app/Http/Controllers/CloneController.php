@@ -66,7 +66,7 @@ class CloneController extends Controller
             OrderCopy::create(['order_shipment_id' => $shipment->id, 'order_id' => $order->id ]);
             return $order->id;
         }, 5);
-        return redirect()->route('clone.order.shipments.create', [ 'shipment' => $shipment, 'order' => $newOrderId ]);
+        return redirect()->route('orders.show', [ 'order' => $newOrderId, 'clone_from' => $shipment->id ]);
     }
 
     public function storeShipment(OrderShipment $shipment, Order $order, CloneShipmentPostRequest $request)

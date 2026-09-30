@@ -275,6 +275,7 @@
         <x-drawers.edit-order :order="$order" :clients="$clients" />
         <x-drawers.add-shipment
             :order="$order"
+            :cloneFrom="$cloneFrom"
             :serviceClasses="$serviceClasses"
             :defaultServiceClass="$defaultServiceClass"
             :instructionsOne="$instructionsOne"

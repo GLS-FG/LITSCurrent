@@ -421,15 +421,15 @@
                     Bill Of Lading
                 </a>
                 @can('clone', $shipment)
-                    <a
-                        href="{{route('clone.order.create', [ 'shipment' => $shipment->id ])}}"
+                    <button
+                        type="button"
+                        @click="window.dispatchEvent(new CustomEvent('open-clone-order-drawer'))"
                         data-tippy-content="{{__('shows.duplicate')}}"
-                        role="button"
-                        class="whitespace-nowrap inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        class="whitespace-nowrap inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
                     >
                         <i class="fa-regular fa-copy shrink-0"></i>
                         {{__('shows.duplicate')}}
-                    </a>
+                    </button>
                 @endcan
                 @canany(['update', 'restore'], $shipment)
                     <form action="{{ route('orders.shipments.update.status', ['order' => $order->id, 'shipment' => $shipment->id]) }}" method="POST" class="flex">
@@ -454,7 +454,7 @@
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
-        @if ($errors->any() && old('_drawer') !== 'shipment-edit')
+        @if ($errors->any() && ! in_array(old('_drawer'), ['shipment-edit', 'order-clone']))
             <x-alerts.error :message="__('shows.service_errors')" :errors="$errors" class="my-4" />
         @endif
         <div id="copyAlert" style="display: none" class="mt-2 rounded-md bg-green-50 dark:bg-green-500/10 p-4 border border-green-400">
@@ -1344,6 +1344,9 @@
                 @endcan
             </div>
     </div>
+    @can('clone', $shipment)
+        <x-drawers.add-order :clients="$clients" :from="$shipment" />
+    @endcan
     @can('update', $shipment)
         <x-drawers.edit-shipment
             :order="$order"
