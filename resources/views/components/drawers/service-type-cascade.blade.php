@@ -77,6 +77,17 @@
                 }
             });
 
+            // "{prefix}cascade-set" loads another record's values (detail:
+            // { cls, mode, type, level }) and re-runs the cascade with them.
+            window.addEventListener(prefix + 'cascade-set', function (event) {
+                const d = event.detail;
+                targets.cls = String(d.cls);
+                targets.mode = d.mode == null ? null : String(d.mode);
+                targets.type = d.type == null ? null : String(d.type);
+                targets.level = d.level == null ? null : String(d.level);
+                window.dispatchEvent(new CustomEvent(prefix + 'cascade-reset'));
+            });
+
             window.addEventListener(prefix + 'cascade-reset', function () {
                 useModeTarget = targets.mode !== null;
                 useTypeTarget = targets.type !== null;

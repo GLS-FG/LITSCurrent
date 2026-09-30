@@ -187,10 +187,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/orders/{order}/imports/{import}', [OrderImportController::class, 'show'])->name('orders.imports.show');
+    Route::get('/orders/{order}/imports/{import}/edit-data', [OrderImportController::class, 'editData'])->name('orders.imports.edit-data');
     Route::get('/orders/{order}/shipments/{shipment}', [OrderShipmentController::class, 'show'])->name('orders.shipments.show');
     Route::get('/orders/{order}/shipments/{shipment}/bill-of-landing', [OrderShipmentController::class, 'showBOL'])->name('orders.shipments.bol');
     Route::get('/orders/{order}/shipments/{shipment}/print-bill-of-landing', [OrderShipmentController::class, 'printBOL'])->name('orders.shipments.print');
     Route::get('/orders/{order}/warehouse-storages/{warehouse_storage}', [OrderWarehouseStorageController::class, 'show'])->name('orders.warehouse-storages.show');
+    Route::get('/orders/{order}/warehouse-storages/{warehouse_storage}/edit-data', [OrderWarehouseStorageController::class, 'editData'])->name('orders.warehouse-storages.edit-data');
     Route::get('/orders-history', [OrderController::class, 'history'])->name('orders.history');
     Route::get('/shipments', [OrderShipmentController::class, 'index'])->name('shipments.index');
     Route::get('/warehouse-storages', [OrderWarehouseStorageController::class, 'index'])->name('warehouse-storages.index');

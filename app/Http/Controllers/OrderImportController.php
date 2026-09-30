@@ -118,6 +118,31 @@ class OrderImportController extends Controller
             'activeCount' => $activeCount,
             'urgentCount' => $urgentCount,
             'onlyUrgent' => $onlyUrgent,
+            'serviceClasses' => ServiceClass::where('service_type_id', 2)->get(),
+            'defaultServiceClass' => ServiceClass::where('service_type_id', 2)->first(),
+        ]);
+    }
+
+    /**
+     * Saved values of a customs service, used to fill the edit drawer that the
+     * list page keeps mounted (the drawer is opened without loading the detail).
+     */
+    public function editData(Order $order, OrderImport $import)
+    {
+        abort_unless($import->order_id === $order->id, 404);
+        Gate::authorize('update', $import);
+        return response()->json([
+            'id' => $import->id,
+            'order_id' => $order->id,
+            'tracking_code' => $import->tracking_code,
+            'client' => $order->client->trade_name,
+            'update_url' => route('orders.imports.update', ['order' => $order, 'import' => $import]),
+            'reference' => $import->reference,
+            'comments' => $import->comments,
+            'service_class_id' => $import->service_class_id,
+            'service_mode_id' => $import->service_mode_id,
+            'class_type_id' => $import->class_type_id,
+            'service_level_id' => $import->service_level_id,
         ]);
     }
 

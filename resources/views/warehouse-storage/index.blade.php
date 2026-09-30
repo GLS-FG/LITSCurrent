@@ -145,14 +145,14 @@
                                         <i class="fa-regular fa-eye"></i>
                                     </a>
                                     @can('update', $storage)
-                                        <a
-                                            href="{{route('orders.warehouse-storages.edit', ['order' => $storage->order->id, 'warehouse_storage' => $storage->id])}}"
+                                        <button
+                                            type="button"
+                                            @click="window.dispatchEvent(new CustomEvent('request-edit-warehouse', { detail: { url: '{{ route('orders.warehouse-storages.edit-data', ['order' => $storage->order->id, 'warehouse_storage' => $storage->id]) }}' } }))"
                                             data-tippy-content="Editar"
-                                            role="button"
-                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                         >
                                             <i class="fa-regular fa-pen-to-square"></i>
-                                        </a>
+                                        </button>
                                     @endcan
                                     @can('delete', $storage)
                                         <div
@@ -252,4 +252,12 @@
             </nav>
         @endif
     </section>
+    @if($storages->contains(fn ($storage) => auth()->user()->can('update', $storage)))
+        <x-drawers.warehouse-form
+            mode="edit"
+            :warehouses="$warehouses"
+            :serviceClasses="$serviceClasses"
+            :defaultServiceClass="$defaultServiceClass"
+        />
+    @endif
 </x-layout-app>

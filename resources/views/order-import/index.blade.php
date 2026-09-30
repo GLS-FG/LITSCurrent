@@ -141,14 +141,14 @@
                                         <i class="fa-regular fa-eye"></i>
                                     </a>
                                     @can('update', $import)
-                                        <a
-                                            href="{{route('orders.imports.edit', ['order' => $import->order->id, 'import' => $import->id])}}"
+                                        <button
+                                            type="button"
+                                            @click="window.dispatchEvent(new CustomEvent('request-edit-import', { detail: { url: '{{ route('orders.imports.edit-data', ['order' => $import->order->id, 'import' => $import->id]) }}' } }))"
                                             data-tippy-content="Editar"
-                                            role="button"
-                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                         >
                                             <i class="fa-regular fa-pen-to-square"></i>
-                                        </a>
+                                        </button>
                                     @endcan
                                     @can('delete', $import)
                                         <div
@@ -248,4 +248,10 @@
             </nav>
         @endif
     </section>
+    @if($imports->contains(fn ($import) => auth()->user()->can('update', $import)))
+        <x-drawers.edit-import
+            :serviceClasses="$serviceClasses"
+            :defaultServiceClass="$defaultServiceClass"
+        />
+    @endif
 </x-layout-app>

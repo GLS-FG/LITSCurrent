@@ -116,6 +116,37 @@ class OrderWarehouseStorageController extends Controller
             'activeCount' => $activeCount,
             'urgentCount' => $urgentCount,
             'onlyUrgent' => $onlyUrgent,
+            'warehouses' => Warehouse::all(),
+            'serviceClasses' => ServiceClass::where('service_type_id', 3)->get(),
+            'defaultServiceClass' => ServiceClass::where('service_type_id', 3)->first(),
+        ]);
+    }
+
+    /**
+     * Saved values of a warehouse storage, used to fill the edit drawer that the
+     * list page keeps mounted (the drawer is opened without loading the detail).
+     */
+    public function editData(Order $order, WarehouseStorage $warehouseStorage)
+    {
+        abort_unless($warehouseStorage->order_id === $order->id, 404);
+        Gate::authorize('update', $warehouseStorage);
+        return response()->json([
+            'id' => $warehouseStorage->id,
+            'order_id' => $order->id,
+            'tracking_code' => $warehouseStorage->tracking_code,
+            'client' => $order->client->trade_name,
+            'update_url' => route('orders.warehouse-storages.update', ['order' => $order, 'warehouse_storage' => $warehouseStorage]),
+            'reference' => $warehouseStorage->reference,
+            'warehouse_id' => $warehouseStorage->warehouse_id,
+            'receipt' => $warehouseStorage->receipt,
+            'receipt_date' => $warehouseStorage->receipt_date?->format('d/m/Y'),
+            'document' => $warehouseStorage->document,
+            'document_date' => $warehouseStorage->document_date?->format('d/m/Y'),
+            'comments' => $warehouseStorage->comments,
+            'service_class_id' => $warehouseStorage->service_class_id,
+            'service_mode_id' => $warehouseStorage->service_mode_id,
+            'class_type_id' => $warehouseStorage->class_type_id,
+            'service_level_id' => $warehouseStorage->service_level_id,
         ]);
     }
 

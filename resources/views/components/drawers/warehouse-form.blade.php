@@ -1,4 +1,4 @@
-@props(['mode', 'order', 'warehouses', 'serviceClasses', 'defaultServiceClass', 'storage' => null])
+@props(['mode', 'order' => null, 'warehouses', 'serviceClasses', 'defaultServiceClass', 'storage' => null])
 {{--
     Create ("create") and edit ("edit") drawer for a warehouse storage service.
     Both share the same fields, so they live in one component; $storage is only
@@ -20,7 +20,17 @@
     };
     $date = fn ($value) => is_null($value) ? '' : $value->format('d/m/Y');
 
-    $saved = fn ($field) => $isEdit ? $storage->{$field} : null;
+    $saved = fn ($field) => ($isEdit && $storage) ? $storage->{$field} : null;
+
+    // On the list page no record is loaded up front ($storage is null): the edit
+    // drawer is filled from JSON when a row's edit icon is clicked. After a failed
+    // validation the redirect lands back on the list, so the record is recovered
+    // from the ids the form sent along (cast to int, never trusted as a URL).
+    $recordOrderId = $isEdit ? ($storage ? $order->id : ($mine ? (int) old('_order') : null)) : null;
+    $recordId = $isEdit ? ($storage ? $storage->id : ($mine ? (int) old('_record') : null)) : null;
+    $formAction = $isEdit
+        ? (($recordOrderId && $recordId) ? route('orders.warehouse-storages.update', ['order' => $recordOrderId, 'warehouse_storage' => $recordId]) : '')
+        : route('orders.warehouse-storages.store', ['order' => $order]);
 
     $inputBase = 'block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600';
     $required = 'user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400';
@@ -37,12 +47,16 @@
     x-on:keydown.escape.window="open = false"
     x-trap.inert.noscroll="open"
 >
-    <form id="{{ $formId }}" action="{{ $isEdit ? route('orders.warehouse-storages.update', ['order' => $order, 'warehouse_storage' => $storage]) : route('orders.warehouse-storages.store', ['order' => $order]) }}" method="POST" class="hidden">
+    <form id="{{ $formId }}" action="{{ $formAction }}" method="POST" class="hidden">
         @csrf
         @if($isEdit)
             @method('PUT')
         @endif
         <input type="hidden" name="_drawer" value="{{ $drawerKey }}">
+        @if($isEdit)
+            <input type="hidden" id="{{ $p }}order_id" name="_order" value="{{ $recordOrderId }}">
+            <input type="hidden" id="{{ $p }}record_id" name="_record" value="{{ $recordId }}">
+        @endif
     </form>
 
     <div
@@ -76,7 +90,7 @@
                 </div>
                 <div>
                     <div class="text-base font-semibold text-gray-900 dark:text-gray-50">{{ $isEdit ? 'Editar almacén' : 'Agregar almacén' }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $isEdit ? $storage->tracking_code : $order->code }} &middot; {{$order->client->trade_name}}</div>
+                    <div id="{{ $p }}subtitle" class="text-xs text-gray-500 dark:text-gray-400">{{ $isEdit ? ($storage ? $storage->tracking_code . ' · ' . $order->client->trade_name : '') : $order->code . ' · ' . $order->client->trade_name }}</div>
                 </div>
             </div>
             <button type="button" @click="open = false" class="rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
@@ -243,6 +257,32 @@
                     return;
                 }
                 $submitButton.prop('disabled', true);
+            });
+
+            // List page (edit mode): fill the drawer with the record behind the
+            // clicked row, then open it. The detail page opens it with its own values.
+            if (@js($isEdit)) window.addEventListener('request-edit-warehouse', function (event) {
+                fetch(event.detail.url, { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
+                    .then(function (response) {
+                        if (!response.ok) { throw new Error('HTTP ' + response.status); }
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        document.getElementById(formId).action = data.update_url;
+                        $('#' + p + 'order_id').val(data.order_id);
+                        $('#' + p + 'record_id').val(data.id);
+                        $('#' + p + 'subtitle').text(data.tracking_code + ' · ' + data.client);
+                        fields.forEach(function (field) {
+                            $('#' + p + field).val(data[field] == null ? '' : data[field]);
+                            snapshot[field] = $('#' + p + field).val();
+                        });
+                        window.dispatchEvent(new CustomEvent(p + 'cascade-set', { detail: {
+                            cls: data.service_class_id, mode: data.service_mode_id,
+                            type: data.class_type_id, level: data.service_level_id
+                        } }));
+                        window.dispatchEvent(new CustomEvent('open-edit-warehouse-drawer'));
+                    })
+                    .catch(function (error) { console.error('No se pudo cargar el almacenamiento', error); });
             });
 
             // Closing the drawer without saving discards what was typed: restore
