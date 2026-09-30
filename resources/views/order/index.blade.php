@@ -11,6 +11,7 @@
                 :title="__('Service orders')"
                 :buttonLabel="__('Add service')"
                 :buttonAction="route('orders.create')"
+                buttonEvent="open-add-order-drawer"
                 :objectClass="\App\Models\Order::class"
             />
         @endisset
@@ -194,14 +195,14 @@
                                         <i class="fa-regular fa-paperclip"></i>
                                     </a>
                                     @can('update', $order)
-                                    <a
-                                        href="{{route('orders.edit', ['order' => $order->id])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-order', { detail: { url: '{{ route('orders.edit-data', ['order' => $order->id]) }}' } }))"
                                         data-tippy-content="{{__('indexes.edit')}}"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                     @endcan
                                     @can('delete', $order)
                                         <div
@@ -289,7 +290,7 @@
                             <td colspan="7" class="px-3 py-8 text-sm text-center text-gray-500 dark:text-gray-400">
                                 No hay órdenes de servicio en la base de datos
                                 @can('create', \App\Models\Order::class)
-                                <span>, define una nueva haciendo <a href="{{route('orders.create')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                <span>, define una nueva haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-order-drawer'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                 @endcan
                                 .
                             </td>
@@ -305,4 +306,12 @@
             </nav>
         @endif
     </section>
+    @if($orders->contains(fn ($order) => auth()->user()->can('update', $order)))
+        <x-drawers.edit-order :clients="$clients" />
+    @endif
+    @unless(isset($history))
+        @can('create', \App\Models\Order::class)
+            <x-drawers.add-order :clients="$clients" />
+        @endcan
+    @endunless
 </x-layout-app>

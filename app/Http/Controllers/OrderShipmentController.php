@@ -120,6 +120,54 @@ class OrderShipmentController extends Controller
             'activeCount' => $activeCount,
             'urgentCount' => $urgentCount,
             'onlyUrgent' => $onlyUrgent,
+            'serviceClasses' => ServiceClass::where('service_type_id', 1)->get(),
+            'defaultServiceClass' => ServiceClass::where('service_type_id', 1)->first(),
+        ]);
+    }
+
+    /**
+     * Saved values of a shipment, used to fill the edit drawer that the list
+     * page keeps mounted (the drawer is opened without loading the detail).
+     */
+    public function editData(Order $order, OrderShipment $shipment)
+    {
+        abort_unless($shipment->order_id === $order->id, 404);
+        Gate::authorize('update', $shipment);
+        return response()->json([
+            'id' => $shipment->id,
+            'order_id' => $order->id,
+            'order_code' => $order->code,
+            'client' => $order->client->trade_name,
+            'update_url' => route('orders.shipments.update', ['order' => $order, 'shipment' => $shipment]),
+            'reference' => $shipment->reference,
+            'origin_country_id' => $shipment->origin_country_id,
+            'origin_state_id' => $shipment->origin_state_id,
+            'origin_city_id' => $shipment->origin_city_id,
+            'ship_from_name' => $shipment->ship_from_name,
+            'ship_from_id' => $shipment->ship_from_id,
+            'ship_from' => $shipment->ship_from,
+            'ship_from_link' => $shipment->ship_from_link,
+            'estimated_time_departure' => $shipment->estimated_time_departure?->format('d/m/Y'),
+            'destination_country_id' => $shipment->destination_country_id,
+            'destination_state_id' => $shipment->destination_state_id,
+            'destination_city_id' => $shipment->destination_city_id,
+            'ship_to_name' => $shipment->ship_to_name,
+            'ship_to_id' => $shipment->ship_to_id,
+            'ship_to' => $shipment->ship_to,
+            'ship_to_link' => $shipment->ship_to_link,
+            'estimated_time_arrival' => $shipment->estimated_time_arrival?->format('d/m/Y'),
+            'instructions1' => $shipment->instructions1,
+            'instructions2' => $shipment->instructions2,
+            'comments' => $shipment->comments,
+            'oversize' => $shipment->oversize,
+            'hazardous_material' => $shipment->hazardous_material,
+            'refrigerated' => $shipment->refrigerated,
+            'insurance' => $shipment->insurance,
+            'tarps' => $shipment->tarps,
+            'service_class_id' => $shipment->service_class_id,
+            'service_mode_id' => $shipment->service_mode_id,
+            'class_type_id' => $shipment->class_type_id,
+            'service_level_id' => $shipment->service_level_id,
         ]);
     }
 

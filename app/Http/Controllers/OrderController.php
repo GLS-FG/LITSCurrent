@@ -151,6 +151,7 @@ class OrderController extends Controller
             'activeCount' => $activeCount,
             'urgentCount' => $urgentCount,
             'onlyUrgent' => $onlyUrgent,
+            'clients' => Client::select('id', 'name', 'last_name', 'company_name', 'trade_name')->get(),
         ]);
     }
 
@@ -265,9 +266,29 @@ class OrderController extends Controller
         return view('order.index', [
             'orders' => $orders,
             'index' => route('orders.history'),
-            'history' => true
+            'history' => true,
+            'clients' => Client::select('id', 'name', 'last_name', 'company_name', 'trade_name')->get(),
         ]);
 
+    }
+
+    /**
+     * Saved values of an order, used to fill the edit drawer that the list page
+     * keeps mounted (the drawer is opened without loading the detail).
+     */
+    public function editData(Order $order)
+    {
+        Gate::authorize('update', $order);
+        return response()->json([
+            'id' => $order->id,
+            'code' => $order->code,
+            'update_url' => route('orders.update', ['order' => $order]),
+            'client_id' => $order->client_id,
+            'client_label' => $order->client->company_name . ' / ' . $order->client->trade_name,
+            'contact_id' => $order->contact_id,
+            'reference' => $order->reference,
+            'carbon_copy' => $order->carbon_copy,
+        ]);
     }
 
     public function create()
@@ -293,6 +314,7 @@ class OrderController extends Controller
         return view('order.show', [
             'order' => $order,
             'statuses' => OrderStatus::all(),
+            'clients' => Client::select('id', 'name', 'last_name', 'company_name', 'trade_name')->get(),
             'services' => $this->getOrderServices($order),
             'serviceClasses' => ServiceClass::where('service_type_id', 1)->get(),
             'defaultServiceClass' => ServiceClass::where('service_type_id', 1)->first(),

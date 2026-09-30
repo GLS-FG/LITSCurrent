@@ -454,7 +454,7 @@
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
-        @if ($errors->any())
+        @if ($errors->any() && old('_drawer') !== 'shipment-edit')
             <x-alerts.error :message="__('shows.service_errors')" :errors="$errors" class="my-4" />
         @endif
         <div id="copyAlert" style="display: none" class="mt-2 rounded-md bg-green-50 dark:bg-green-500/10 p-4 border border-green-400">

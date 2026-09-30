@@ -1,15 +1,26 @@
-@props(['order', 'shipment', 'serviceClasses', 'defaultServiceClass'])
+@props(['order' => null, 'shipment' => null, 'serviceClasses', 'defaultServiceClass'])
+@php
+    // On the list page no shipment is loaded up front ($shipment is null): the
+    // drawer is filled from JSON when a row's edit icon is clicked. A blank model
+    // keeps every "$shipment->field" below null-safe until then.
+    $isLoaded = ! is_null($shipment);
+    $shipment ??= new \App\Models\OrderShipment();
+
+    // "_drawer" tells this drawer's failed validation apart from the other forms
+    // that redirect back to the same page. After a failure on the list page the
+    // record is recovered from the ids the form sent along (cast to int, never
+    // trusted as a URL).
+    $mine = old('_drawer') === 'shipment-edit';
+    $recordOrderId = $isLoaded ? $order->id : ($mine ? (int) old('_order') : null);
+    $recordId = $isLoaded ? $shipment->id : ($mine ? (int) old('_record') : null);
+    $formAction = ($recordOrderId && $recordId)
+        ? route('orders.shipments.update', ['order' => $recordOrderId, 'shipment' => $recordId])
+        : '';
+@endphp
 <div
     class="relative"
-    x-data="{ open: {{ (! old('_drawer') && ($errors->has('ship_from') || $errors->has('service_class_id'))) || request()->boolean('edit') ? 'true' : 'false' }} }"
-    x-init="
-        $watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('edit-shipment-drawer-closed')) });
-        if (new URLSearchParams(location.search).has('edit')) {
-            const url = new URL(location.href);
-            url.searchParams.delete('edit');
-            history.replaceState(history.state, '', url);
-        }
-    "
+    x-data="{ open: {{ $mine && $errors->any() ? 'true' : 'false' }} }"
+    x-init="$watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('edit-shipment-drawer-closed')) })"
     x-on:open-edit-shipment-drawer.window="open = true"
     x-on:keydown.escape.window="open = false"
     x-trap.inert.noscroll="open"
@@ -24,9 +35,12 @@
         Every field below is associated to this form via the `form` attribute
         instead of DOM nesting, which HTML5 supports natively.
     --}}
-    <form id="shipment-edit-form" action="{{route('orders.shipments.update', ['order' => $order, 'shipment' => $shipment])}}" method="POST" class="hidden">
+    <form id="shipment-edit-form" action="{{ $formAction }}" method="POST" class="hidden">
         @csrf
         @method('PUT')
+        <input type="hidden" name="_drawer" value="shipment-edit">
+        <input type="hidden" id="edit_order_id" name="_order" value="{{ $recordOrderId }}">
+        <input type="hidden" id="edit_record_id" name="_record" value="{{ $recordId }}">
     </form>
 
     <div
@@ -60,7 +74,7 @@
                 </div>
                 <div>
                     <div class="text-base font-semibold text-gray-900 dark:text-gray-50">Editar embarque</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{{$order->code}} &middot; {{$order->client->trade_name}}</div>
+                    <div id="edit_subtitle" class="text-xs text-gray-500 dark:text-gray-400">{{ $isLoaded ? $order->code . ' · ' . $order->client->trade_name : '' }}</div>
                 </div>
             </div>
             <button type="button" @click="open = false" class="rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
@@ -70,7 +84,7 @@
         </div>
 
         <div class="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-6">
-            @if ($errors->any())
+            @if ($mine && $errors->any())
                 <x-alerts.error :message="'Para editar el servicio soluciona los siguientes errores:'" :errors="$errors" />
             @endif
 
@@ -253,6 +267,14 @@
     </div>
 </div>
 
+<x-drawers.service-type-cascade
+    prefix="edit_"
+    :classTarget="old('service_class_id', is_null($shipment->service_class_id) ? $defaultServiceClass->id : $shipment->service_class_id)"
+    :modeTarget="old('service_mode_id', $shipment->service_mode_id)"
+    :typeTarget="old('class_type_id', $shipment->class_type_id)"
+    :levelTarget="old('service_level_id', $shipment->service_level_id)"
+/>
+
 @push('custom_script')
     <script type="module">
         $('#edit_estimated_time_departure').datepicker({ dateFormat: 'dd/mm/yy' });
@@ -348,81 +370,6 @@
                 }
             }
         });
-        var editServiceModes;
-        var hasEditServiceModeOld = true;
-        var hasEditClassTypeOld = true;
-        var hasEditServiceLevelOld = true;
-
-        // These represent the shipment's real, saved values (or old() input
-        // after a failed validation redirect) — the cascade always falls back
-        // to picking the first option once these one-shot flags are spent, so
-        // resetEditForm() below re-arms them to restore this exact state.
-        var editServiceClassTarget = "{{old('service_class_id', is_null($shipment->service_class_id) ? $defaultServiceClass->id : $shipment->service_class_id)}}";
-        var editServiceModeTarget = "{{old('service_mode_id', is_null($shipment->service_mode_id) ? '1' : $shipment->service_mode_id)}}";
-        var editClassTypeTarget = "{{old('class_type_id', is_null($shipment->class_type_id) ? '1' : $shipment->class_type_id)}}";
-        var editServiceLevelTarget = "{{old('service_level_id', is_null($shipment->service_level_id) ? '1' : $shipment->service_level_id)}}";
-
-        const $editServiceClass = $('#edit_service_class_id');
-        const $editServiceMode = $('#edit_service_mode_id');
-        const $editClassType = $('#edit_class_type_id');
-        const $editServiceLevel = $('#edit_service_level_id');
-        function fetchEditServiceTypes (service_type) {
-            $.ajax({
-                url: "{{ route('autocomplete.serviceTypes') }}",
-                type: 'GET',
-                dataType: "json",
-                data: { service_type },
-                success: function(data) {
-                    editServiceModes = data;
-                    $editServiceMode.empty();
-                    for (const serviceMode of editServiceModes) {
-                        const serviceModeOption = new Option(serviceMode.name, serviceMode.id);
-                        $editServiceMode.append(serviceModeOption);
-                    }
-                    if(hasEditServiceModeOld === true){
-                        hasEditServiceModeOld = false;
-                        $editServiceMode.val(editServiceModeTarget).change();
-                    } else {
-                        const firstId = editServiceModes[0].id;
-                        $editServiceMode.val(firstId).change();
-                    }
-                }
-            });
-        }
-        fetchEditServiceTypes(editServiceClassTarget)
-        $editServiceClass.change(function() {
-            fetchEditServiceTypes($(this).val());
-        });
-        $editServiceMode.change(function() {
-            $editClassType.empty();
-            const classTypes = editServiceModes.find(m => m.id == $editServiceMode.val()).class_types;
-            for (const classType of classTypes) {
-                const classTypeOption = new Option(classType.name, classType.id);
-                $editClassType.append(classTypeOption);
-            }
-            if(hasEditClassTypeOld === true){
-                hasEditClassTypeOld = false;
-                $editClassType.val(editClassTypeTarget).change();
-            } else {
-                const firstId = classTypes[0].id;
-                $editClassType.val(firstId).change();
-            }
-        });
-        $editClassType.change(function() {
-            $editServiceLevel.empty();
-            const serviceLevels = editServiceModes.find(m => m.id == $editServiceMode.val()).class_types.find(m => m.id == $editClassType.val()).service_levels;
-            for (const serviceLevel of serviceLevels) {
-                const serviceLevelOption = new Option(serviceLevel.name, serviceLevel.id);
-                $editServiceLevel.append(serviceLevelOption);
-            }
-            if(hasEditServiceLevelOld === true){
-                hasEditServiceLevelOld = false;
-                $editServiceLevel.val(editServiceLevelTarget).change();
-            } else {
-                const firstId = serviceLevels[0].id;
-                $editServiceLevel.val(firstId).change();
-            }
-        });
         $('#shipment-edit-form').on('submit', function(e) {
             const $submitButton = $(this).find('button[type="submit"]');
             if ($submitButton.prop('disabled')) {
@@ -464,6 +411,37 @@
             tarps: $('#edit_tarps').val(),
         };
 
+        // List page: fill the drawer with the record behind the clicked row,
+        // then open it. The detail page opens it directly with its own values.
+        window.addEventListener('request-edit-shipment', function (event) {
+            fetch(event.detail.url, { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
+                .then(function (response) {
+                    if (!response.ok) { throw new Error('HTTP ' + response.status); }
+                    return response.json();
+                })
+                .then(function (data) {
+                    document.getElementById('shipment-edit-form').action = data.update_url;
+                    $('#edit_order_id').val(data.order_id);
+                    $('#edit_record_id').val(data.id);
+                    $('#edit_subtitle').text(data.order_code + ' · ' + data.client);
+                    $('#edit_origin_autocomplete').val('');
+                    $('#edit_destination_autocomplete').val('');
+                    Object.keys(editFormSnapshot).forEach(function (field) {
+                        $('#edit_' + field).val(data[field] == null ? '' : data[field]);
+                        editFormSnapshot[field] = $('#edit_' + field).val();
+                    });
+                    document.querySelectorAll('[form="shipment-edit-form"][data-touched]').forEach(function (el) {
+                        el.removeAttribute('data-touched');
+                    });
+                    window.dispatchEvent(new CustomEvent('edit_cascade-set', { detail: {
+                        cls: data.service_class_id, mode: data.service_mode_id,
+                        type: data.class_type_id, level: data.service_level_id
+                    } }));
+                    window.dispatchEvent(new CustomEvent('open-edit-shipment-drawer'));
+                })
+                .catch(function (error) { console.error('No se pudo cargar el embarque', error); });
+        });
+
         function resetEditForm() {
             $('#edit_origin_autocomplete').val('');
             $('#edit_destination_autocomplete').val('');
@@ -473,11 +451,7 @@
             document.querySelectorAll('[form="shipment-edit-form"][data-touched]').forEach(function (el) {
                 el.removeAttribute('data-touched');
             });
-            hasEditServiceModeOld = true;
-            hasEditClassTypeOld = true;
-            hasEditServiceLevelOld = true;
-            $editServiceClass.val(editServiceClassTarget);
-            fetchEditServiceTypes(editServiceClassTarget);
+            window.dispatchEvent(new CustomEvent('edit_cascade-reset'));
         }
         window.addEventListener('edit-shipment-drawer-closed', resetEditForm);
         document.addEventListener('livewire:init', function() {

@@ -19,15 +19,15 @@
             </div>
             <div class="flex items-center gap-1.5 flex-wrap">
                 @can('update', $order)
-                    <a
-                        href="{{route('orders.edit', ['order' => $order->id])}}"
+                    <button
+                        type="button"
+                        @click="window.dispatchEvent(new CustomEvent('open-edit-order-drawer'))"
                         data-tippy-content="{{__('shows.edit_order')}}"
-                        role="button"
-                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
                     >
                         <i class="fa-regular fa-pen-to-square"></i>
                         {{__('shows.edit')}}
-                    </a>
+                    </button>
                     <a
                         href="{{route('orders.documents.create', [ 'order' => $order->id ])}}"
                         data-tippy-content="{{__('shows.attach_file')}}"
@@ -272,6 +272,7 @@
         </div>
     </div>
     @can('update', $order)
+        <x-drawers.edit-order :order="$order" :clients="$clients" />
         <x-drawers.add-shipment
             :order="$order"
             :serviceClasses="$serviceClasses"

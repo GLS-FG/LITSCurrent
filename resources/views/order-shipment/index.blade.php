@@ -146,14 +146,14 @@
                                         <i class="fa-regular fa-eye"></i>
                                     </a>
                                     @can('update', $shipment)
-                                        <a
-                                            href="{{route('orders.shipments.show', ['order' => $shipment->order->id, 'shipment' => $shipment->id, 'edit' => 1])}}"
+                                        <button
+                                            type="button"
+                                            @click="window.dispatchEvent(new CustomEvent('request-edit-shipment', { detail: { url: '{{ route('orders.shipments.edit-data', ['order' => $shipment->order->id, 'shipment' => $shipment->id]) }}' } }))"
                                             data-tippy-content="Editar"
-                                            role="button"
-                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                         >
                                             <i class="fa-regular fa-pen-to-square"></i>
-                                        </a>
+                                        </button>
                                     @endcan
                                     @can('delete', $shipment)
                                         <div
@@ -253,4 +253,10 @@
             </nav>
         @endif
     </section>
+    @if($shipments->contains(fn ($shipment) => auth()->user()->can('update', $shipment)))
+        <x-drawers.edit-shipment
+            :serviceClasses="$serviceClasses"
+            :defaultServiceClass="$defaultServiceClass"
+        />
+    @endif
 </x-layout-app>

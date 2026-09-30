@@ -186,9 +186,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/imports', [OrderImportController::class, 'index'])->name('imports.index');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/edit-data', [OrderController::class, 'editData'])->name('orders.edit-data');
     Route::get('/orders/{order}/imports/{import}', [OrderImportController::class, 'show'])->name('orders.imports.show');
     Route::get('/orders/{order}/imports/{import}/edit-data', [OrderImportController::class, 'editData'])->name('orders.imports.edit-data');
     Route::get('/orders/{order}/shipments/{shipment}', [OrderShipmentController::class, 'show'])->name('orders.shipments.show');
+    Route::get('/orders/{order}/shipments/{shipment}/edit-data', [OrderShipmentController::class, 'editData'])->name('orders.shipments.edit-data');
     Route::get('/orders/{order}/shipments/{shipment}/bill-of-landing', [OrderShipmentController::class, 'showBOL'])->name('orders.shipments.bol');
     Route::get('/orders/{order}/shipments/{shipment}/print-bill-of-landing', [OrderShipmentController::class, 'printBOL'])->name('orders.shipments.print');
     Route::get('/orders/{order}/warehouse-storages/{warehouse_storage}', [OrderWarehouseStorageController::class, 'show'])->name('orders.warehouse-storages.show');
