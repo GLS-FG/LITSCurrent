@@ -192,7 +192,10 @@ class OrderWarehouseStorageController extends Controller
             'incoterms' => Incoterm::orderBy('id', 'desc')->get(),
             'statuses' => WarehouseStorageStatus::all(),
             'services' => $this->getOrderServices($order, $warehouseStorage->id),
-            'documentTypes' => $documentTypes
+            'documentTypes' => $documentTypes,
+            'warehouses' => Warehouse::all(),
+            'serviceClasses' => ServiceClass::where('service_type_id', 3)->get(),
+            'defaultServiceClass' => ServiceClass::where('service_type_id', 3)->first(),
         ]);
     }
 

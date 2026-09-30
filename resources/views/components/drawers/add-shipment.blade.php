@@ -1,7 +1,8 @@
 @props(['order', 'serviceClasses', 'defaultServiceClass', 'instructionsOne', 'instructionsTwo'])
 <div
     class="relative"
-    x-data="{ open: {{ $errors->has('ship_from') || $errors->has('service_class_id') ? 'true' : 'false' }} }"
+    x-data="{ open: {{ ! old('_drawer') && ($errors->has('ship_from') || $errors->has('service_class_id')) ? 'true' : 'false' }} }"
+    x-init="$watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('add-shipment-drawer-closed')) })"
     x-on:open-add-shipment-drawer.window="open = true"
     x-on:keydown.escape.window="open = false"
     x-trap.inert.noscroll="open"
@@ -422,6 +423,36 @@
                 return;
             }
             $submitButton.prop('disabled', true);
+        });
+
+        // Closing the drawer without saving discards what was typed: restore
+        // the values the server rendered (blank, or old() input after a failed
+        // validation), taken once before any editing.
+        var createFormSnapshot = {};
+        [
+            'reference', 'origin_country_id', 'origin_state_id', 'origin_city_id', 'ship_from_name', 'ship_from_id',
+            'ship_from', 'ship_from_link', 'estimated_time_departure', 'destination_country_id', 'destination_state_id',
+            'destination_city_id', 'ship_to_name', 'ship_to_id', 'ship_to', 'ship_to_link', 'estimated_time_arrival',
+            'instructions1', 'instructions2', 'comments'
+        ].forEach(function (field) { createFormSnapshot[field] = $('#' + field).val(); });
+        var createCascadeTargets = {
+            cls: "{{old('service_class_id', $defaultServiceClass->id)}}",
+            mode: hasServiceModeOld, type: hasClassTypeOld, level: hasServiceLevelOld
+        };
+        window.addEventListener('add-shipment-drawer-closed', function () {
+            $('#origin_autocomplete').val('');
+            $('#destination_autocomplete').val('');
+            Object.keys(createFormSnapshot).forEach(function (field) {
+                $('#' + field).val(createFormSnapshot[field]);
+            });
+            document.querySelectorAll('[form="shipment-create-form"][data-touched]').forEach(function (el) {
+                el.removeAttribute('data-touched');
+            });
+            hasServiceModeOld = createCascadeTargets.mode;
+            hasClassTypeOld = createCascadeTargets.type;
+            hasServiceLevelOld = createCascadeTargets.level;
+            $serviceClass.val(createCascadeTargets.cls);
+            fetchServiceTypes(createCascadeTargets.cls);
         });
         document.addEventListener('livewire:init', function() {
             Livewire.on('address-selected', (event) => {

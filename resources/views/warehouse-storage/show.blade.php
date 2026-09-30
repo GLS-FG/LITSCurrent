@@ -36,15 +36,15 @@
             </div>
             <div class="flex items-center gap-1.5 flex-wrap">
                 @can('update', $storage)
-                    <a
-                        href="{{route('orders.warehouse-storages.edit', [ 'order' => $order->id, 'warehouse_storage' => $storage->id ])}}"
+                    <button
+                        type="button"
+                        @click="window.dispatchEvent(new CustomEvent('open-edit-warehouse-drawer'))"
                         data-tippy-content="{{__('shows.edit_service')}}"
-                        role="button"
-                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer"
                     >
                         <i class="fa-regular fa-pen-to-square"></i>
                         {{__('shows.edit')}}
-                    </a>
+                    </button>
                     <a
                         href='{{route('orders.warehouse-storages.documents.create', [ 'order' => $storage->order, 'warehouse_storage' => $storage ])}}'
                         data-tippy-content="{{__('shows.attach_file')}}"
@@ -78,7 +78,7 @@
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
-        @if ($errors->any())
+        @if ($errors->any() && old('_drawer') !== 'warehouse-edit')
             <x-alerts.error :message="'Para editar la órden soluciona los siguientes errores:'" :errors="$errors" class="my-4" />
         @endif
 
@@ -659,4 +659,14 @@
             @endcan
         </div>
     </div>
+    @can('update', $storage)
+        <x-drawers.warehouse-form
+            mode="edit"
+            :order="$order"
+            :storage="$storage"
+            :warehouses="$warehouses"
+            :serviceClasses="$serviceClasses"
+            :defaultServiceClass="$defaultServiceClass"
+        />
+    @endcan
 </x-layout-app>

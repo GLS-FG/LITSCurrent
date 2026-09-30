@@ -222,6 +222,8 @@ class OrderImportController extends Controller
             'statuses' => OrderImportStatus::all(),
             'services' => $this->getOrderServices($order, $import->id),
             'documentTypes' => $documentTypes,
+            'serviceClasses' => ServiceClass::where('service_type_id', 2)->get(),
+            'defaultServiceClass' => ServiceClass::where('service_type_id', 2)->first(),
         ]);
     }
 

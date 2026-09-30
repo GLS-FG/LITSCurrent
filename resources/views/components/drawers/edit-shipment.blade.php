@@ -1,8 +1,15 @@
 @props(['order', 'shipment', 'serviceClasses', 'defaultServiceClass'])
 <div
     class="relative"
-    x-data="{ open: {{ $errors->has('ship_from') || $errors->has('service_class_id') ? 'true' : 'false' }} }"
-    x-init="$watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('edit-shipment-drawer-closed')) })"
+    x-data="{ open: {{ (! old('_drawer') && ($errors->has('ship_from') || $errors->has('service_class_id'))) || request()->boolean('edit') ? 'true' : 'false' }} }"
+    x-init="
+        $watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('edit-shipment-drawer-closed')) });
+        if (new URLSearchParams(location.search).has('edit')) {
+            const url = new URL(location.href);
+            url.searchParams.delete('edit');
+            history.replaceState(history.state, '', url);
+        }
+    "
     x-on:open-edit-shipment-drawer.window="open = true"
     x-on:keydown.escape.window="open = false"
     x-trap.inert.noscroll="open"

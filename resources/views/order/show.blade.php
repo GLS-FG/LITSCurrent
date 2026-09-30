@@ -82,7 +82,7 @@
             page's own generic alert is suppressed for that case to avoid
             showing the same errors twice.
         --}}
-        @if ($errors->any() && ! ($errors->has('ship_from') || $errors->has('service_class_id')))
+        @if ($errors->any() && ! ($errors->has('ship_from') || $errors->has('service_class_id')) && ! old('_drawer'))
             <x-alerts.error :message="__('order_errors')" :errors="$errors" class="my-4" />
         @endif
 
@@ -278,6 +278,18 @@
             :defaultServiceClass="$defaultServiceClass"
             :instructionsOne="$instructionsOne"
             :instructionsTwo="$instructionsTwo"
+        />
+        <x-drawers.add-import
+            :order="$order"
+            :serviceClasses="$importServiceClasses"
+            :defaultServiceClass="$defaultImportServiceClass"
+        />
+        <x-drawers.warehouse-form
+            mode="create"
+            :order="$order"
+            :warehouses="$warehouses"
+            :serviceClasses="$warehouseServiceClasses"
+            :defaultServiceClass="$defaultWarehouseServiceClass"
         />
     @endcan
 </x-layout-app>

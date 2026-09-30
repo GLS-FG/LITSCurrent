@@ -147,7 +147,7 @@
                                     </a>
                                     @can('update', $shipment)
                                         <a
-                                            href="{{route('orders.shipments.edit', ['order' => $shipment->order->id, 'shipment' => $shipment->id])}}"
+                                            href="{{route('orders.shipments.show', ['order' => $shipment->order->id, 'shipment' => $shipment->id, 'edit' => 1])}}"
                                             data-tippy-content="Editar"
                                             role="button"
                                             class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"

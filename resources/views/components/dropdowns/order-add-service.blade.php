@@ -68,14 +68,26 @@
                 <i class="fa-regular fa-route text-lg mr-3"></i>
                 {{__('Shipment')}}
             </button>
-            <a href="{{route('orders.imports.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1" id="menu-item-1">
+            <button
+                type="button"
+                @click="closeDropdown(); window.dispatchEvent(new CustomEvent('open-add-import-drawer'))"
+                class="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer"
+                role="menuitem"
+                tabindex="-1"
+            >
                 <i class="fa-regular fa-person-military-pointing text-lg mr-3"></i>
                 {{__('Custom')}}
-            </a>
-            <a href="{{route('orders.warehouse-storages.create', ['order' => $order->id])}}" class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem" tabindex="-1" id="menu-item-0">
+            </button>
+            <button
+                type="button"
+                @click="closeDropdown(); window.dispatchEvent(new CustomEvent('open-add-warehouse-drawer'))"
+                class="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer"
+                role="menuitem"
+                tabindex="-1"
+            >
                 <i class="fa-regular fa-warehouse text-lg mr-3"></i>
                 {{__('Warehouse')}}
-            </a>
+            </button>
         </div>
     </div>
 </div>
