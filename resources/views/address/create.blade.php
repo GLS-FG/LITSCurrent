@@ -120,7 +120,29 @@
                 }
             };
             input.addEventListener('input', check);
+            input.addEventListener('blur', check);
         }
+
+        function attachSelectValidation(id, message) {
+            const select = document.getElementById(id);
+            if (!select) return;
+            const errorEl = select.nextElementSibling;
+            const check = () => {
+                if (select.value === '') {
+                    errorEl.textContent = message;
+                    select.classList.add('outline-red-500', 'dark:outline-red-500');
+                } else {
+                    errorEl.textContent = '';
+                    select.classList.remove('outline-red-500', 'dark:outline-red-500');
+                }
+            };
+            select.addEventListener('blur', check);
+            select.addEventListener('change', check);
+        }
+
+        attachSelectValidation('country_id', 'Selecciona un país.');
+        attachSelectValidation('state_id', 'Selecciona un estado.');
+        attachSelectValidation('city_id', 'Selecciona una ciudad.');
 
         attachLiveValidation('contact_name', { required: true, min: 3 });
         attachLiveValidation('name', { required: true, min: 3, max: 256 });
