@@ -1,4 +1,13 @@
 @section('title', 'Nuevo usuario')
+@push('custom_script')
+    @include('partials.live-validation')
+    <script type="module">
+        attachLiveValidation('name', { required: true, max: 255 });
+        attachLiveValidation('email', { required: true, email: true });
+        attachLiveValidation('password', { required: true, min: 6 });
+        attachLiveValidation('password-confirm', { required: true, match: 'password', matchMessage: 'Las contraseñas no coinciden.', watch: ['password'] });
+    </script>
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Usuarios' => route('users.index'), 'Nuevo usuario' => '#']" />

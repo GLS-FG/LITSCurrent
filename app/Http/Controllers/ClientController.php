@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClientPostRequest;
 use App\Http\Requests\ClientPutRequest;
 use App\Models\Client;
+use App\Models\Country;
 use App\Models\ClientAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +37,7 @@ class ClientController extends Controller
 
     public function create()
     {
-        return view('client.create');
+        return view('client.create', [ 'countries' => Country::select('id', 'name')->orderBy('name')->get() ]);
     }
 
     public function store(ClientPostRequest $request)

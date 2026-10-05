@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomPostRequest;
 use App\Http\Requests\CustomPutRequest;
+use App\Models\Country;
 use App\Models\Custom;
 use Illuminate\Http\Request;
 
@@ -43,7 +44,7 @@ class CustomController extends Controller
 
     public function create()
     {
-        return view('custom.create');
+        return view('custom.create', [ 'countries' => Country::select('id', 'name')->orderBy('name')->get() ]);
     }
 
     public function store(CustomPostRequest $request)
@@ -59,7 +60,10 @@ class CustomController extends Controller
 
     public function edit(Custom $custom)
     {
-        return view('custom.edit', compact('custom'));
+        return view('custom.edit', [
+            'custom' => $custom,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
+        ]);
     }
 
     public function update(CustomPutRequest $request, Custom $custom)

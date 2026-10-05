@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomAgentPostRequest;
 use App\Http\Requests\CustomAgentPutRequest;
+use App\Models\Country;
 use App\Models\Custom;
 use App\Models\CustomAgent;
 use App\Models\CustomAgentAddress;
@@ -35,7 +36,7 @@ class CustomAgentController extends Controller
 
     public function create()
     {
-        return view('custom.agent.create', [ 'customs' => Custom::all() ]);
+        return view('custom.agent.create', [ 'customs' => Custom::all(), 'countries' => Country::select('id', 'name')->orderBy('name')->get() ]);
     }
 
     public function store(CustomAgentPostRequest $request)

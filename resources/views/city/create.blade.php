@@ -1,69 +1,17 @@
 @section('title', 'Nueva ciudad')
-@section('custom_script')
+@push('custom_script')
+    @include('partials.live-validation')
+    @include('partials.location-selects')
     <script type="module">
-        $('#stte_ctr').autocomplete({
-            minLength: 1,
-            autoFocus: true,
-            source: function( request, response ) {
-                $.ajax({
-                    url: "{{ route('autocomplete.countries') }}",
-                    type: 'GET',
-                    dataType: "json",
-                    data: {
-                        search: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            focus: function(event, ui) {
-                event.preventDefault();
-            },
-            select: function(event, ui) {
-                event.preventDefault();
-                $('#stte_ctr').val(ui.item.label);
-                $('#country_id').val(ui.item.value);
-            },
-            change: function(event, ui) {
-                if($('#stte_ctr').val() === ""){
-                    $('#country_id').val("");
-                }
-            }
-        });
-        $('#cty_stte').autocomplete({
-            minLength: 1,
-            autoFocus: true,
-            source: function( request, response ) {
-                $.ajax({
-                    url: "{{ route('autocomplete.states') }}",
-                    type: 'GET',
-                    dataType: "json",
-                    data: {
-                        search: request.term,
-                        country_id: $('#country_id').val()
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            focus: function(event, ui) {
-                event.preventDefault();
-            },
-            select: function(event, ui) {
-                event.preventDefault();
-                $('#cty_stte').val(ui.item.label);
-                $('#state_id').val(ui.item.value);
-            },
-            change: function(event, ui) {
-                if($('#cty_stte').val() === ""){
-                    $('#state_id').val("");
-                }
-            }
-        });
+        initLocationSelects({ old: { country: @json(old('country_id')), state: @json(old('state_id')) } });
+        attachLiveValidation('name', { required: true, max: 100 });
+        attachLiveValidation('country_id', { required: true, requiredMessage: 'Selecciona un país.' });
+        const newStateChecked = () => document.getElementById('new_state').checked;
+        attachLiveValidation('state_id', { required: true, requiredMessage: 'Selecciona un estado.', when: () => !newStateChecked(), watch: ['new_state'] });
+        attachLiveValidation('new_state_name', { required: true, max: 100, when: newStateChecked, watch: ['new_state'] });
+        attachLiveValidation('new_state_short_name', { required: true, max: 50, when: newStateChecked, watch: ['new_state'] });
     </script>
-@endsection
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Ciudades' => route('cities.index'), 'Nueva ciudad' => '#']" />
@@ -81,7 +29,6 @@
                     toggleNewState() {
                         this.newState = !this.newState;
                         if(this.newState == true){
-                            $refs.ctyStte.value = '';
                             $refs.stateId.value = '';
                         } else {
                             $refs.newStateName.value = '';
@@ -103,19 +50,24 @@
                             </div>
                         </div>
                         <div class="sm:col-span-3">
-                            <label for="stte_ctr" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">P<span class="hidden">avoidautocomplete</span>aís</label>
-                            <div class="mt-2">
-                                <input id="stte_ctr" value="{{old('stte_ctr')}}" name="stte_ctr" placeholder="México" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                <input id="country_id" value="{{old('country_id')}}" name="country_id" type="hidden" />
+                                <label for="country_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">País</label>
+                                <div class="mt-2">
+                                    <select id="country_id" name="country_id" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <option value="">Selecciona un país</option>
+                                        @foreach($countries as $country)
+                                            <option value="{{ $country->id }}" @selected(old('country_id') == $country->id)>{{ $country->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
                         <div class="sm:col-span-3">
-                            <label for="cty_stte" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Es<span class="hidden">avoidautocomplete</span>tado</label>
-                            <div class="mt-2">
-                                <input id="cty_stte" x-ref="ctyStte" value="{{old('cty_stte')}}" x-bind:disabled="newState" name="cty_stte" x-bind:placeholder="newState ? 'Nuevo Estado' : 'Sonora'" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md  px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" :class="{ 'bg-white': !newState, 'bg-gray-100 cursor-not-allowed': newState }">
-                                <input id="state_id" x-ref="stateId" value="{{old('state_id')}}" x-bind:disabled="newState" name="state_id" type="hidden" />
+                                <label for="state_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Estado</label>
+                                <div class="mt-2">
+                                    <select id="state_id" name="state_id" x-ref="stateId" x-bind:disabled="newState" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <option value="">Selecciona un estado</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
                         <div class="sm:col-span-full border-b border-gray-200 dark:border-lits-blue-450"></div>
                         <div class="sm:col-span-full">
                             <div class="flex gap-3">

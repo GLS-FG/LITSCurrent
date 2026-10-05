@@ -1,4 +1,12 @@
 @section('title', 'Nueva clave de pedimento')
+@push('custom_script')
+    @include('partials.live-validation')
+    <script type="module">
+        attachLiveValidation('code', { required: true, max: 3 });
+        attachLiveValidation('description', { required: true, max: 500 });
+        attachLiveValidation('application_assumptions', { required: true, max: 500 });
+    </script>
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Claves de pedimento' => route('petition-codes.index'), 'Nueva clave de pedimento' => '#']" />

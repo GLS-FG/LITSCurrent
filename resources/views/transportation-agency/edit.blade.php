@@ -1,4 +1,17 @@
 @section('title', 'Editar transportista')
+@push('custom_script')
+    @include('partials.live-validation')
+    <script type="module">
+        attachLiveValidation('name', { required: true, max: 100 });
+        attachLiveValidation('company_name', { required: true, max: 200 });
+        attachLiveValidation('rfc', { max: 13 });
+        attachLiveValidation('caat_code', { max: 4 });
+        attachLiveValidation('scac_code', { max: 4 });
+        attachLiveValidation('contact_name', { required: true, max: 100 });
+        attachLiveValidation('phone1', { required: true, max: 20 });
+        attachLiveValidation('phone2', { max: 20 });
+    </script>
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Transportistas' => route('transportation-agencies.index'), $agency->name => route('transportation-agencies.show', ['transportation_agency' => $agency]), 'Editar transportista' => '#']" />

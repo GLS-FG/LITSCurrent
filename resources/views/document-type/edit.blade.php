@@ -1,4 +1,10 @@
 @section('title', 'Editar Tipo de documento')
+@push('custom_script')
+    @include('partials.live-validation')
+    <script type="module">
+        attachLiveValidation('name', { required: true });
+    </script>
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Tipos de documentos' => route('document-types.index'), 'Editar Tipo de documento' => '#']" />

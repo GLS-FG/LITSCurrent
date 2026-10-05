@@ -1,4 +1,13 @@
 @section('title', 'Editar almacen')
+@push('custom_script')
+    @include('partials.live-validation')
+    <script type="module">
+        attachLiveValidation('name', { required: true, max: 255 });
+        attachLiveValidation('contact_name', { required: true, max: 255 });
+        attachLiveValidation('phone1', { required: true, max: 20 });
+        attachLiveValidation('phone2', { max: 20 });
+    </script>
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Almacenes' => route('warehouses.index'), $warehouse->name => route('warehouses.show', ['warehouse' =>  $warehouse]), 'Editar almacen' => '#']" />

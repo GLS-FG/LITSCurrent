@@ -1,4 +1,13 @@
 @section('title', 'Editar usuario')
+@push('custom_script')
+    @include('partials.live-validation')
+    <script type="module">
+        attachLiveValidation('name', { required: true, max: 255 });
+        attachLiveValidation('email', { required: true, email: true });
+        attachLiveValidation('password', { min: 6 });
+        attachLiveValidation('password-confirm', { required: true, match: 'password', matchMessage: 'Las contraseñas no coinciden.', when: () => document.getElementById('password').value !== '' || document.getElementById('password-confirm').value !== '', watch: ['password'] });
+    </script>
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Usuarios' => route('users.index'), 'Editar usuario' => '#']" />

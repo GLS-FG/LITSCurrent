@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CityPostRequest;
 use App\Http\Requests\CityPutRequest;
 use App\Models\City;
+use App\Models\Country;
 use App\Models\State;
 use Illuminate\Http\Request;
 
@@ -39,7 +40,7 @@ class CityController extends Controller
 
     public function create()
     {
-        return view('city.create');
+        return view('city.create', [ 'countries' => Country::select('id', 'name')->orderBy('name')->get() ]);
     }
 
     public function store(CityPostRequest $request)
@@ -64,7 +65,10 @@ class CityController extends Controller
 
     public function edit(City $city)
     {
-        return view('city.edit', compact('city'));
+        return view('city.edit', [
+            'city' => $city,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
+        ]);
     }
 
     public function update(CityPutRequest $request, City $city)

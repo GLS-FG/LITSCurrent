@@ -1,112 +1,22 @@
 @section('title', 'Nuevo cliente')
-@section('custom_script')
+@push('custom_script')
+    @include('partials.live-validation')
+    @include('partials.location-selects')
     <script type="module">
-        $('#clt_crt').autocomplete({
-            minLength: 1,
-            autoFocus: true,
-            source: function( request, response ) {
-                $.ajax({
-                    url: "{{ route('autocomplete.countries') }}",
-                    type: 'GET',
-                    dataType: "json",
-                    data: {
-                        search: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            focus: function(event) {
-                event.preventDefault();
-            },
-            select: function(event, ui) {
-                event.preventDefault();
-                $('#clt_crt').val(ui.item.label);
-                $('#country_id').val(ui.item.value);
-                $('#clt_stt').val('');
-                $('#state_id').val('');
-                $('#clt_cit').val('');
-                $('#city_id').val('');
-            },
-            change: function() {
-                if($('#clt_crt').val() === ""){
-                    $('#country_id').val("");
-                    $('#clt_stt').val('');
-                    $('#state_id').val('');
-                    $('#clt_cit').val('');
-                    $('#city_id').val('');
-                }
-            }
-        });
-        $('#clt_stt').autocomplete({
-            minLength: 1,
-            autoFocus: true,
-            source: function( request, response ) {
-                $.ajax({
-                    url: "{{ route('autocomplete.states') }}",
-                    type: 'GET',
-                    dataType: "json",
-                    data: {
-                        search: request.term,
-                        country_id: $('#country_id').val()
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            focus: function(event) {
-                event.preventDefault();
-            },
-            select: function(event, ui) {
-                event.preventDefault();
-                $('#clt_stt').val(ui.item.label);
-                $('#state_id').val(ui.item.value);
-                $('#clt_cit').val('');
-                $('#city_id').val('');
-            },
-            change: function() {
-                if($('#clt_stt').val() === ""){
-                    $('#state_id').val("");
-                    $('#clt_cit').val('');
-                    $('#city_id').val('');
-                }
-            }
-        });
-        $('#clt_cit').autocomplete({
-            minLength: 1,
-            autoFocus: true,
-            source: function( request, response ) {
-                $.ajax({
-                    url: "{{ route('autocomplete.cities') }}",
-                    type: 'GET',
-                    dataType: "json",
-                    data: {
-                        search: request.term,
-                        state_id: $('#state_id').val()
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            focus: function(event) {
-                event.preventDefault();
-            },
-            select: function(event, ui) {
-                event.preventDefault();
-                $('#clt_cit').val(ui.item.label);
-                $('#city_id').val(ui.item.value);
-            },
-            change: function() {
-                if($('#clt_cit').val() === ""){
-                    $('#city_id').val("");
-                }
-            }
-        });
+        initLocationSelects({ old: { country: @json(old('country_id')), state: @json(old('state_id')), city: @json(old('city_id')) } });
+        attachLiveValidation('company_name', { required: true });
+        attachLiveValidation('trade_name', { required: true });
+        attachLiveValidation('email', { required: true, email: true });
+        attachLiveValidation('phone1', { required: true, numeric: true, min: 10 });
+        attachLiveValidation('country_id', { required: true, requiredMessage: 'Selecciona un país.' });
+        attachLiveValidation('state_id', { required: true, requiredMessage: 'Selecciona un estado.' });
+        attachLiveValidation('city_id', { required: true, requiredMessage: 'Selecciona una ciudad.' });
+        attachLiveValidation('street_name', { required: true });
+        attachLiveValidation('street_no', { required: true, max: 50 });
+        attachLiveValidation('neighborhood', { required: true, max: 100 });
+        attachLiveValidation('postal_code', { required: true, numeric: true, min: 5 });
     </script>
-@endsection
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Clientes' => route('clients.index'), 'Nuevo cliente' => '#']" />
@@ -171,28 +81,34 @@
                             <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Llena los datos de la dirección del cliente.</p>
                             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 lg:grid-cols-12">
                                 <div class="sm:col-span-2 lg:col-span-4">
-                                    <label for="clt_crt" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">P<span class="hidden">avoidautocomplete</span>aís</label>
-                                    <div class="mt-2">
-                                        <input id="clt_crt" value="{{old('clt_crt')}}" name="clt_crt" type="search" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                        <input id="country_id" value="{{old('country_id')}}" name="country_id" type="hidden" />
+                                        <label for="country_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">País</label>
+                                        <div class="mt-2">
+                                            <select id="country_id" name="country_id" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                <option value="">Selecciona un país</option>
+                                                @foreach($countries as $country)
+                                                    <option value="{{ $country->id }}" @selected(old('country_id') == $country->id)>{{ $country->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
 
                                 <div class="sm:col-span-2 lg:col-span-4">
-                                    <label for="clt_stt" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Es<span class="hidden">avoidautocomplete</span>tado</label>
-                                    <div class="mt-2">
-                                        <input id="clt_stt" value="{{old('clt_stt')}}" name="clt_stt" type="search" autocomplete="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                        <input id="state_id" value="{{old('state_id')}}" name="state_id" type="hidden" />
+                                        <label for="state_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Estado</label>
+                                        <div class="mt-2">
+                                            <select id="state_id" name="state_id" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                <option value="">Selecciona un estado</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
 
                                 <div class="sm:col-span-2 lg:col-span-4">
-                                    <label for="clt_cit" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Ci<span class="hidden">avoidautocomplete</span>udad</label>
-                                    <div class="mt-2">
-                                        <input id="clt_cit" value="{{old('clt_cit')}}" name="clt_cit" type="search" autocomplete="nope" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                        <input id="city_id" value="{{old('city_id')}}" name="city_id" type="hidden" />
+                                        <label for="city_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Ciudad</label>
+                                        <div class="mt-2">
+                                            <select id="city_id" name="city_id" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                                <option value="">Selecciona una ciudad</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
 
                                 <div class="sm:col-span-full">
                                     <label for="street_name" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Calle</label>

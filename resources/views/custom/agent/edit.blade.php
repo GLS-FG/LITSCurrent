@@ -1,4 +1,14 @@
 @section('title', 'Editar agente aduanal')
+@push('custom_script')
+    @include('partials.live-validation')
+    <script type="module">
+        attachLiveValidation('company_name', { required: true, min: 3, max: 200 });
+        attachLiveValidation('name', { required: true, min: 3 });
+        attachLiveValidation('last_name', { required: true });
+        attachLiveValidation('patent', { required: true });
+        attachLiveValidation('phone1', { required: true, numeric: true, min: 10 });
+    </script>
+@endpush
 @section('custom_script')
     <script type="module">
         $('#clt_crt').autocomplete({

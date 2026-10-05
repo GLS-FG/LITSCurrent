@@ -1,69 +1,14 @@
 @section('title', 'Editar ciudad')
-@section('custom_script')
+@push('custom_script')
+    @include('partials.live-validation')
+    @include('partials.location-selects')
     <script type="module">
-        $('#stte_ctr').autocomplete({
-            minLength: 1,
-            autoFocus: true,
-            source: function( request, response ) {
-                $.ajax({
-                    url: "{{ route('autocomplete.countries') }}",
-                    type: 'GET',
-                    dataType: "json",
-                    data: {
-                        search: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            focus: function(event, ui) {
-                event.preventDefault();
-            },
-            select: function(event, ui) {
-                event.preventDefault();
-                $('#stte_ctr').val(ui.item.label);
-                $('#country_id').val(ui.item.value);
-            },
-            change: function(event, ui) {
-                if($('#stte_ctr').val() === ""){
-                    $('#country_id').val("");
-                }
-            }
-        });
-        $('#cty_stte').autocomplete({
-            minLength: 1,
-            autoFocus: true,
-            source: function( request, response ) {
-                $.ajax({
-                    url: "{{ route('autocomplete.states') }}",
-                    type: 'GET',
-                    dataType: "json",
-                    data: {
-                        search: request.term,
-                        country_id: $('#country_id').val()
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            focus: function(event, ui) {
-                event.preventDefault();
-            },
-            select: function(event, ui) {
-                event.preventDefault();
-                $('#cty_stte').val(ui.item.label);
-                $('#state_id').val(ui.item.value);
-            },
-            change: function(event, ui) {
-                if($('#cty_stte').val() === ""){
-                    $('#state_id').val("");
-                }
-            }
-        });
+        initLocationSelects({ old: { country: @json(old('country_id', $city->state->country_id)), state: @json(old('state_id', $city->state_id)) } });
+        attachLiveValidation('name', { required: true, max: 100 });
+        attachLiveValidation('country_id', { required: true, requiredMessage: 'Selecciona un país.' });
+        attachLiveValidation('state_id', { required: true, requiredMessage: 'Selecciona un estado.' });
     </script>
-@endsection
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Ciudades' => route('cities.index'), $city->name => route('cities.show', ['city' => $city]), 'Editar ciudad' => '#']" />
@@ -89,19 +34,24 @@
                             </div>
                         </div>
                         <div class="sm:col-span-3">
-                            <label for="stte_ctr" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">P<span class="hidden">avoidautocomplete</span>aís</label>
-                            <div class="mt-2">
-                                <input id="stte_ctr" value="{{old('stte_ctr', $city->state->country->name)}}" name="stte_ctr" placeholder="México" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                <input id="country_id" value="{{old('country_id', $city->state->country_id)}}" name="country_id" type="hidden" />
+                                <label for="country_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">País</label>
+                                <div class="mt-2">
+                                    <select id="country_id" name="country_id" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <option value="">Selecciona un país</option>
+                                        @foreach($countries as $country)
+                                            <option value="{{ $country->id }}" @selected(old('country_id', $city->state->country_id) == $country->id)>{{ $country->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
                         <div class="sm:col-span-3">
-                            <label for="cty_stte" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Es<span class="hidden">avoidautocomplete</span>tado</label>
-                            <div class="mt-2">
-                                <input id="cty_stte" value="{{old('cty_stte', $city->state->name)}}" name="cty_stte" placeholder="Sonora" type="search" autocomplete="off" autofill="off" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                <input id="state_id" value="{{old('state_id', $city->state_id)}}" name="state_id" type="hidden" />
+                                <label for="state_id" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Estado</label>
+                                <div class="mt-2">
+                                    <select id="state_id" name="state_id" class="block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <option value="">Selecciona un estado</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
                     </div>
                 </div>
                 <div class="px-4 py-4 sm:px-6">

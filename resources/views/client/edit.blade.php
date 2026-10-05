@@ -1,4 +1,13 @@
 @section('title', 'Editar cliente')
+@push('custom_script')
+    @include('partials.live-validation')
+    <script type="module">
+        attachLiveValidation('company_name', { required: true });
+        attachLiveValidation('trade_name', { required: true });
+        attachLiveValidation('email', { required: true, email: true });
+        attachLiveValidation('phone1', { required: true, numeric: true, min: 10 });
+    </script>
+@endpush
 <x-layout-admin>
     <section>
         <x-navigation.breadcrumbs :links="['Clientes' => route('clients.index'), $client->company_name => route('clients.show', [ 'client' => $client]), 'Editar cliente' => '#']" />
