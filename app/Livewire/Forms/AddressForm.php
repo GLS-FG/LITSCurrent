@@ -3,6 +3,9 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Address;
+use App\Rules\UniqueAddress;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
@@ -62,7 +65,19 @@ class AddressForm extends Form
 
     public function store()
     {
+        foreach (['name', 'trade_name', 'contact_name', 'address'] as $field) {
+            $this->$field = Str::upper(UniqueAddress::normalize($this->$field) ?? '');
+        }
+        $this->neighborhood = Str::upper(UniqueAddress::normalize($this->neighborhood) ?? '');
+        $this->postal_code = UniqueAddress::normalize($this->postal_code);
+
         $this->validate();
+
+        (new UniqueAddress($this->city_id, $this->postal_code))
+            ->validate('address', $this->address, function (string $message) {
+                throw ValidationException::withMessages(['form.address' => $message]);
+            });
+
         Address::create($this->all());
         $this->reset();
     }
