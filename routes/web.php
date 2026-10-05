@@ -23,6 +23,7 @@ use App\Http\Controllers\OrderWarehouseStorageLocationController;
 use App\Http\Controllers\OrderWarehouseStoragePrivateDocumentController;
 use App\Http\Controllers\OrderWarehouseStorageProductController;
 use App\Http\Controllers\PrivateDocumentController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PrivateDocumentTypeController;
 use App\Http\Controllers\ServiceClassController;
 use App\Http\Controllers\ServiceLevelController;
@@ -79,6 +80,12 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['guest', 'signed'])->group(function () {
     Route::get('/orders/{order}/shipments/{shipment}/drivers', [OrderShipmentDriverController::class, 'show'])->name('orders.shipments.drivers.show');
     Route::post('/orders/{order}/shipments/{shipment}/drivers', [OrderShipmentDriverController::class, 'store'])->name('orders.shipments.drivers.store');
+});
+
+// Reportes: solo Super Admin
+Route::middleware(['auth', 'role:Super Admin'])->group(function () {
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
 });
 
 Route::middleware(['auth', 'role:Super Admin|Operator Admin|Operator|Warehouse|Billing'])->group(function () {

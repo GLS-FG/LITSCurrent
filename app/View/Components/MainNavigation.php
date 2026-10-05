@@ -20,6 +20,11 @@ class MainNavigation extends Component
         $warehouse = new Navigation('warehouse-storages.index', __('Warehouses'), 'fa-regular fa-warehouse');
         $history = new Navigation('orders.history', __('History'), 'fa-regular fa-clock-rotate-left');
         $this->navigation = array($dashboard, $orders, $shipments, $imports, $warehouse, $history);
+
+        // Reportes: solo Super Admin
+        if (auth()->user()?->hasAnyRole(Navigation::REPORT_ROLES)) {
+            $this->navigation[] = new Navigation('reports.index', __('Reports'), 'fa-regular fa-chart-column');
+        }
     }
 
     public function render(): View|Closure|string
