@@ -87,13 +87,44 @@
                             @endif
 
                             <div>
-                                <label for="reference" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Referencia</label>
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Recuerda llenar sólo la información necesaria de la referencia.</p>
-                                <div class="mt-2">
-                                    <textarea id="reference" form="shipment-create-form" name="reference" rows="2" autocomplete="off" required class="@error('reference') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('reference', $prefill['reference'] ?? null)}}</textarea>
-                                    @error('reference')
-                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                    @enderror
+                                <div class="text-sm font-semibold text-gray-900 dark:text-gray-50">Tipo de servicio</div>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">La selección se acomoda en cascada.</p>
+                                <div class="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-3">
+                                    <div>
+                                        <label for="service_class_id" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Service Class</label>
+                                        <div class="mt-1 grid grid-cols-1">
+                                            <select id="service_class_id" form="shipment-create-form" name="service_class_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+                                                @foreach($serviceClasses as $service)
+                                                    <option value='{{$service->id}}' @selected(old('service_class_id', $prefill['service_class_id'] ?? null) == $service->id)>{{$service->name}}</option>
+                                                @endforeach
+                                            </select>
+                                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sm text-gray-500 dark:text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="service_mode_id" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Service Mode</label>
+                                        <div class="mt-1 grid grid-cols-1">
+                                            <select id="service_mode_id" form="shipment-create-form" name="service_mode_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+                                            </select>
+                                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sm text-gray-500 dark:text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="class_type_id" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Class Type</label>
+                                        <div class="mt-1 grid grid-cols-1">
+                                            <select id="class_type_id" form="shipment-create-form" name="class_type_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+                                            </select>
+                                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sm text-gray-500 dark:text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="service_level_id" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Service Level</label>
+                                        <div class="mt-1 grid grid-cols-1">
+                                            <select id="service_level_id" form="shipment-create-form" name="service_level_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+                                            </select>
+                                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sm text-gray-500 dark:text-gray-400"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -178,44 +209,13 @@
                             </div>
 
                             <div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-gray-50">Tipo de servicio</div>
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">La selección se acomoda en cascada.</p>
-                                <div class="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-3">
-                                    <div>
-                                        <label for="service_class_id" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Service Class</label>
-                                        <div class="mt-1 grid grid-cols-1">
-                                            <select id="service_class_id" form="shipment-create-form" name="service_class_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
-                                                @foreach($serviceClasses as $service)
-                                                    <option value='{{$service->id}}' @selected(old('service_class_id', $prefill['service_class_id'] ?? null) == $service->id)>{{$service->name}}</option>
-                                                @endforeach
-                                            </select>
-                                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sm text-gray-500 dark:text-gray-400"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label for="service_mode_id" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Service Mode</label>
-                                        <div class="mt-1 grid grid-cols-1">
-                                            <select id="service_mode_id" form="shipment-create-form" name="service_mode_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
-                                            </select>
-                                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sm text-gray-500 dark:text-gray-400"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label for="class_type_id" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Class Type</label>
-                                        <div class="mt-1 grid grid-cols-1">
-                                            <select id="class_type_id" form="shipment-create-form" name="class_type_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
-                                            </select>
-                                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sm text-gray-500 dark:text-gray-400"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label for="service_level_id" class="block text-xs font-medium text-gray-900 dark:text-gray-50">Service Level</label>
-                                        <div class="mt-1 grid grid-cols-1">
-                                            <select id="service_level_id" form="shipment-create-form" name="service_level_id" autocomplete="off" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white dark:bg-lits-blue-550 py-1.5 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
-                                            </select>
-                                            <i class="fa-regular fa-angle-down pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end text-sm text-gray-500 dark:text-gray-400"></i>
-                                        </div>
-                                    </div>
+                                <label for="reference" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-50">Referencia</label>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Recuerda llenar sólo la información necesaria de la referencia.</p>
+                                <div class="mt-2">
+                                    <textarea id="reference" form="shipment-create-form" name="reference" rows="2" autocomplete="off" required class="@error('reference') outline-red-400 @else outline-gray-300 dark:outline-gray-600 @enderror user-invalid:outline-red-400 dark:user-invalid:outline-red-400 touched-invalid:outline-red-400 dark:touched-invalid:outline-red-400 block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">{{old('reference', $prefill['reference'] ?? null)}}</textarea>
+                                    @error('reference')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
 
