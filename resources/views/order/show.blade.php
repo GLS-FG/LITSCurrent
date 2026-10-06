@@ -1,21 +1,21 @@
 @section('title', $order->code)
 <x-layout-app>
     <div>
-        <x-navigation.breadcrumbs :links="[__('Orders') => route('orders.index'), $order->code => '#']" />
+        <x-navigation.breadcrumbs :links="[__('Orders') => route('orders.index')]" />
 
         <div class="mt-5 flex items-start justify-between gap-4 flex-wrap">
             <div class="flex items-center gap-2.5 flex-wrap">
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">{{$order->code}}</h1>
+                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset {{ $order->order_status_id->badgeColor() }}">
+                    <span class="size-1.5 rounded-full {{ $order->order_status_id->dotColor() }}"></span>
+                    {{ $order->order_status_id->label() }}
+                </span>
                 @if($order->urgent)
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-lits-red-50 dark:bg-lits-red-500/15 px-2.5 py-1 text-xs font-bold text-lits-red-600 dark:text-lits-red-400">
                         <i class="fa-regular fa-light-emergency-on"></i>
                         {{__('Urgent')}}
                     </span>
                 @endif
-                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">{{$order->code}}</h1>
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $order->order_status_id->textColor() }}">
-                    <span class="size-1.5 rounded-full {{ $order->order_status_id->dotColor() }}"></span>
-                    {{ $order->order_status_id->label() }}
-                </span>
             </div>
             <div class="flex items-center gap-1.5 flex-wrap">
                 @can('update', $order)
@@ -157,14 +157,39 @@
                         ">
                             <i class="{{ $entityIcon }} text-base"></i>
                         </div>
-                        <div class="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_auto] items-start gap-4">
+                        <div class="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_auto] lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_auto] items-start gap-4">
                             <div>
-                                <div class="text-[11px] font-semibold uppercase tracking-wide
-                                    @if($entitySlug === 'shipment') text-entity-shipments
-                                    @elseif($entitySlug === 'warehouse') text-entity-warehouses
-                                    @else text-entity-customs
-                                    @endif
-                                ">{{ $entityLabel }}</div>
+                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                                    <div class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5
+                                        @if($entitySlug === 'shipment') bg-entity-shipments-50 dark:bg-entity-shipments/15
+                                        @elseif($entitySlug === 'warehouse') bg-entity-warehouses-50 dark:bg-entity-warehouses/15
+                                        @else bg-entity-customs-50 dark:bg-entity-customs/15
+                                        @endif
+                                    ">
+                                    <span class="w-[4.75rem] shrink-0 text-[11px] font-semibold uppercase tracking-wide
+                                        @if($entitySlug === 'shipment') text-entity-shipments
+                                        @elseif($entitySlug === 'warehouse') text-entity-warehouses
+                                        @else text-entity-customs
+                                        @endif
+                                    ">{{ $entityLabel }}</span>
+                                    @foreach([
+                                        'Service Class' => $service->service->serviceClass?->code,
+                                        'Service Mode' => $service->service->serviceMode?->code,
+                                        'Class Type' => $service->service->classType?->code,
+                                        'Service Level' => $service->service->serviceLevel?->code,
+                                    ] as $label => $code)
+                                        @if($code)
+                                            <span data-tippy-content="{{ $label }}" class="w-[2.75rem] text-center text-[10.5px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:cursor-help">{{ $code }}</span>
+                                        @else
+                                            <span aria-hidden="true" class="w-[2.75rem]"></span>
+                                        @endif
+                                    @endforeach
+                                    </div>
+                                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset {{ $service->status->badgeColor() }}">
+                                        <span class="size-1.5 rounded-full {{ $service->status->dotColor() }}"></span>
+                                        {{ $service->status->label() }}
+                                    </span>
+                                </div>
                                 <a
                                     href="{{route($service->route . 'show', ['order' => $service->service->order->id, $service->slug => $service->service->id])}}"
                                     class="text-sm font-semibold text-gray-900 dark:text-gray-50 hover:text-lits-red-500 mt-0.5 inline-block"
@@ -179,20 +204,22 @@
                                         {{ $service->service->tracking_code }}
                                     @endif
                                 </a>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-xs break-words">{{ $service->service->reference }}</div>
-                                <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{__('shows.created_at')}} {{ $service->service->created_at->isoFormat('DD/MM/YYYY') }}</div>
-                                <div class="flex gap-1 mt-2">
-                                    @foreach([
-                                        'Service Class' => $service->service->serviceClass?->code,
-                                        'Service Mode' => $service->service->serviceMode?->code,
-                                        'Class Type' => $service->service->classType?->code,
-                                        'Service Level' => $service->service->serviceLevel?->code,
-                                    ] as $label => $code)
-                                        @if($code)
-                                            <span data-tippy-content="{{ $label }}" class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:cursor-help">{{ $code }}</span>
-                                        @endif
-                                    @endforeach
-                                </div>
+                                <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mt-0.5 max-w-xs break-words">{{ $service->service->reference }}</div>
+                                <div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{{__('shows.created_at')}} {{ $service->service->created_at->isoFormat('DD/MM/YYYY') }}</div>
+                            </div>
+
+                            <div class="hidden lg:block min-w-0">
+                                @if($service->serviceType == 'Embarque')
+                                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Ruta</div>
+                                    <div data-tippy-content="{{ $service->service->ship_from }}" class="flex items-center gap-1.5">
+                                        <i class="fa-solid fa-location-dot text-[11px] text-gray-400 dark:text-gray-500"></i>
+                                        <span class="text-xs text-gray-700 dark:text-gray-300 line-clamp-1">{{ $service->service->originCity?->name }}, {{ $service->service->originState?->short_name }}</span>
+                                    </div>
+                                    <div data-tippy-content="{{ $service->service->ship_to }}" class="flex items-center gap-1.5 mt-1">
+                                        <i class="fa-solid fa-flag text-[11px] text-gray-400 dark:text-gray-500"></i>
+                                        <span class="text-xs text-gray-700 dark:text-gray-300 line-clamp-1">{{ $service->service->destinationCity?->name }}, {{ $service->service->destinationState?->short_name }}</span>
+                                    </div>
+                                @endif
                             </div>
 
                             <div>
@@ -200,7 +227,9 @@
                                     <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Transportista</div>
                                     @if($service->service->transportations->isNotEmpty())
                                         <div class="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                                            {{ $service->service->transportations->pluck('agency.company_name')->filter()->implode(', ') }}
+                                            @foreach($service->service->transportations->pluck('agency.company_name')->filter() as $agencyName)
+                                                <div>{{ $agencyName }}</div>
+                                            @endforeach
                                         </div>
                                     @else
                                         <p class="text-xs text-gray-400 dark:text-gray-500">Sin transportista asignado</p>
@@ -229,10 +258,6 @@
                             </div>
 
                             <div class="flex flex-col items-end gap-2 shrink-0">
-                                <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $service->status->textColor() }}">
-                                    <span class="size-1.5 rounded-full {{ $service->status->dotColor() }}"></span>
-                                    {{ $service->status->label() }}
-                                </span>
                                 <div class="flex items-center gap-1">
                                     <a
                                         href="{{route($service->route . 'show', ['order' => $service->service->order->id, $service->slug => $service->service->id, 'activeTab' => 1])}}"

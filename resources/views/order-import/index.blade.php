@@ -91,7 +91,7 @@
                     @forelse($imports as $import)
                         <tr class="group border-b border-gray-100 dark:border-lits-blue-450/60 {{ $import->urgent ? 'bg-lits-red-50/50 dark:bg-lits-red-500/10 shadow-[inset_3px_0_0_var(--color-lits-red-500)] hover:bg-lits-red-50 dark:hover:bg-lits-red-500/15' : 'hover:bg-gray-50 dark:hover:bg-lits-blue-550/60' }}">
                             <td class="py-3.5 pl-4">
-                                <a href="{{route('orders.imports.show', ['order' => $import->order->id, 'import' => $import->id])}}" class="tabular-nums text-sm font-semibold text-gray-900 dark:text-gray-50 hover:text-lits-red-500">{{ $import->tracking_code }}</a>
+                                <a href="{{route('orders.imports.show', ['order' => $import->order->id, 'import' => $import->id])}}" class="tabular-nums text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 hover:underline">{{ $import->tracking_code }}</a>
                                 <div class="text-gray-400 dark:text-gray-500 text-xs mt-0.5">{{ $import->order->code }}</div>
                             </td>
                             <td class="px-3 py-3.5">
@@ -106,7 +106,7 @@
                                 </div>
                             </td>
                             <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400 max-w-xs">
-                                <span class="block truncate">{{ $import->reference }}</span>
+                                <span class="block break-words">{{ $import->reference }}</span>
                             </td>
                             <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                                 {{ $import->created_at->isoFormat('DD/MM/YYYY') }}
@@ -132,14 +132,6 @@
                             </td>
                             <td class="relative py-3.5 pr-4 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                    <a
-                                        href="{{route('orders.imports.show', ['order' => $import->order->id, 'import' => $import->id])}}"
-                                        data-tippy-content="Ver"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                    >
-                                        <i class="fa-regular fa-eye"></i>
-                                    </a>
                                     @can('update', $import)
                                         <button
                                             type="button"

@@ -20,19 +20,19 @@
                 <div class="size-9 shrink-0 rounded-lg flex items-center justify-center bg-entity-warehouses-50 dark:bg-entity-warehouses/15 text-entity-warehouses">
                     <i class="fa-regular fa-warehouse text-base"></i>
                 </div>
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">
+                    {{$storage->tracking_code}}
+                </h1>
+                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset {{ $storage->warehouse_storage_status_id->badgeColor() }}">
+                    <span class="size-1.5 rounded-full {{ $storage->warehouse_storage_status_id->dotColor() }}"></span>
+                    {{ $storage->warehouse_storage_status_id->label() }}
+                </span>
                 @if($storage->urgent)
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-lits-red-50 dark:bg-lits-red-500/15 px-2.5 py-1 text-xs font-bold text-lits-red-600 dark:text-lits-red-400">
                         <i class="fa-regular fa-light-emergency-on"></i>
                         {{__('Urgent')}}
                     </span>
                 @endif
-                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">
-                    {{$storage->tracking_code}}
-                </h1>
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $storage->warehouse_storage_status_id->textColor() }}">
-                    <span class="size-1.5 rounded-full {{ $storage->warehouse_storage_status_id->dotColor() }}"></span>
-                    {{ $storage->warehouse_storage_status_id->label() }}
-                </span>
             </div>
             <div class="flex items-center gap-1.5 flex-wrap">
                 @can('update', $storage)
@@ -143,7 +143,7 @@
 
             <div x-cloak x-show.transition.in.opacity.duration.600="activeTab === 0" class="pt-2">
                 <div class="flex flex-col gap-6">
-                    <div class="flex gap-1.5 flex-wrap">
+                    <div class="flex flex-wrap items-start gap-3">
                         @foreach([
                             'Service Class' => $storage->serviceClass?->code,
                             'Service Mode' => $storage->serviceMode?->code,
@@ -151,7 +151,10 @@
                             'Service Level' => $storage->serviceLevel?->code,
                         ] as $label => $code)
                             @if($code)
-                                <span data-tippy-content="{{ $label }}" class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:cursor-help">{{ $code }}</span>
+                                <div>
+                                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{ $label }}</div>
+                                    <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-entity-warehouses-50 dark:bg-entity-warehouses/15 text-entity-warehouses">{{ $code }}</span>
+                                </div>
                             @endif
                         @endforeach
                     </div>

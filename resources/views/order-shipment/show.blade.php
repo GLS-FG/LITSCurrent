@@ -370,12 +370,6 @@
                 <div class="size-9 shrink-0 rounded-lg flex items-center justify-center bg-entity-shipments-50 dark:bg-entity-shipments/15 text-entity-shipments">
                     <i class="fa-regular fa-route text-base"></i>
                 </div>
-                @if($shipment->urgent)
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-lits-red-50 dark:bg-lits-red-500/15 px-2.5 py-1 text-xs font-bold text-lits-red-600 dark:text-lits-red-400">
-                        <i class="fa-regular fa-light-emergency-on"></i>
-                        {{__('Urgent')}}
-                    </span>
-                @endif
                 <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">
                     @can('create', \App\Models\Order::class)
                         {{$shipment->tracking_code}}
@@ -383,10 +377,16 @@
                         {{$shipment->tracking_number}}
                     @endcan
                 </h1>
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $shipment->order_shipment_status_id->textColor() }}">
+                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset {{ $shipment->order_shipment_status_id->badgeColor() }}">
                     <span class="size-1.5 rounded-full {{ $shipment->order_shipment_status_id->dotColor() }}"></span>
                     {{ $shipment->order_shipment_status_id->label() }}
                 </span>
+                @if($shipment->urgent)
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-lits-red-50 dark:bg-lits-red-500/15 px-2.5 py-1 text-xs font-bold text-lits-red-600 dark:text-lits-red-400">
+                        <i class="fa-regular fa-light-emergency-on"></i>
+                        {{__('Urgent')}}
+                    </span>
+                @endif
             </div>
             <div class="flex items-center gap-1.5 flex-wrap">
                 @can('update', $shipment)
@@ -484,6 +484,21 @@
                     <div class="text-xs text-gray-500 dark:text-gray-400">{{$order->contact->name}}</div>
                 </div>
             </div>
+            <div class="flex flex-wrap items-start gap-3 self-center">
+                @foreach([
+                    'Service Class' => $shipment->serviceClass?->code,
+                    'Service Mode' => $shipment->serviceMode?->code,
+                    'Class Type' => $shipment->classType?->code,
+                    'Service Level' => $shipment->serviceLevel?->code,
+                ] as $label => $code)
+                    @if($code)
+                        <div>
+                            <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{ $label }}</div>
+                            <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-entity-shipments-50 dark:bg-entity-shipments/15 text-entity-shipments hover:cursor-help">{{ $code }}</span>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
             <div class="flex items-start gap-6 flex-wrap">
                 @can('create', \App\Models\Order::class)
                     <div>
@@ -568,21 +583,6 @@
                                 @if($shipment->ship_to_link)
                                     <a href="{{$shipment->ship_to_link}}" target="_blank" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">{{$shipment->ship_to_link}}</a>
                                 @endif
-                            </div>
-                            <div class="md:col-span-1">
-                                <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1.5">Servicio</div>
-                                <div class="flex flex-wrap gap-1.5">
-                                    @foreach([
-                                        'Service Class' => $shipment->serviceClass?->code,
-                                        'Service Mode' => $shipment->serviceMode?->code,
-                                        'Class Type' => $shipment->classType?->code,
-                                        'Service Level' => $shipment->serviceLevel?->code,
-                                    ] as $label => $code)
-                                        @if($code)
-                                            <span data-tippy-content="{{ $label }}" class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:cursor-help">{{ $code }}</span>
-                                        @endif
-                                    @endforeach
-                                </div>
                             </div>
                             <div class="md:col-span-1">
                                 <livewire:shipment-handling :$shipment />
