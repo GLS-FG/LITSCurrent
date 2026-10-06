@@ -12,6 +12,8 @@ use App\Http\Requests\OrderPostRequest;
 use App\Http\Requests\OrderPutRequest;
 use App\Http\Requests\OrderStatusPutRequest;
 use App\Http\Requests\ProductsCopyPostRequest;
+use App\Models\Address;
+use App\Models\ClassType;
 use App\Models\Client;
 use App\Models\Order;
 use App\Models\OrderCopy;
@@ -21,6 +23,8 @@ use App\Models\OrderProduct;
 use App\Models\OrderShipment;
 use App\Models\OrderStatus;
 use App\Models\ServiceClass;
+use App\Models\ServiceLevel;
+use App\Models\ServiceMode;
 use App\Models\Warehouse;
 use App\Models\WarehouseStorage;
 use App\Notifications\OrderUpdate;
@@ -340,7 +344,99 @@ class OrderController extends Controller
             'defaultWarehouseServiceClass' => ServiceClass::where('service_type_id', 3)->first(),
             'instructionsOne' => "*no chain allowed, use belt/strap to secure cargo ** please make loading appointment & confirm with supplier NON‐HAZ. Included",
             'instructionsTwo' => '** Truck/Driver must meet security requirement for delivery to site*** need 24 hr alert before delivery ** can go straight to site through "Caseta de Vigilancia ** NO TAX APPLICABLE WHEN BILL TO GLS GROUP MEXICO',
+            'shipmentSuggestions' => $cloneFrom ? [] : $this->shipmentSuggestions($order),
         ]);
+    }
+
+    /**
+     * Route + service type combinations this order's client has already shipped,
+     * for the "Agregar embarque" drawer. Only shipments of the same client, not
+     * canceled, whose origin/destination are address-book entries still alive.
+     */
+    private function shipmentSuggestions(Order $order): array
+    {
+        $groups = OrderShipment::query()
+            ->join('orders', 'orders.id', '=', 'order_shipments.order_id')
+            ->where('orders.client_id', $order->client_id)
+            ->whereNull('orders.deleted_at')
+            ->whereNotNull('order_shipments.ship_from_id')
+            ->whereNotNull('order_shipments.ship_to_id')
+            ->whereNotNull('order_shipments.service_class_id')
+            ->where('order_shipments.order_shipment_status_id', '!=', OrderShipmentStatusEnum::CANCELED)
+            ->groupBy(
+                'order_shipments.ship_from_id', 'order_shipments.ship_to_id',
+                'order_shipments.service_class_id', 'order_shipments.service_mode_id',
+                'order_shipments.class_type_id', 'order_shipments.service_level_id'
+            )
+            ->selectRaw('order_shipments.ship_from_id, order_shipments.ship_to_id, order_shipments.service_class_id, order_shipments.service_mode_id, order_shipments.class_type_id, order_shipments.service_level_id, COUNT(*) as total, MAX(order_shipments.created_at) as last_at')
+            ->orderByDesc('total')
+            ->orderByDesc('last_at')
+            ->limit(10)
+            ->get();
+
+        if ($groups->isEmpty()) {
+            return [];
+        }
+
+        $addresses = Address::with(['city', 'state', 'country'])
+            ->whereIn('id', $groups->pluck('ship_from_id')->merge($groups->pluck('ship_to_id'))->unique())
+            ->get()
+            ->keyBy('id');
+        $codes = [
+            'class' => ServiceClass::whereIn('id', $groups->pluck('service_class_id')->filter())->pluck('code', 'id'),
+            'mode' => ServiceMode::whereIn('id', $groups->pluck('service_mode_id')->filter())->pluck('code', 'id'),
+            'type' => ClassType::whereIn('id', $groups->pluck('class_type_id')->filter())->pluck('code', 'id'),
+            'level' => ServiceLevel::whereIn('id', $groups->pluck('service_level_id')->filter())->pluck('code', 'id'),
+        ];
+
+        $suggestions = [];
+        foreach ($groups as $group) {
+            $from = $addresses->get($group->ship_from_id);
+            $to = $addresses->get($group->ship_to_id);
+            if (! $from || ! $to) {
+                continue;
+            }
+            $last = Carbon::parse($group->last_at);
+            $suggestions[] = [
+                'key' => $group->ship_from_id . '-' . $group->ship_to_id . '-' . $group->service_class_id . '-' . $group->service_mode_id . '-' . $group->class_type_id . '-' . $group->service_level_id,
+                'from' => $this->suggestionAddress($from),
+                'to' => $this->suggestionAddress($to),
+                'svc' => [
+                    'cls' => $group->service_class_id,
+                    'mode' => $group->service_mode_id,
+                    'type' => $group->class_type_id,
+                    'level' => $group->service_level_id,
+                ],
+                'codes' => array_values(array_filter([
+                    $codes['class']->get($group->service_class_id),
+                    $codes['mode']->get($group->service_mode_id),
+                    $codes['type']->get($group->class_type_id),
+                    $codes['level']->get($group->service_level_id),
+                ])),
+                'total' => (int) $group->total,
+                'last_ts' => $last->timestamp,
+                'last_human' => $last->locale(app()->getLocale())->diffForHumans(),
+            ];
+        }
+        return $suggestions;
+    }
+
+    private function suggestionAddress(Address $address): array
+    {
+        $neighborhood = $address->neighborhood ? ', ' . $address->neighborhood : '';
+        return [
+            'id' => $address->id,
+            'label' => $address->name,
+            'place' => $address->city?->name . ', ' . $address->state?->short_name,
+            'country_id' => $address->country_id,
+            'state_id' => $address->state_id,
+            'city_id' => $address->city_id,
+            'link' => $address->link,
+            'full_address' => $address->name . PHP_EOL .
+                $address->address . $neighborhood . PHP_EOL .
+                $address->city?->name . ', ' . $address->state?->name . ' ' . $address->postal_code . ' ' . $address->country?->name . PHP_EOL .
+                $address->contact_name,
+        ];
     }
 
     public function edit(Order $order)

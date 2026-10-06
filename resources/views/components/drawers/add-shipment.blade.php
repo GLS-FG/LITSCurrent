@@ -1,4 +1,4 @@
-@props(['order', 'serviceClasses', 'defaultServiceClass', 'instructionsOne', 'instructionsTwo', 'cloneFrom' => null])
+@props(['order', 'serviceClasses', 'defaultServiceClass', 'instructionsOne', 'instructionsTwo', 'cloneFrom' => null, 'suggestions' => []])
 @php
     // With $cloneFrom (the closed shipment being duplicated) the drawer is the
     // second step of "Duplicar": it opens by itself on the new order, prefilled
@@ -15,6 +15,13 @@
         'service_class_id', 'service_mode_id', 'class_type_id', 'service_level_id',
         'oversize', 'hazardous_material', 'refrigerated', 'insurance', 'tarps',
     ])->mapWithKeys(fn ($field) => [$field => $cloneFrom->{$field}])->all() : [];
+    // Service type the cascade starts from; "Limpiar" and closing the drawer go back to it.
+    $initialCascade = [
+        'cls' => old('service_class_id', $prefill['service_class_id'] ?? $defaultServiceClass->id),
+        'mode' => old('service_mode_id', $prefill['service_mode_id'] ?? null),
+        'type' => old('class_type_id', $prefill['class_type_id'] ?? null),
+        'level' => old('service_level_id', $prefill['service_level_id'] ?? null),
+    ];
 @endphp
 <div
     class="relative"
@@ -84,6 +91,101 @@
                         <div class="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-6">
                             @if ($errors->any() && (! $isClone || $mine))
                                 <x-alerts.error :message="'Para crear el servicio soluciona los siguientes errores:'" :errors="$errors" />
+                            @endif
+
+                            @if(! $isClone && count($suggestions))
+                                {{-- Combinations (route + service type) this client already shipped. Clicking one fills
+                                     origin, destination and the four service selects; reference and dates are never touched. --}}
+                                <div
+                                    x-data="{
+                                        items: @js($suggestions),
+                                        initial: @js($initialCascade),
+                                        sort: 'freq',
+                                        applied: null,
+                                        get list() {
+                                            return [...this.items]
+                                                .sort((a, b) => this.sort === 'freq' ? (b.total - a.total || b.last_ts - a.last_ts) : (b.last_ts - a.last_ts || b.total - a.total))
+                                                .slice(0, 3);
+                                        },
+                                        fillRoute(side, a) {
+                                            const f = side === 'origin'
+                                                ? { country: 'origin_country_id', state: 'origin_state_id', city: 'origin_city_id', text: 'ship_from', name: 'ship_from_name', link: 'ship_from_link', id: 'ship_from_id' }
+                                                : { country: 'destination_country_id', state: 'destination_state_id', city: 'destination_city_id', text: 'ship_to', name: 'ship_to_name', link: 'ship_to_link', id: 'ship_to_id' };
+                                            $('#' + f.country).val(a ? a.country_id : '');
+                                            $('#' + f.state).val(a ? a.state_id : '');
+                                            $('#' + f.city).val(a ? a.city_id : '');
+                                            $('#' + f.text).val(a ? a.full_address : '');
+                                            $('#' + f.name).val(a ? a.label : '');
+                                            $('#' + f.link).val(a && a.link ? a.link : '');
+                                            $('#' + f.id).val(a ? a.id : '');
+                                        },
+                                        apply(item) {
+                                            if (this.applied === item.key) { this.clear(); return; }
+                                            this.applied = item.key;
+                                            this.fillRoute('origin', item.from);
+                                            this.fillRoute('destination', item.to);
+                                            window.dispatchEvent(new CustomEvent('cascade-set', { detail: item.svc }));
+                                        },
+                                        clear() {
+                                            this.applied = null;
+                                            this.fillRoute('origin', null);
+                                            this.fillRoute('destination', null);
+                                            window.dispatchEvent(new CustomEvent('cascade-set', { detail: this.initial }));
+                                        },
+                                    }"
+                                    x-on:add-shipment-drawer-closed.window="applied = null"
+                                    class="rounded-xl border border-dashed border-entity-shipments/50 bg-entity-shipments-50/60 dark:bg-entity-shipments/10 p-4"
+                                >
+                                    <div class="flex flex-wrap items-start justify-between gap-3">
+                                        <div>
+                                            <div class="text-sm font-semibold text-gray-900 dark:text-gray-50">Pedidos anteriores de <span class="text-entity-shipments">{{ $order->client->trade_name }}</span></div>
+                                            <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Haz clic en una para llenar la ruta y el tipo de servicio. Puedes editar todo después.</p>
+                                        </div>
+                                        <div class="inline-flex overflow-hidden rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550">
+                                            <button type="button" @click="sort = 'freq'" :class="sort === 'freq' ? 'bg-entity-shipments text-white' : 'text-gray-500 dark:text-gray-400'" class="px-2.5 py-1 text-xs font-semibold hover:cursor-pointer">Más frecuentes</button>
+                                            <button type="button" @click="sort = 'recent'" :class="sort === 'recent' ? 'bg-entity-shipments text-white' : 'text-gray-500 dark:text-gray-400'" class="px-2.5 py-1 text-xs font-semibold hover:cursor-pointer">Más recientes</button>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 grid gap-2">
+                                        <template x-for="item in list" :key="item.key">
+                                            <button
+                                                type="button"
+                                                @click="apply(item)"
+                                                :aria-pressed="applied === item.key"
+                                                :class="applied === item.key ? 'border-green-500 bg-green-50 dark:bg-green-500/10' : 'border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 hover:border-entity-shipments'"
+                                                class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 rounded-lg border px-3 py-2.5 text-left hover:cursor-pointer"
+                                            >
+                                                <div class="min-w-0">
+                                                    <div class="flex items-center gap-1.5">
+                                                        <i class="fa-solid fa-location-dot text-[11px] text-gray-400 dark:text-gray-500"></i>
+                                                        <span class="truncate text-xs font-semibold text-gray-700 dark:text-gray-300" x-text="item.from.place"></span>
+                                                    </div>
+                                                    <div class="mt-1 flex items-center gap-1.5">
+                                                        <i class="fa-solid fa-flag text-[11px] text-gray-400 dark:text-gray-500"></i>
+                                                        <span class="truncate text-xs font-semibold text-gray-700 dark:text-gray-300" x-text="item.to.place"></span>
+                                                    </div>
+                                                    <div class="mt-2 flex flex-wrap gap-1.5">
+                                                        <template x-for="code in item.codes" :key="code">
+                                                            <span class="min-w-9.5 rounded-md bg-entity-shipments-50 dark:bg-entity-shipments/15 px-1.5 py-0.5 text-center text-[10.5px] font-semibold text-entity-shipments" x-text="code"></span>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right text-[11.5px] text-gray-500 dark:text-gray-400">
+                                                    <template x-if="applied === item.key"><span class="text-xs font-bold text-green-600 dark:text-green-400">Aplicada</span></template>
+                                                    <template x-if="applied !== item.key">
+                                                        <div>
+                                                            <b class="block text-sm text-gray-900 dark:text-gray-50" x-text="sort === 'freq' ? item.total + '×' : item.last_human"></b>
+                                                            <span x-text="sort === 'freq' ? 'último ' + item.last_human : item.total + (item.total === 1 ? ' vez' : ' veces') + ' en total'"></span>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </button>
+                                        </template>
+                                    </div>
+                                    <div class="mt-2" x-show="applied" x-cloak>
+                                        <button type="button" @click="clear()" class="text-xs text-gray-500 dark:text-gray-400 underline hover:cursor-pointer">Limpiar lo aplicado</button>
+                                    </div>
+                                </div>
                             @endif
 
                             <div>
@@ -396,7 +498,9 @@
             document.querySelectorAll('[form="shipment-create-form"][data-touched]').forEach(function (el) {
                 el.removeAttribute('data-touched');
             });
-            window.dispatchEvent(new CustomEvent('cascade-reset'));
+            // cascade-set (not cascade-reset): a suggestion may have replaced the cascade's
+            // targets, so this puts back the ones the server rendered.
+            window.dispatchEvent(new CustomEvent('cascade-set', { detail: @js($initialCascade) }));
         });
         document.addEventListener('livewire:init', function() {
             Livewire.on('address-selected', (event) => {

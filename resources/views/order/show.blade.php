@@ -305,6 +305,7 @@
             :defaultServiceClass="$defaultServiceClass"
             :instructionsOne="$instructionsOne"
             :instructionsTwo="$instructionsTwo"
+            :suggestions="$shipmentSuggestions"
         />
         <x-drawers.add-import
             :order="$order"
