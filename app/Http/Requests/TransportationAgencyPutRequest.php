@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TransportationAgencyPutRequest extends FormRequest
 {
@@ -21,7 +22,14 @@ class TransportationAgencyPutRequest extends FormRequest
             'rfc' => 'nullable|string|max:13',
             'caat_code' => 'nullable|string|max:4',
             'scac_code' => 'nullable|string|max:4',
-            'company_name' => 'required|string|max:200',
+            'company_name' => ['required', 'string', 'max:200', Rule::unique('transportation_agencies', 'company_name')->whereNull('deleted_at')->ignore($this->transportation_agency->id)],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'company_name.unique' => 'Ya existe un transportista con esa razón social.',
         ];
     }
 }

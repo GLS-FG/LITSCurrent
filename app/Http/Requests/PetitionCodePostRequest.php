@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\PetitionCode;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PetitionCodePostRequest extends FormRequest
 {
@@ -15,9 +16,16 @@ class PetitionCodePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|string|max:3',
+            'code' => ['required', 'string', 'max:3', Rule::unique('petition_codes', 'code')->whereNull('deleted_at')],
             'description' => 'required|string|max:500',
             'application_assumptions' => 'required|string|max:500',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'code.unique' => 'Ya existe una clave de pedimento con ese código.',
         ];
     }
 }
