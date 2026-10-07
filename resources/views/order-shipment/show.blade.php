@@ -494,7 +494,7 @@
                     @if($code)
                         <div>
                             <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{ $label }}</div>
-                            <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-entity-shipments-50 dark:bg-entity-shipments/15 text-entity-shipments hover:cursor-help">{{ $code }}</span>
+                            <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-entity-shipments-50 dark:bg-entity-shipments/15 text-entity-shipments">{{ $code }}</span>
                         </div>
                     @endif
                 @endforeach

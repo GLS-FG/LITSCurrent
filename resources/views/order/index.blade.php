@@ -121,7 +121,7 @@
                                 {{ $order->created_at->isoFormat('DD/MM/YYYY') }}
                             </td>
                             <td class="px-3 py-3.5 text-sm whitespace-nowrap">
-                                <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $order->order_status_id->textColor() }}">
+                                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset {{ $order->order_status_id->badgeColor() }}">
                                     <span class="size-1.5 rounded-full {{ $order->order_status_id->dotColor() }}"></span>
                                     {{ $order->order_status_id->label() }}
                                 </span>

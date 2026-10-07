@@ -68,6 +68,18 @@
 
 .dark {
     color-scheme: dark;
+    /*
+     * Brand red, softened for dark mode: #FF1B1C vibrates against the navy
+     * surfaces. Utilities read these variables at runtime, so every
+     * lits-red-* class picks this up without per-view dark: variants.
+     * Only the brand scale is overridden; Tailwind's red-* (errors, delete)
+     * keeps its semantic colour.
+     */
+    --color-lits-red-600: #cf3a3f;
+    --color-lits-red-550: #db4146;
+    --color-lits-red-500: #e5484d;
+    --color-lits-red-450: #ec5b5f;
+    --color-lits-red-400: #f2686c;
     --shadow-lits-card: 0 0.25rem 1.875rem rgba(0, 0, 0, 0.35);
 }
 
@@ -184,23 +196,36 @@ gmp-place-autocomplete {
  * script (see layout.blade.php) toggle the highlighted state instead.
  */
 .nav-link.is-active {
-    @apply bg-slate-100 dark:bg-gray-800 text-red-600;
+    @apply bg-slate-100 dark:bg-gray-800 text-red-600 dark:text-lits-red-400;
 }
 .nav-link:not(.is-active) {
     @apply text-gray-700 dark:text-white;
 }
 .nav-link:not(.is-active):hover {
-    @apply text-red-600 bg-slate-100 dark:bg-gray-800;
+    @apply text-red-600 dark:text-lits-red-400 bg-slate-100 dark:bg-gray-800;
 }
 
 .nav-sublink.is-active {
-    @apply bg-slate-100 dark:bg-gray-800 text-red-600;
+    @apply bg-slate-100 dark:bg-gray-800 text-red-600 dark:text-lits-red-400;
 }
 .nav-sublink:not(.is-active) {
-    @apply text-gray-600 dark:text-gray-300;
+    @apply text-gray-700 dark:text-white;
 }
 .nav-sublink:not(.is-active):hover {
-    @apply text-red-600 bg-slate-100 dark:bg-gray-800;
+    @apply text-red-600 dark:text-lits-red-400 bg-slate-100 dark:bg-gray-800;
+}
+
+/* Rounded-square container for sidebar icons. */
+.nav-icon {
+    @apply flex size-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-white/5;
+}
+.nav-link.is-active .nav-icon,
+.nav-sublink.is-active .nav-icon {
+    @apply bg-lits-red-500/10 dark:bg-lits-red-500/15;
+}
+.nav-link:not(.is-active):hover .nav-icon,
+.nav-sublink:not(.is-active):hover .nav-icon {
+    @apply bg-white dark:bg-white/10;
 }
 
 .ui-helper-hidden-accessible {

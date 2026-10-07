@@ -48,6 +48,8 @@
                 Alpine.data('sidebar', function () {
                     return {
                         isSidebarOpen: this.$persist(false),
+                        // true while the sidebar shows only the Settings items
+                        settingsView: false,
 
                         toggle() {
                             this.isSidebarOpen = ! this.isSidebarOpen
@@ -99,9 +101,14 @@
                     var trigger = root.querySelector('[data-settings-trigger]');
                     if (trigger) trigger.classList.toggle('is-active', anyActive);
 
-                    if (anyActive && window.Alpine) {
-                        var data = window.Alpine.$data(root);
-                        if (data) data.settingsMenuOpen = true;
+                    // Landing on a settings page opens the Settings panel;
+                    // navigating to any other page brings the main links back.
+                    var sidebarRoot = document.querySelector('[x-data="sidebar"]');
+                    if (sidebarRoot && window.Alpine) {
+                        try {
+                            var data = window.Alpine.$data(sidebarRoot);
+                            if (data) data.settingsView = anyActive;
+                        } catch (e) {}
                     }
                 });
             }
