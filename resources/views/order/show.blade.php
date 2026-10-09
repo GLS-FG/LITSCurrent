@@ -192,7 +192,7 @@
                                 </div>
                                 <a
                                     href="{{route($service->route . 'show', ['order' => $service->service->order->id, $service->slug => $service->service->id])}}"
-                                    class="text-sm font-semibold text-gray-900 dark:text-gray-50 hover:text-lits-red-500 mt-0.5 inline-block"
+                                    class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 hover:underline mt-0.5 inline-block"
                                 >
                                     @if($service->serviceType == 'Embarque')
                                         @can('create', \App\Models\Order::class)
@@ -224,6 +224,7 @@
 
                             <div>
                                 @if($service->serviceType == 'Embarque')
+                                  @can('create', \App\Models\Order::class)
                                     <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Transportista</div>
                                     @if($service->service->transportations->isNotEmpty())
                                         <div class="text-xs font-semibold text-gray-700 dark:text-gray-300">
@@ -234,6 +235,7 @@
                                     @else
                                         <p class="text-xs text-gray-400 dark:text-gray-500">Sin transportista asignado</p>
                                     @endif
+                                  @endcan
                                 @endif
                             </div>
                             <div>
