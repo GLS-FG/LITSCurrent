@@ -33,6 +33,9 @@ use Illuminate\Support\Facades\Gate;
 
 class OrderController extends Controller
 {
+    /** Days without a registered status after which an order counts as "stale" (Dashboard panel and "My orders"). */
+    public const STALE_DAYS = 7;
+
     public function index(Request $request)
     {
         $code = $request->get('code_search');
@@ -145,11 +148,20 @@ class OrderController extends Controller
         $canSeeMine = ! $user->hasRole(RolesEnum::CLIENT);
         $mineCount = $canSeeMine ? (clone $baseQuery)->where('user_id', $user->id)->count() : 0;
         $onlyMine = $canSeeMine && ! $onlyUrgent && $request->boolean('mine');
+        // Only inside "My orders": hide the ones that had movement in the last STALE_DAYS days.
+        $onlyStale = $onlyMine && $request->boolean('stale');
         $orders = (clone $baseQuery)
             ->when($onlyUrgent, fn ($query) => $query->where('urgent', true))
-            ->when($onlyMine, fn ($query) => $query->where('user_id', $user->id))
-            ->orderBy('urgent', 'desc')
-            ->orderBy('created_at', 'desc')
+            ->when($onlyMine, fn ($query) => $query
+                ->where('user_id', $user->id)
+                ->withLastMovement()
+                ->when($onlyStale, fn ($query) => $query->staleFor(self::STALE_DAYS))
+            )
+            ->when($onlyMine,
+                // Longest without movement first.
+                fn ($query) => $query->orderBy('last_movement_at'),
+                fn ($query) => $query->orderBy('urgent', 'desc')->orderBy('created_at', 'desc')
+            )
             ->paginate(20)->withQueryString();
         return view('order.index', [
             'orders' => $orders,
@@ -160,6 +172,8 @@ class OrderController extends Controller
             'canSeeMine' => $canSeeMine,
             'mineCount' => $mineCount,
             'onlyMine' => $onlyMine,
+            'onlyStale' => $onlyStale,
+            'staleDays' => self::STALE_DAYS,
             'clients' => Client::select('id', 'name', 'last_name', 'company_name', 'trade_name')->get(),
         ]);
     }

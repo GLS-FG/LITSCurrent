@@ -58,14 +58,14 @@
 
         <div class="mt-4 flex items-center gap-5 border-b border-gray-200 dark:border-lits-blue-450">
             <a
-                href="{{ route('shipments.index', request()->except(['urgent', 'page'])) }}"
+                href="{{ route('shipments.index', request()->except(['urgent', 'overdue', 'mine', 'page'])) }}"
                 class="inline-flex items-center gap-1.5 pb-2.5 text-sm border-b-2 {{ $onlyUrgent ? 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' : 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' }}"
             >
                 {{__('indexes.active')}}
                 <span class="text-xs text-gray-400 dark:text-gray-500">{{ $activeCount }}</span>
             </a>
             <a
-                href="{{ route('shipments.index', array_merge(request()->except(['urgent', 'page']), ['urgent' => 1])) }}"
+                href="{{ route('shipments.index', array_merge(request()->except(['urgent', 'overdue', 'mine', 'page']), ['urgent' => 1])) }}"
                 class="inline-flex items-center gap-1.5 pb-2.5 text-sm border-b-2 {{ $onlyUrgent ? 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' : 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}"
             >
                 <span class="size-1.5 rounded-full bg-lits-red-500"></span>
@@ -73,6 +73,22 @@
                 <span class="text-xs text-gray-400 dark:text-gray-500">{{ $urgentCount }}</span>
             </a>
         </div>
+        @if($onlyOverdue || $onlyMine)
+            <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                @foreach([
+                    'overdue' => $onlyOverdue ? 'ETA vencido' : null,
+                    'mine' => $onlyMine ? 'De mis órdenes' : null,
+                ] as $param => $label)
+                    @if($label)
+                        <a href="{{ route('shipments.index', request()->except([$param, 'page'])) }}" class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-white/10 px-2.5 py-1 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/15">
+                            {{ $label }}
+                            <i class="fa-regular fa-xmark"></i>
+                            <span class="sr-only">Quitar filtro</span>
+                        </a>
+                    @endif
+                @endforeach
+            </div>
+        @endif
 
         <div class="mt-4 overflow-x-auto">
             <div class="inline-block min-w-full align-middle">

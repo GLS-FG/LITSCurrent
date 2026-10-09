@@ -110,8 +110,14 @@ class OrderShipmentController extends Controller
         $activeCount = (clone $baseQuery)->count();
         $urgentCount = (clone $baseQuery)->where('urgent', true)->count();
         $onlyUrgent = $request->boolean('urgent');
+        // Filters that arrive from the Dashboard "Tus pendientes" panel (system users only).
+        $isStaff = ! $user->hasRole(RolesEnum::CLIENT);
+        $onlyOverdue = $request->boolean('overdue');
+        $onlyMine = $isStaff && $request->boolean('mine');
         $shipments = (clone $baseQuery)
             ->when($onlyUrgent, fn ($query) => $query->where('urgent', true))
+            ->when($onlyOverdue, fn ($query) => $query->whereDate('estimated_time_arrival', '<', today()))
+            ->when($onlyMine, fn ($query) => $query->whereHas('order', fn ($order) => $order->where('user_id', $user->id)))
             ->orderBy('urgent', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20)->withQueryString();
@@ -121,6 +127,8 @@ class OrderShipmentController extends Controller
             'activeCount' => $activeCount,
             'urgentCount' => $urgentCount,
             'onlyUrgent' => $onlyUrgent,
+            'onlyOverdue' => $onlyOverdue,
+            'onlyMine' => $onlyMine,
             'serviceClasses' => ServiceClass::where('service_type_id', 1)->get(),
             'defaultServiceClass' => ServiceClass::where('service_type_id', 1)->first(),
         ]);

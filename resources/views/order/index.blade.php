@@ -65,14 +65,14 @@
         @unless($history ?? false)
             <div class="mt-4 flex items-center gap-5 border-b border-gray-200 dark:border-lits-blue-450">
                 <a
-                    href="{{ route('orders.index', request()->except(['urgent', 'mine', 'page'])) }}"
+                    href="{{ route('orders.index', request()->except(['urgent', 'mine', 'stale', 'page'])) }}"
                     class="inline-flex items-center gap-1.5 pb-2.5 text-sm border-b-2 {{ ($onlyUrgent || $onlyMine) ? 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' : 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' }}"
                 >
                     {{__('indexes.active')}}
                     <span class="text-xs text-gray-400 dark:text-gray-500">{{ $activeCount }}</span>
                 </a>
                 <a
-                    href="{{ route('orders.index', array_merge(request()->except(['urgent', 'mine', 'page']), ['urgent' => 1])) }}"
+                    href="{{ route('orders.index', array_merge(request()->except(['urgent', 'mine', 'stale', 'page']), ['urgent' => 1])) }}"
                     class="inline-flex items-center gap-1.5 pb-2.5 text-sm border-b-2 {{ $onlyUrgent ? 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' : 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}"
                 >
                     <span class="size-1.5 rounded-full bg-lits-red-500"></span>
@@ -81,7 +81,7 @@
                 </a>
                 @if($canSeeMine)
                     <a
-                        href="{{ route('orders.index', array_merge(request()->except(['urgent', 'mine', 'page']), ['mine' => 1])) }}"
+                        href="{{ route('orders.index', array_merge(request()->except(['urgent', 'mine', 'stale', 'page']), ['mine' => 1])) }}"
                         class="inline-flex items-center gap-1.5 pb-2.5 text-sm border-b-2 {{ $onlyMine ? 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' : 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}"
                     >
                         Mis órdenes
@@ -89,6 +89,18 @@
                     </a>
                 @endif
             </div>
+            @if($onlyMine)
+                <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500 dark:text-gray-400">
+                    <span>Ordenadas por más tiempo sin movimiento</span>
+                    @if($onlyStale)
+                        <a href="{{ route('orders.index', array_merge(request()->except(['stale', 'page']), ['mine' => 1])) }}" class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-white/10 px-2.5 py-1 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/15">
+                            Sin movimiento más de {{ $staleDays }} días
+                            <i class="fa-regular fa-xmark"></i>
+                            <span class="sr-only">Quitar filtro</span>
+                        </a>
+                    @endif
+                </div>
+            @endif
         @endunless
 
         <div class="mt-4 overflow-x-auto">
@@ -100,6 +112,9 @@
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">{{__("indexes.client")}}</th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">{{__("indexes.reference")}}</th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">{{__("indexes.request_date")}}</th>
+                            @if($onlyMine ?? false)
+                                <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Último movimiento</th>
+                            @endif
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">{{__("indexes.status")}}</th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">{{__("indexes.services")}}</th>
                             <th scope="col" class="py-2.5 pr-2 pl-3 text-center text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">{{__('Actions')}}</th>
@@ -129,6 +144,21 @@
                             <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                                 {{ $order->created_at->isoFormat('DD/MM/YYYY') }}
                             </td>
+                            @if($onlyMine ?? false)
+                                @php
+                                    $lastMovement = \Illuminate\Support\Carbon::parse($order->last_movement_at);
+                                    $idleDays = (int) $lastMovement->copy()->startOfDay()->diffInDays(today());
+                                    $idleColor = $idleDays > 30 ? 'text-red-600 dark:text-red-400' : ($idleDays > 7 ? 'text-amber-700 dark:text-amber-400' : 'text-gray-500 dark:text-gray-400');
+                                    $noStatusYet = $lastMovement->equalTo($order->created_at);
+                                @endphp
+                                <td class="px-3 py-3.5 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5 text-sm font-semibold tabular-nums {{ $idleColor }}">
+                                        <i class="fa-regular fa-clock text-xs"></i>
+                                        {{ $idleDays }} {{ $idleDays === 1 ? 'día' : 'días' }}
+                                    </span>
+                                    <div class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">{{ $noStatusYet ? 'Creada' : 'Último' }}: {{ $lastMovement->isoFormat('DD/MM/YYYY') }}</div>
+                                </td>
+                            @endif
                             <td class="px-3 py-3.5 text-sm whitespace-nowrap">
                                 <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset {{ $order->order_status_id->badgeColor() }}">
                                     <span class="size-1.5 rounded-full {{ $order->order_status_id->dotColor() }}"></span>
@@ -288,7 +318,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-3 py-8 text-sm text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="{{ ($onlyMine ?? false) ? 8 : 7 }}" class="px-3 py-8 text-sm text-center text-gray-500 dark:text-gray-400">
                                 No hay órdenes de servicio en la base de datos
                                 @can('create', \App\Models\Order::class)
                                 <span>, define una nueva haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-order-drawer'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>

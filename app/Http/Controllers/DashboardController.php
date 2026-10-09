@@ -29,64 +29,50 @@ class DashboardController extends Controller
 
         return view('dashboard.dashboard', [
             'stats' => $stats,
-            'attentionItems' => $this->attentionItems($orders, $shipments, $imports, $storages),
+            'attentionItems' => $this->attentionItems($orders),
+            'pending' => $this->operatorPending($user),
         ]);
     }
 
     /**
-     * Pulls active records flagged as urgent across all 4 entity types into a
-     * single "needs your attention" list for the dashboard.
+     * Counts for the "Your pending items" panel: only the orders the user created.
+     * System users only; clients get null and the panel is not rendered.
+     *
+     * @return array<string, int>|null
+     */
+    private function operatorPending($user): ?array
+    {
+        if ($user->hasRole(RolesEnum::CLIENT)) {
+            return null;
+        }
+
+        return [
+            'mine' => Order::active()->where('user_id', $user->id)->count(),
+            'overdue' => OrderShipment::active()
+                ->whereDate('estimated_time_arrival', '<', today())
+                ->whereHas('order', fn ($order) => $order->where('user_id', $user->id))
+                ->count(),
+            'stale' => Order::active()->where('user_id', $user->id)->staleFor(OrderController::STALE_DAYS)->count(),
+            'staleDays' => OrderController::STALE_DAYS,
+        ];
+    }
+
+    /**
+     * Active orders flagged as urgent, for the "needs your attention" list.
+     * Only orders: their services belong to the same order, so listing them
+     * separately would repeat the same item.
      *
      * @return array<int, array<string, mixed>>
      */
-    private function attentionItems(Builder $orders, Builder $shipments, Builder $imports, Builder $storages): array
+    private function attentionItems(Builder $orders): array
     {
-        $items = collect();
-
-        $items = $items->merge(
-            (clone $orders)->where('urgent', true)->limit(6)->get()->map(fn (Order $order) => [
-                'slug' => 'order',
-                'icon' => 'fa-regular fa-clipboard-list-check',
-                'type' => __('Order'),
-                'reference' => $order->reference ?: $order->code ?: ('#' . $order->id),
-                'created_at' => $order->created_at,
-                'route' => route('orders.show', $order->id),
-            ])
-        );
-
-        $items = $items->merge(
-            (clone $shipments)->where('urgent', true)->with('order')->limit(6)->get()->map(fn (OrderShipment $shipment) => [
-                'slug' => 'shipment',
-                'icon' => 'fa-regular fa-route',
-                'type' => __('Shipment'),
-                'reference' => $shipment->reference ?: ('#' . $shipment->id),
-                'created_at' => $shipment->created_at,
-                'route' => route('orders.shipments.show', [$shipment->order_id, $shipment->id]),
-            ])
-        );
-
-        $items = $items->merge(
-            (clone $imports)->where('urgent', true)->with('order')->limit(6)->get()->map(fn (OrderImport $import) => [
-                'slug' => 'import',
-                'icon' => 'fa-regular fa-person-military-pointing',
-                'type' => __('Custom'),
-                'reference' => $import->reference ?: ('#' . $import->id),
-                'created_at' => $import->created_at,
-                'route' => route('orders.imports.show', [$import->order_id, $import->id]),
-            ])
-        );
-
-        $items = $items->merge(
-            (clone $storages)->where('urgent', true)->with('order')->limit(6)->get()->map(fn (WarehouseStorage $storage) => [
-                'slug' => 'warehouse_storage',
-                'icon' => 'fa-regular fa-warehouse',
-                'type' => __('Warehouse'),
-                'reference' => $storage->reference ?: ('#' . $storage->id),
-                'created_at' => $storage->created_at,
-                'route' => route('orders.warehouse-storages.show', [$storage->order_id, $storage->id]),
-            ])
-        );
-
-        return $items->sortByDesc('created_at')->take(6)->values()->all();
+        return (clone $orders)->where('urgent', true)->limit(6)->get()->map(fn (Order $order) => [
+            'slug' => 'order',
+            'icon' => 'fa-regular fa-clipboard-list-check',
+            'type' => __('Order'),
+            'reference' => $order->reference ?: $order->code ?: ('#' . $order->id),
+            'created_at' => $order->created_at,
+            'route' => route('orders.show', $order->id),
+        ])->all();
     }
 }

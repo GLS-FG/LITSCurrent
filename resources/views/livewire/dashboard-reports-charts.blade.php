@@ -21,8 +21,8 @@
         </div>
     </div>
 
-    <div class="flex flex-col gap-5 lg:col-span-5">
-        <div class="dashboard-chart-card animate-fade-up relative rounded-2xl bg-white dark:bg-lits-blue-550 shadow-lits-card ring-1 ring-gray-100 dark:ring-gray-800" style="animation-delay: 180ms">
+    <div class="contents">
+        <div class="dashboard-chart-card animate-fade-up relative rounded-2xl lg:col-span-5 bg-white dark:bg-lits-blue-550 shadow-lits-card ring-1 ring-gray-100 dark:ring-gray-800" style="animation-delay: 180ms">
             <div class="flex items-center gap-3 px-4 pt-4">
                 <div class="flex size-8 items-center justify-center rounded-lg bg-lits-blue-50 text-lits-blue-500">
                     <i class="fa-regular fa-chart-line text-xs"></i>
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="dashboard-chart-card animate-fade-up relative rounded-2xl bg-white dark:bg-lits-blue-550 shadow-lits-card ring-1 ring-gray-100 dark:ring-gray-800" style="animation-delay: 260ms">
+        <div class="dashboard-chart-card animate-fade-up relative rounded-2xl bg-white dark:bg-lits-blue-550 shadow-lits-card ring-1 ring-gray-100 dark:ring-gray-800 lg:col-span-3" style="animation-delay: 260ms">
             <div class="flex flex-wrap items-center justify-between gap-3 px-4 pt-4">
                 <div class="flex items-center gap-3">
                     <div class="flex size-8 items-center justify-center rounded-lg bg-lits-blue-50 text-lits-blue-500">

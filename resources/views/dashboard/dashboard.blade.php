@@ -241,20 +241,79 @@
             <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{__("Welcome to")}} LITS</span>
         </h1>
 
+        @php
+            $statIconColors = [
+                'order' => 'bg-entity-orders-50 text-entity-orders group-hover:bg-entity-orders group-hover:text-white',
+                'shipment' => 'bg-entity-shipments-50 text-entity-shipments group-hover:bg-entity-shipments group-hover:text-white',
+                'import' => 'bg-entity-customs-50 text-entity-customs group-hover:bg-entity-customs group-hover:text-white',
+                'warehouse_storage' => 'bg-entity-warehouses-50 text-entity-warehouses group-hover:bg-entity-warehouses group-hover:text-white',
+            ];
+        @endphp
+        <section class="animate-fade-up mt-8 overflow-hidden rounded-2xl bg-white dark:bg-lits-blue-550 shadow-lits-card ring-1 ring-gray-100 dark:ring-gray-800">
+            <div class="flex items-center gap-3 px-5 pt-4 pb-3">
+                <div class="flex size-8 items-center justify-center rounded-lg bg-lits-red-50 text-lits-red-500">
+                    <i class="fa-regular fa-triangle-exclamation text-xs"></i>
+                </div>
+                <h2 class="text-base font-bold text-gray-900 dark:text-gray-50">{{__("Needs your attention")}}</h2>
+            </div>
+
+            @if($pending)
+                <div class="grid grid-cols-1 border-t border-gray-100 dark:border-lits-blue-450/60 sm:grid-cols-3">
+                    @foreach([
+                        ['n' => $pending['mine'], 'dot' => null, 'label' => 'Órdenes activas mías', 'link' => 'Ver mis órdenes', 'href' => route('orders.index', ['mine' => 1])],
+                        ['n' => $pending['overdue'], 'dot' => 'bg-lits-red-500', 'label' => 'Embarques con ETA vencido', 'link' => 'Revisar', 'href' => route('shipments.index', ['overdue' => 1, 'mine' => 1])],
+                        ['n' => $pending['stale'], 'dot' => 'bg-amber-500', 'label' => 'Sin movimiento más de ' . $pending['staleDays'] . ' días', 'link' => 'Revisar', 'href' => route('orders.index', ['mine' => 1, 'stale' => 1])],
+                    ] as $cell)
+                        <div class="flex flex-col gap-0.5 border-t border-gray-100 px-5 py-4 first:border-t-0 dark:border-lits-blue-450/60 sm:border-t-0 sm:border-l sm:first:border-l-0">
+                            <p class="flex items-center gap-2 text-3xl font-semibold tabular-nums text-gray-900 dark:text-gray-50">
+                                @if($cell['dot'])<span class="size-2 rounded-full {{ $cell['dot'] }}"></span>@endif
+                                {{ $cell['n'] }}
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $cell['label'] }}</p>
+                            <a href="{{ $cell['href'] }}" class="mt-1 text-sm font-semibold text-lits-red-500 hover:text-lits-red-600">{{ $cell['link'] }} <span aria-hidden="true">→</span></a>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <div class="border-t border-gray-100 px-5 py-3 dark:border-lits-blue-450/60">
+                <p class="pb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">{{ $pending ? 'Urgentes de todo el equipo' : 'Órdenes urgentes' }}</p>
+                @if(count($attentionItems) > 0)
+                    <ul class="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+                        @foreach($attentionItems as $item)
+                            <li class="border-b border-gray-100 last:border-b-0 dark:border-lits-blue-450/60 {{ $loop->iteration === count($attentionItems) - 1 && $loop->iteration % 2 === 1 ? 'lg:border-b-0' : '' }}">
+                                <a href="{{ $item['route'] }}" class="group -mx-2 flex items-center justify-between gap-4 rounded-lg px-2 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+                                    <div class="flex min-w-0 items-center gap-3">
+                                        <span class="flex size-8 shrink-0 items-center justify-center rounded-lg {{ $statIconColors[$item['slug']] ?? $statIconColors['order'] }}">
+                                            <i class="{{ $item['icon'] }} text-sm"></i>
+                                        </span>
+                                        <div class="min-w-0">
+                                            <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-50">{{ $item['type'] }} · {{ $item['reference'] }}</p>
+                                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item['created_at']->diffForHumans() }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex shrink-0 items-center rounded-full bg-red-100 dark:bg-red-500/15 px-2.5 py-1 text-xs font-bold text-red-700 dark:text-red-400">
+                                        {{__("Urgent")}}
+                                    </span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <div class="flex items-center gap-2 py-2 text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fa-regular fa-circle-check text-base text-gray-300 dark:text-gray-600"></i>
+                        {{__("No urgent items right now")}}
+                    </div>
+                @endif
+            </div>
+        </section>
+
         <header class="pt-8 pb-4 sm:pb-6">
             <div class="mx-auto flex flex-wrap items-center gap-6 sm:flex-nowrap">
                 <h2 class="text-base/7 font-semibold text-gray-900 dark:text-gray-50">{{__("Orders summary")}}</h2>
             </div>
         </header>
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            @php
-                $statIconColors = [
-                    'order' => 'bg-entity-orders-50 text-entity-orders group-hover:bg-entity-orders group-hover:text-white',
-                    'shipment' => 'bg-entity-shipments-50 text-entity-shipments group-hover:bg-entity-shipments group-hover:text-white',
-                    'import' => 'bg-entity-customs-50 text-entity-customs group-hover:bg-entity-customs group-hover:text-white',
-                    'warehouse_storage' => 'bg-entity-warehouses-50 text-entity-warehouses group-hover:bg-entity-warehouses group-hover:text-white',
-                ];
-            @endphp
             @foreach($stats as $stat)
                 <div
                     class="dashboard-stat-card group animate-fade-up relative overflow-hidden rounded-2xl bg-white dark:bg-lits-blue-550 px-5 py-6 shadow-lits-card ring-1 ring-gray-100 dark:ring-gray-800"
@@ -278,44 +337,6 @@
 
         <div class="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-8">
             <livewire:dashboard-reports-charts />
-
-            <div class="dashboard-chart-card animate-fade-up flex h-full flex-col rounded-2xl bg-white dark:bg-lits-blue-550 shadow-lits-card ring-1 ring-gray-100 dark:ring-gray-800 lg:col-span-3" style="animation-delay: 340ms">
-                <div class="flex items-center gap-3 px-4 pt-4">
-                    <div class="flex size-8 items-center justify-center rounded-lg bg-lits-red-50 text-lits-red-500">
-                        <i class="fa-regular fa-triangle-exclamation text-xs"></i>
-                    </div>
-                    <h2 class="text-base font-bold text-gray-900 dark:text-gray-50">{{__("Needs your attention")}}</h2>
-                </div>
-                <div class="flex-1 px-4 py-3">
-                    @if(count($attentionItems) > 0)
-                        <ul class="divide-y divide-gray-100 dark:divide-gray-800">
-                            @foreach($attentionItems as $item)
-                                <li>
-                                    <a href="{{ $item['route'] }}" class="group -mx-2 flex items-center justify-between gap-4 rounded-lg px-2 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
-                                        <div class="flex min-w-0 items-center gap-3">
-                                            <span class="flex size-8 shrink-0 items-center justify-center rounded-lg {{ $statIconColors[$item['slug']] ?? $statIconColors['order'] }}">
-                                                <i class="{{ $item['icon'] }} text-sm"></i>
-                                            </span>
-                                            <div class="min-w-0">
-                                                <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-50">{{ $item['type'] }} · {{ $item['reference'] }}</p>
-                                                <p class="text-xs text-gray-400 dark:text-gray-500">{{ $item['created_at']->diffForHumans() }}</p>
-                                            </div>
-                                        </div>
-                                        <span class="inline-flex shrink-0 items-center rounded-full bg-red-100 dark:bg-red-500/15 px-2.5 py-1 text-xs font-bold text-red-700 dark:text-red-400">
-                                            {{__("Urgent")}}
-                                        </span>
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <div class="flex h-full flex-col items-center justify-center gap-2 py-10 text-center">
-                            <i class="fa-regular fa-circle-check text-2xl text-gray-300 dark:text-gray-600"></i>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">{{__("No urgent items right now")}}</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
         </div>
     </div>
 </x-layout-app>
