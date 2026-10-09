@@ -65,20 +65,29 @@
         @unless($history ?? false)
             <div class="mt-4 flex items-center gap-5 border-b border-gray-200 dark:border-lits-blue-450">
                 <a
-                    href="{{ route('orders.index', request()->except(['urgent', 'page'])) }}"
-                    class="inline-flex items-center gap-1.5 pb-2.5 text-sm border-b-2 {{ $onlyUrgent ? 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' : 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' }}"
+                    href="{{ route('orders.index', request()->except(['urgent', 'mine', 'page'])) }}"
+                    class="inline-flex items-center gap-1.5 pb-2.5 text-sm border-b-2 {{ ($onlyUrgent || $onlyMine) ? 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' : 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' }}"
                 >
                     {{__('indexes.active')}}
                     <span class="text-xs text-gray-400 dark:text-gray-500">{{ $activeCount }}</span>
                 </a>
                 <a
-                    href="{{ route('orders.index', array_merge(request()->except(['urgent', 'page']), ['urgent' => 1])) }}"
+                    href="{{ route('orders.index', array_merge(request()->except(['urgent', 'mine', 'page']), ['urgent' => 1])) }}"
                     class="inline-flex items-center gap-1.5 pb-2.5 text-sm border-b-2 {{ $onlyUrgent ? 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' : 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}"
                 >
                     <span class="size-1.5 rounded-full bg-lits-red-500"></span>
                     {{__('indexes.urgent')}}
                     <span class="text-xs text-gray-400 dark:text-gray-500">{{ $urgentCount }}</span>
                 </a>
+                @if($canSeeMine)
+                    <a
+                        href="{{ route('orders.index', array_merge(request()->except(['urgent', 'mine', 'page']), ['mine' => 1])) }}"
+                        class="inline-flex items-center gap-1.5 pb-2.5 text-sm border-b-2 {{ $onlyMine ? 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' : 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}"
+                    >
+                        Mis órdenes
+                        <span class="text-xs text-gray-400 dark:text-gray-500">{{ $mineCount }}</span>
+                    </a>
+                @endif
             </div>
         @endunless
 

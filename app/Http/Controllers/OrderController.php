@@ -141,8 +141,13 @@ class OrderController extends Controller
         $activeCount = (clone $baseQuery)->count();
         $urgentCount = (clone $baseQuery)->where('urgent', true)->count();
         $onlyUrgent = $request->boolean('urgent');
+        // "My orders" is only for system users, never for clients.
+        $canSeeMine = ! $user->hasRole(RolesEnum::CLIENT);
+        $mineCount = $canSeeMine ? (clone $baseQuery)->where('user_id', $user->id)->count() : 0;
+        $onlyMine = $canSeeMine && ! $onlyUrgent && $request->boolean('mine');
         $orders = (clone $baseQuery)
             ->when($onlyUrgent, fn ($query) => $query->where('urgent', true))
+            ->when($onlyMine, fn ($query) => $query->where('user_id', $user->id))
             ->orderBy('urgent', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20)->withQueryString();
@@ -152,6 +157,9 @@ class OrderController extends Controller
             'activeCount' => $activeCount,
             'urgentCount' => $urgentCount,
             'onlyUrgent' => $onlyUrgent,
+            'canSeeMine' => $canSeeMine,
+            'mineCount' => $mineCount,
+            'onlyMine' => $onlyMine,
             'clients' => Client::select('id', 'name', 'last_name', 'company_name', 'trade_name')->get(),
         ]);
     }
