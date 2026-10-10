@@ -94,7 +94,7 @@
                         <tr class="group border-b border-gray-100 dark:border-lits-blue-450/60 {{ $notification->service->urgent ? 'bg-lits-red-50/50 dark:bg-lits-red-500/10 shadow-[inset_3px_0_0_var(--color-lits-red-500)] hover:bg-lits-red-50 dark:hover:bg-lits-red-500/15' : 'hover:bg-gray-50 dark:hover:bg-lits-blue-550/60' }}">
                             <td class="py-3.5 pl-4 whitespace-nowrap">
                                 <a href="{{route('orders.shipments.show', ['order' => $notification->service->order->id, 'shipment' => $notification->service->id, 'activeTab' => 2])}}" class="tabular-nums text-sm font-semibold text-gray-900 dark:text-gray-50 hover:text-lits-red-500">{{ $notification->service->order->code }}</a>
-                                <div class="text-gray-400 dark:text-gray-500 text-xs mt-0.5">{{ $notification->service->order->createdBy->name }}</div>
+                                <div class="text-gray-400 dark:text-gray-500 text-xs mt-0.5">{{ $notification->service->order->createdBy?->name }}</div>
                             </td>
                             <td class="px-3 py-3.5">
                                 <div class="flex items-center">

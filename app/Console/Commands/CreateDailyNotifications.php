@@ -28,6 +28,9 @@ class CreateDailyNotifications extends Command
 
         foreach ($departures as $departure) {
             $user = $departure->order->createdBy;
+            if (! $user || $user->trashed()) {
+                continue;
+            }
             $user->notify(new ShipmentToDeparture($departure));
         }
 
@@ -38,6 +41,9 @@ class CreateDailyNotifications extends Command
 
         foreach ($arrivals as $arrival) {
             $user = $arrival->order->createdBy;
+            if (! $user || $user->trashed()) {
+                continue;
+            }
             $user->notify(new ShipmentToArrive($arrival));
         }
 
@@ -48,6 +54,9 @@ class CreateDailyNotifications extends Command
 
         foreach ($delivered as $deliver) {
             $user = $deliver->order->createdBy;
+            if (! $user || $user->trashed()) {
+                continue;
+            }
             $user->notify(new ActiveDeliveredShipment($deliver));
         }
 
@@ -60,6 +69,9 @@ class CreateDailyNotifications extends Command
 
         foreach ($toNotify as $notification) {
             $user = $notification->order->createdBy;
+            if (! $user || $user->trashed()) {
+                continue;
+            }
             $user->notify(new ShipmentToNotify($notification));
         }
     }

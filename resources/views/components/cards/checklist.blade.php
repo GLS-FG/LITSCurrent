@@ -24,13 +24,13 @@
                 <tr>
                     <td style="width: 100%; font-size: 9px; line-height: 11px; white-space: nowrap; text-align: center;">
                         @if($service::class == \App\Models\OrderShipment::class)
-                        <p style="margin: 0">{{$service->order->code}} - {{$service->tracking_code}} – {{$service->tracking_number}} - {{explode(' ', $service->order->createdBy->name)[0][0] ?? null}}{{explode(' ', $service->order->createdBy->name)[1][0] ?? null}}</p>
+                        <p style="margin: 0">{{$service->order->code}} - {{$service->tracking_code}} – {{$service->tracking_number}} - {{explode(' ', $service->order->createdBy?->name ?? '')[0][0] ?? null}}{{explode(' ', $service->order->createdBy?->name ?? '')[1][0] ?? null}}</p>
                         @endif
                         @if($service::class == \App\Models\OrderImport::class)
-                            <p style="margin: 0">{{$service->order->code}} - {{$service->tracking_code}} – {{explode(' ', $service->order->createdBy->name)[0][0] ?? null}}{{explode(' ', $service->order->createdBy->name)[1][0] ?? null}}</p>
+                            <p style="margin: 0">{{$service->order->code}} - {{$service->tracking_code}} – {{explode(' ', $service->order->createdBy?->name ?? '')[0][0] ?? null}}{{explode(' ', $service->order->createdBy?->name ?? '')[1][0] ?? null}}</p>
                         @endif
                         @if($service::class == \App\Models\WarehouseStorage::class)
-                            <p style="margin: 0">{{$service->order->code}} - {{$service->tracking_code}} – {{explode(' ', $service->order->createdBy->name)[0][0] ?? null}}{{explode(' ', $service->order->createdBy->name)[1][0] ?? null}}</p>
+                            <p style="margin: 0">{{$service->order->code}} - {{$service->tracking_code}} – {{explode(' ', $service->order->createdBy?->name ?? '')[0][0] ?? null}}{{explode(' ', $service->order->createdBy?->name ?? '')[1][0] ?? null}}</p>
                         @endif
                     </td>
                 </tr>

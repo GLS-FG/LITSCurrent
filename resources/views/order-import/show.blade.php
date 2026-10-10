@@ -101,7 +101,7 @@
                 </div>
                 <div>
                     <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $import->order->createdBy->name }}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $import->order->createdBy?->name }}</div>
                 </div>
             </div>
         </div>

@@ -101,7 +101,7 @@
                         <tr class="group border-b border-gray-100 dark:border-lits-blue-450/60 {{ $order->urgent ? 'bg-lits-red-50/50 dark:bg-lits-red-500/10 shadow-[inset_3px_0_0_var(--color-lits-red-500)] hover:bg-lits-red-50 dark:hover:bg-lits-red-500/15' : 'hover:bg-gray-50 dark:hover:bg-lits-blue-550/60' }}">
                             <td class="py-3.5 pl-4">
                                 <a href="{{route('orders.show', ['order' => $order->id])}}" class="tabular-nums text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 hover:underline">{{ $order->code }}</a>
-                                <div class="text-gray-400 dark:text-gray-500 text-xs mt-0.5">{{ $order->createdBy->name }}</div>
+                                <div class="text-gray-400 dark:text-gray-500 text-xs mt-0.5">{{ $order->createdBy?->name }}</div>
                             </td>
                             <td class="px-3 py-3.5">
                                 <div class="flex items-center">

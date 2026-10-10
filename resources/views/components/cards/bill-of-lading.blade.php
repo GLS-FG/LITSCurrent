@@ -53,7 +53,7 @@
             </tr>
             <tr>
                 <td style="width: 300px;padding: 5px 5px; font-size: 8px; line-height: 12px; vertical-align: top;border: 1px #d1d5dc solid;text-align: left;">
-                    <p style="font-weight: bold; margin: 0 0 5px 0;">Contact:{{$order->createdBy->name}}/ FERNANDO WALTERS</p>
+                    <p style="font-weight: bold; margin: 0 0 5px 0;">Contact:{{$order->createdBy?->name}}/ FERNANDO WALTERS</p>
                     <p style="margin: 0;">+52 6625202079 / +1 5208227113</p>
                 </td>
                 <td style="width: 115px;"></td>

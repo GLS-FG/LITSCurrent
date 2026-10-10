@@ -49,7 +49,7 @@ class Order extends Model
 
     public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id')->withTrashed();
     }
 
     public function contactPerson(): BelongsTo
