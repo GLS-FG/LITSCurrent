@@ -10,11 +10,13 @@ class Navigation
     public string $route;
     public string $title;
     public ?string $icon;
+    public ?string $group;
 
-    public function __construct($route, $title, $icon)
+    public function __construct($route, $title, $icon, ?string $group = null)
     {
         $this->route = $route;
         $this->title = $title;
         $this->icon = $icon;
+        $this->group = $group;
     }
 }
