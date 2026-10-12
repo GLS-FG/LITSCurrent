@@ -157,7 +157,7 @@
                         ">
                             <i class="{{ $entityIcon }} text-base"></i>
                         </div>
-                        <div class="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_auto] lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_auto] items-start gap-4">
+                        <div class="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_3.75rem] lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_3.75rem] items-start gap-4">
                             <div>
                                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                                     <div class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5

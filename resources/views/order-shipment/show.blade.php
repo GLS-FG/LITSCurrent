@@ -521,7 +521,7 @@
             </div>
         </div>
 
-        <div x-data="{ activeTab: {{request()->get('activeTab', 0)}} }" class="mt-6">
+        <div x-data="{ activeTab: {{request()->get('activeTab', 0)}} }" x-init="$watch('activeTab', value => { const url = new URL(window.location.href); url.searchParams.set('activeTab', value); history.replaceState(history.state, '', url); })" class="mt-6">
                 <div class="flex items-center gap-6">
                     <button
                         @click="activeTab = 0"

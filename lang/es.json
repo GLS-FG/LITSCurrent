@@ -51,6 +51,8 @@
     "Custom": "Aduana",
     "Warehouse": "Almacén",
     "Order": "Orden",
+    "Service": "Servicio",
+    "Export": "Exportación",
     "Needs your attention": "Requiere tu atención",
     "No urgent items right now": "No hay pendientes urgentes por ahora",
     "Urgent": "Urgente",

@@ -68,17 +68,52 @@ class OrderDocuments extends Component
         }
     }
 
+    /**
+     * A qué registro pertenece cada documento, indexado por "tipo:id" del documentable.
+     * Se arma con los servicios que la orden ya tiene cargados (los mismos que alimentan
+     * allDocuments()), sin una consulta extra por documento.
+     */
+    public function serviceMap(): array
+    {
+        $map = [
+            $this->order->getMorphClass() . ':' . $this->order->id => ['slug' => 'order', 'label' => __('Order'), 'code' => null],
+        ];
+        $groups = [
+            ['shipments', 'shipment', __('Shipment')],
+            ['storages', 'warehouse', __('Warehouse')],
+            ['imports', 'customs', __('Custom')],
+            ['exports', 'customs', __('Export')],
+        ];
+        foreach ($groups as [$relation, $slug, $label]) {
+            foreach ($this->order->$relation as $service) {
+                $map[$service->getMorphClass() . ':' . $service->id] = [
+                    'slug' => $slug,
+                    'label' => $label,
+                    'code' => $service->tracking_code,
+                ];
+            }
+        }
+        return $map;
+    }
+
+    public function serviceFor($document, ?array $map = null): array
+    {
+        $map ??= $this->serviceMap();
+        return $map[$document->documentable_type . ':' . $document->documentable_id]
+            ?? ['slug' => 'order', 'label' => __('Order'), 'code' => null];
+    }
+
     public function render()
     {
-        if ($this->sortBy != null) {
-            if ($this->sortByDirection == "asc") {
-                $this->documents = $this->order->allDocuments()->sortBy($this->sortBy);
-            } else {
-                $this->documents = $this->order->allDocuments()->sortByDesc($this->sortBy);
-            }
-        } else {
-            $this->documents = $this->order->allDocuments();
+        $documents = $this->order->allDocuments();
+        $map = $this->serviceMap();
+        if ($this->sortBy === 'service') {
+            $key = fn ($document) => ($info = $this->serviceFor($document, $map))['label'] . ' ' . $info['code'];
+            $documents = $this->sortByDirection == "asc" ? $documents->sortBy($key) : $documents->sortByDesc($key);
+        } elseif ($this->sortBy != null) {
+            $documents = $this->sortByDirection == "asc" ? $documents->sortBy($this->sortBy) : $documents->sortByDesc($this->sortBy);
         }
-        return view('livewire.order-documents');
+        $this->documents = $documents;
+        return view('livewire.order-documents', ['serviceMap' => $map]);
     }
 }

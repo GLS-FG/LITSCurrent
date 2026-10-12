@@ -44,6 +44,18 @@
                                 </button>
                             </th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold text-gray-400 dark:text-gray-500">
+                                <button type="button" wire:click="changeSort('service')" class="rounded hover:bg-gray-100 dark:hover:bg-gray-800 p-1 hover:cursor-pointer">
+                                    {{__('Service')}}
+                                    @if($sortBy == "service")
+                                        @if($sortByDirection == "asc")
+                                            <i class="fa-regular fa-arrow-down-short-wide text-lits-red-500"></i>
+                                        @else
+                                            <i class="fa-regular fa-arrow-up-short-wide text-lits-red-500"></i>
+                                        @endif
+                                    @endif
+                                </button>
+                            </th>
+                            <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold text-gray-400 dark:text-gray-500">
                                 <button type="button" wire:click="changeSort('document_type_id')" class="rounded hover:bg-gray-100 dark:hover:bg-gray-800 p-1 hover:cursor-pointer">
                                     {{__('Type')}}
                                     @if($sortBy == "document_type_id")
@@ -95,6 +107,20 @@
                                     </div>
                                 </td>
                                 <td class="py-3.5 pr-3 text-sm font-medium text-gray-900 dark:text-gray-50 group-has-checked:text-lits-red-600 dark:group-has-checked:text-lits-red-400">{{$file->original_name}}</td>
+                                @php
+                                    $service = $this->serviceFor($file, $serviceMap);
+                                @endphp
+                                <td class="px-3 py-3.5 text-sm">
+                                    <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-semibold
+                                        @if($service['slug'] === 'shipment') bg-entity-shipments-50 dark:bg-entity-shipments/15 text-entity-shipments dark:text-cyan-400
+                                        @elseif($service['slug'] === 'warehouse') bg-entity-warehouses-50 dark:bg-entity-warehouses/15 text-entity-warehouses dark:text-amber-400
+                                        @elseif($service['slug'] === 'customs') bg-entity-customs-50 dark:bg-entity-customs/15 text-entity-customs dark:text-violet-400
+                                        @else bg-entity-orders-50 dark:bg-entity-orders/15 text-entity-orders dark:text-indigo-400
+                                        @endif
+                                    ">
+                                        <span class="text-[10px] uppercase tracking-wide opacity-80">{{ $service['label'] }}</span>{{ $service['code'] }}
+                                    </span>
+                                </td>
                                 <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $file->documentType->name }}</td>
                                 <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">{{ $file->size_label }}</td>
                                 <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">{{ $file->created_at->isoFormat('DD/MM/YYYY') }}</td>
@@ -173,7 +199,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td class="relative px-3 py-4" colspan="6">
+                                <td class="relative px-3 py-4" colspan="7">
                                     <div class="text-center">
                                         <i class="fa-regular fa-folder-open mx-auto text-4xl text-gray-400 dark:text-gray-500"></i>
                                         <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-50">{{__('There are no attachments in the file')}}</h3>
