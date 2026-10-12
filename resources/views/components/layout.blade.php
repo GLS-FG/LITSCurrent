@@ -45,17 +45,40 @@
         @stack('custom_script')
         <script>
             document.addEventListener('alpine:init', () => {
-                Alpine.data('sidebar', function () {
-                    return {
-                        isSidebarOpen: this.$persist(false),
-                        // true while the sidebar shows only the Settings items
-                        settingsView: false,
-
-                        toggle() {
-                            this.isSidebarOpen = ! this.isSidebarOpen
-                        }
-                    }
+                // The sidebar itself sits inside a persist block and survives
+                // wire:navigate, but the wrapper around the page content
+                // (layout-app.blade.php) is re-created on each navigation. If each
+                // `x-data="sidebar"` root kept its own copy of the state, the
+                // toggle button would flip the old copy while the content padding
+                // followed the new one, and the content would stop adjusting to
+                // the sidebar. So the state lives in one shared reactive object
+                // and every root gets its own thin object that reads and writes
+                // it. (Returning the same object to every root is not an option:
+                // Alpine defines its magic properties on it and redefining them
+                // throws, which leaves the new page content hidden.)
+                const shared = Alpine.reactive({
+                    isSidebarOpen: false,
+                    // true while the sidebar shows only the Settings items
+                    settingsView: false,
                 })
+
+                // Same localStorage key that $persist used before, so the stored
+                // open/closed preference carries over.
+                Alpine.persist('_x_isSidebarOpen', {
+                    get: () => shared.isSidebarOpen,
+                    set: (value) => { shared.isSidebarOpen = value },
+                })
+
+                Alpine.data('sidebar', () => ({
+                    get isSidebarOpen() { return shared.isSidebarOpen },
+                    set isSidebarOpen(value) { shared.isSidebarOpen = value },
+                    get settingsView() { return shared.settingsView },
+                    set settingsView(value) { shared.settingsView = value },
+
+                    toggle() {
+                        shared.isSidebarOpen = ! shared.isSidebarOpen
+                    },
+                }))
             })
 
             // wire:navigate swaps the document without a real page load, so
