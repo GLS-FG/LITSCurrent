@@ -5,7 +5,7 @@
         <x-headings.without-action
             :title="'Detalles del cliente'"
         />
-        @if ($errors->any())
+        @if ($errors->any() && ! old('_drawer'))
             <x-alerts.error :message="'Ocurrieron los siguientes errores:'" :errors="$errors" class="my-4" />
         @endif
         @if(session()->has('success'))
@@ -21,12 +21,12 @@
                         </div>
                         <div class="flex shrink-0 space-x-5">
                             @can('update', $client)
-                                <a href='{{route('clients.edit', [ 'client' => $client->id ])}}'
+                                <button type="button" @click="window.dispatchEvent(new CustomEvent('open-edit-client-modal'))"
                                    class="inline-flex items-center gap-1 rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer"
                                 >
                                     <i class="fa-regular fa-pen-to-square mr-1.5 -ml-0.5"></i>
                                     Editar cliente
-                                </a>
+                                </button>
                             @endcan
                         </div>
                     </div>
@@ -331,4 +331,7 @@
             </div>
         </div>
     </section>
+    @can('update', $client)
+        <x-modals.edit-client :client="$client" />
+    @endcan
 </x-layout-admin>

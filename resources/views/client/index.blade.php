@@ -5,7 +5,7 @@
         <x-headings.with-one-action
             :title="'Clientes'"
             :buttonLabel="'Nuevo cliente'"
-            :buttonAction="route('clients.create')"
+            :buttonEvent="'open-add-client-modal'"
             :objectClass="\App\Models\Client::class"
         />
         @if(session()->has('success'))
@@ -128,23 +128,25 @@
                             </td>
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                <a
-                                    href="{{route('clients.show', ['client' => $client->id])}}"
-                                    data-tippy-content="Ver"
-                                    role="button"
-                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                >
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
                                 @can('update', $client)
-                                    <a
-                                        href="{{route('clients.edit', ['client' => $client->id])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-client', { detail: @js([
+                                            'id' => $client->id,
+                                            'update_url' => route('clients.update', ['client' => $client->id]),
+                                            'company_name' => $client->company_name,
+                                            'trade_name' => $client->trade_name,
+                                            'federal_tax_id' => $client->federal_tax_id,
+                                            'national_id' => $client->national_id,
+                                            'phone1' => $client->phone1,
+                                            'email' => $client->email,
+                                            'image_url' => route('clients.logos', ['filename' => str_replace('.', '_', str_replace('logos/', '', $client->image))]),
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $client)
                                     <div
@@ -209,7 +211,7 @@
                                                                     <form action="{{route('clients.destroy', ['client' => $client->id])}}" method="POST">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Cancelar</button>
+                                                                        <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Desactivar</button>
                                                                     </form>
                                                                     <button type="button" @click="openCancel = false" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs ring-1 ring-gray-300 dark:ring-gray-600 ring-inset hover:bg-gray-50 dark:hover:bg-gray-800 sm:mt-0 sm:w-auto">Regresar</button>
                                                                 </div>
@@ -227,7 +229,7 @@
                                     <td colspan="6" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                         No hay clientes en la base de datos
                                         @can('create', \App\Models\Client::class)
-                                            <span>, define uno nuevo haciendo <a href="{{route('clients.create')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                            <span>, define uno nuevo haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-client-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                         @endcan
                                         .
                                     </td>
@@ -243,4 +245,10 @@
                     </nav>
                 @endif
     </section>
+    @can('create', \App\Models\Client::class)
+        <x-modals.add-client :countries="$countries" />
+    @endcan
+    @if($clients->isNotEmpty() && auth()->user()->can('update', $clients->first()))
+        <x-modals.edit-client />
+    @endif
 </x-layout-admin>

@@ -31,7 +31,8 @@ class ClientController extends Controller
             )
             ->paginate(20)->withQueryString();
         return view('client.index', [
-            'clients' => $clients
+            'clients' => $clients,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
         ]);
     }
 

@@ -35,7 +35,8 @@ class UserController extends Controller
             )
             ->paginate(20)->withQueryString();
         return view('user.index', [
-            'users' => $users
+            'users' => $users,
+            'roles' => Role::select('name', 'id')->whereNot('name', RolesEnum::CLIENT)->get(),
         ]);
     }
 
@@ -59,7 +60,10 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        return view('user.show', [ 'user' => $user ]);
+        return view('user.show', [
+            'user' => $user,
+            'roles' => Role::select('name', 'id')->whereNot('name', RolesEnum::CLIENT)->get(),
+        ]);
     }
 
     public function edit(User $user)

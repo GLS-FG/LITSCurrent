@@ -5,13 +5,13 @@
         <x-headings.with-one-action
             :title="'Usuarios'"
             :buttonLabel="'Nuevo usuario'"
-            :buttonAction="route('users.create')"
+            :buttonEvent="'open-add-user-modal'"
             :objectClass="\App\Models\User::class"
         />
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
-        @if ($errors->any())
+        @if ($errors->any() && ! old('_drawer'))
             <x-alerts.error :message="'Ocurrieron los siguientes errores:'" :errors="$errors" class="mb-4" />
         @endif
         <div class="mt-5">
@@ -106,8 +106,12 @@
                     <tbody>
                     @forelse($users as $user)
                         <tr class="border-b border-gray-100 dark:border-lits-blue-450/60 hover:bg-gray-50 dark:hover:bg-lits-blue-550/60">
-                            <td class="py-3.5 pl-2 text-sm font-medium text-gray-900 dark:text-gray-50">
-                                {{ $user->name }}
+                            <td class="py-3.5 pl-2 text-sm font-medium">
+                                @can('update', $user)
+                                    <a href="{{route('users.show', ['user' => $user->id])}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">{{ $user->name }}</a>
+                                @else
+                                    <span class="text-gray-900 dark:text-gray-50">{{ $user->name }}</span>
+                                @endcan
                             </td>
                             <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                                 {{ $user->email }}
@@ -125,22 +129,20 @@
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
                                 @can('update', $user)
-                                    <a
-                                        href="{{route('users.show', ['user' => $user->id])}}"
-                                        data-tippy-content="Ver usuario"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                    >
-                                        <i class="fa-regular fa-eye"></i>
-                                    </a>
-                                    <a
-                                        href="{{route('users.edit', ['user' => $user])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-user', { detail: @js([
+                                            'id' => $user->id,
+                                            'update_url' => route('users.update', ['user' => $user->id]),
+                                            'name' => $user->name,
+                                            'email' => $user->email,
+                                            'role_id' => $user->roles->pluck('id')->first(),
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $user)
                                     <div
@@ -232,4 +234,10 @@
                     </nav>
                 @endif
     </section>
+    @can('create', \App\Models\User::class)
+        <x-modals.add-user :roles="$roles" />
+    @endcan
+    @if($users->isNotEmpty() && auth()->user()->can('update', $users->first()))
+        <x-modals.edit-user :roles="$roles" />
+    @endif
 </x-layout-admin>
