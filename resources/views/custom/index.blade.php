@@ -5,7 +5,7 @@
         <x-headings.with-one-action
             :title="'Aduanas'"
             :buttonLabel="'Nueva aduana'"
-            :buttonAction="route('customs.create')"
+            :buttonEvent="'open-add-custom-modal'"
             :objectClass="\App\Models\Custom::class"
         />
         @if(session()->has('success'))
@@ -125,23 +125,23 @@
                             </td>
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                <a
-                                    href="{{route('customs.show', ['custom' => $custom->id])}}"
-                                    data-tippy-content="Ver"
-                                    role="button"
-                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                >
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
                                 @can('update', $custom)
-                                    <a
-                                        href="{{route('customs.edit', ['custom' => $custom->id])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-custom', { detail: @js([
+                                            'id' => $custom->id,
+                                            'update_url' => route('customs.update', ['custom' => $custom->id]),
+                                            'denomination' => $custom->denomination,
+                                            'code' => $custom->code,
+                                            'country_id' => $custom->country_id,
+                                            'state_id' => $custom->state_id,
+                                            'city_id' => $custom->city_id,
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $custom)
                                     <div
@@ -225,7 +225,7 @@
                                     <td colspan="7" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                         No hay aduanas en la base de datos
                                         @can('create', \App\Models\Custom::class)
-                                            <span>, define una nueva haciendo <a href="{{route('customs.create')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                            <span>, define una nueva haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-custom-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                         @endcan
                                         .
                                     </td>
@@ -241,4 +241,10 @@
                     </nav>
                 @endif
     </section>
+    @can('create', \App\Models\Custom::class)
+        <x-modals.custom-form mode="create" :countries="$countries" />
+    @endcan
+    @if($customs->isNotEmpty() && auth()->user()->can('update', $customs->first()))
+        <x-modals.custom-form mode="edit" :countries="$countries" />
+    @endif
 </x-layout-admin>

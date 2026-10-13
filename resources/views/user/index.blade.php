@@ -152,7 +152,7 @@
                                         <button
                                             type="button"
                                             @click="openCancel = true"
-                                            data-tippy-content="Eliminar"
+                                            data-tippy-content="Desactivar"
                                             class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400 hover:cursor-pointer"
                                         >
                                                     <i class="fa-regular fa-trash-can"></i>
@@ -193,9 +193,9 @@
                                                                         <i class="fa-regular fa-triangle-exclamation text-lg text-red-600 dark:text-red-400"></i>
                                                                     </div>
                                                                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left whitespace-normal">
-                                                                        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Eliminar usuario</h3>
+                                                                        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Desactivar usuario</h3>
                                                                         <div class="mt-2">
-                                                                            <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">¿Estás seguro de eliminar el siguiente usuario?</p>
+                                                                            <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">¿Estás seguro de desactivar el siguiente usuario?</p>
                                                                             <p class="text-sm text-red-500 dark:text-red-400 font-medium">{{$user->name}}</p>
                                                                         </div>
                                                                     </div>
@@ -204,7 +204,7 @@
                                                                     <form action="{{route('users.destroy', ['user' => $user])}}" method="POST">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Eliminar</button>
+                                                                        <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Desactivar</button>
                                                                     </form>
                                                                     <button type="button" @click="openCancel = false" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs ring-1 ring-gray-300 dark:ring-gray-600 ring-inset hover:bg-gray-50 dark:hover:bg-gray-800 sm:mt-0 sm:w-auto">Regresar</button>
                                                                 </div>

@@ -1,14 +1,18 @@
 {{--
     Selects en cascada País -> Estado -> Ciudad (mismo comportamiento que address/create).
-    Uso: initLocationSelects({ old: { country, state, city } })
-    Los ids esperados son country_id, state_id y (opcional) city_id.
+    Uso: initLocationSelects({ old: { country, state, city }, prefix: 'edit_' })
+    Los ids esperados son country_id, state_id y (opcional) city_id; `prefix` (opcional) se
+    antepone a los tres, para tener dos juegos de selects en la misma página (crear y editar).
+    Devuelve { set(country, state, city), clear() } para llenar o vaciar los selects desde JS
+    (set no dispara eventos `change`, así que no activa la validación en vivo).
 --}}
 <script>
     window.initLocationSelects = function (options = {}) {
         const old = options.old || {};
-        const countrySelect = document.getElementById('country_id');
-        const stateSelect = document.getElementById('state_id');
-        const citySelect = document.getElementById('city_id');
+        const prefix = options.prefix || '';
+        const countrySelect = document.getElementById(prefix + 'country_id');
+        const stateSelect = document.getElementById(prefix + 'state_id');
+        const citySelect = document.getElementById(prefix + 'city_id');
 
         const resetSelect = (select, placeholder) => {
             if (!select) return;
@@ -56,9 +60,22 @@
         countrySelect.addEventListener('change', () => loadStates(countrySelect.value));
         stateSelect.addEventListener('change', () => loadCities(stateSelect.value));
 
+        const api = {
+            set(country, state = null, city = null) {
+                countrySelect.value = country || '';
+                if (country) {
+                    loadStates(country, state, city);
+                } else {
+                    resetSelect(stateSelect, 'Selecciona un estado');
+                    resetSelect(citySelect, 'Selecciona una ciudad');
+                }
+            },
+            clear() { api.set(''); },
+        };
+
         if (old.country) {
-            countrySelect.value = old.country;
-            loadStates(old.country, old.state, old.city);
+            api.set(old.country, old.state, old.city);
         }
+        return api;
     };
 </script>

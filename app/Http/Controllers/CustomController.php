@@ -38,7 +38,8 @@ class CustomController extends Controller
             )
             ->paginate(20)->withQueryString();
         return view('custom.index', [
-            'customs' => $customs
+            'customs' => $customs,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
         ]);
     }
 
@@ -55,7 +56,10 @@ class CustomController extends Controller
 
     public function show(Custom $custom)
     {
-        return view('custom.show', compact('custom'));
+        return view('custom.show', [
+            'custom' => $custom,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
+        ]);
     }
 
     public function edit(Custom $custom)

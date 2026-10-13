@@ -12,7 +12,7 @@
         <x-headings.without-action
             :title="'Detalles de la aduana'"
         />
-        @if ($errors->any())
+        @if ($errors->any() && ! old('_drawer'))
             <x-alerts.error :message="'Ocurrieron los siguientes errores:'" :errors="$errors" class="my-4" />
         @endif
         @if(session()->has('success'))
@@ -28,12 +28,12 @@
                         </div>
                         <div class="flex shrink-0 space-x-5">
                             @can('update', $custom)
-                                <a href='{{route('customs.edit', [ 'custom' => $custom->id ])}}'
+                                <button type="button" @click="window.dispatchEvent(new CustomEvent('open-edit-custom-modal'))"
                                    class="inline-flex items-center gap-1 rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer"
                                 >
                                     <i class="fa-regular fa-pen-to-square mr-1.5 -ml-0.5"></i>
                                     Editar aduana
-                                </a>
+                                </button>
                             @endcan
                         </div>
                     </div>
@@ -67,4 +67,7 @@
             </div>
         </div>
     </section>
+    @can('update', $custom)
+        <x-modals.custom-form mode="edit" :custom="$custom" :countries="$countries" />
+    @endcan
 </x-layout-admin>

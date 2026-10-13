@@ -86,7 +86,7 @@ class ClientController extends Controller
     {
         $name = $client->company_name;
         $client->delete();
-        return back()->with('success', 'El cliente ' . $name . ' ha sido eliminado.');
+        return back()->with('success', 'El cliente ' . $name . ' ha sido desactivado.');
     }
 
     public function logo(string $filename)
