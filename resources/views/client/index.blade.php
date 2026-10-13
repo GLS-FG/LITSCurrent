@@ -202,8 +202,8 @@
                                                                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left whitespace-normal">
                                                                         <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Desactivar cliente</h3>
                                                                         <div class="mt-2">
-                                                                            <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">¿Estás seguro de cancelar la orden servicio?</p>
-                                                                            <p class="text-sm text-red-500 dark:text-red-400 font-medium">{{$client->code}}</p>
+                                                                            <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">¿Estás seguro de desactivar este cliente?</p>
+                                                                            <p class="text-sm text-red-500 dark:text-red-400 font-medium">{{$client->company_name}}</p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
