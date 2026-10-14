@@ -30,7 +30,8 @@ class CustomAgentController extends Controller
             )
             ->paginate(20)->withQueryString();
         return view('custom.agent.index', [
-            'agents' => $agents
+            'agents' => $agents,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
         ]);
     }
 

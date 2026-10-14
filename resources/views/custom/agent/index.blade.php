@@ -5,7 +5,7 @@
         <x-headings.with-one-action
             :title="'Agencias aduanales'"
             :buttonLabel="'Nueva agencia'"
-            :buttonAction="route('custom-agents.create')"
+            :buttonEvent="'open-add-custom-agent-modal'"
             :objectClass="\App\Models\CustomAgent::class"
         />
         @if(session()->has('success'))
@@ -130,14 +130,22 @@
                                     <i class="fa-regular fa-eye"></i>
                                 </a>
                                 @can('update', $agent)
-                                    <a
-                                        href="{{route('custom-agents.edit', ['custom_agent' => $agent->id])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-custom-agent', { detail: @js([
+                                            'id' => $agent->id,
+                                            'update_url' => route('custom-agents.update', ['custom_agent' => $agent->id]),
+                                            'company_name' => $agent->company_name,
+                                            'name' => $agent->name,
+                                            'last_name' => $agent->last_name,
+                                            'patent' => $agent->patent,
+                                            'phone1' => $agent->phone1,
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $agent)
                                     <div
@@ -221,7 +229,7 @@
                                     <td colspan="6" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                         No hay aduanas en la base de datos
                                         @can('create', \App\Models\Custom::class)
-                                            <span>, define una nueva haciendo <a href="{{route('custom-agents.create')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                            <span>, define una nueva haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-custom-agent-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                         @endcan
                                         .
                                     </td>
@@ -237,4 +245,10 @@
                     </nav>
                 @endif
     </section>
+    @can('create', \App\Models\CustomAgent::class)
+        <x-modals.custom-agent-form mode="create" :countries="$countries" />
+    @endcan
+    @if($agents->isNotEmpty() && auth()->user()->can('update', $agents->first()))
+        <x-modals.custom-agent-form mode="edit" />
+    @endif
 </x-layout-admin>
