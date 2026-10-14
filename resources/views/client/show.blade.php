@@ -121,14 +121,14 @@
                                             >
                                                 <i class="fa-regular fa-eye"></i>
                                             </a>
-                                            <a
-                                                href="{{route('clients.users.edit', ['client' => $client, 'user' => $user])}}"
+                                            <button
+                                                type="button"
+                                                @click="window.dispatchEvent(new CustomEvent('open-edit-client-contact-modal-{{ $user->id }}'))"
                                                 data-tippy-content="Editar"
-                                                role="button"
                                                 class="{{ $iconBtn }}"
                                             >
                                                 <i class="fa-regular fa-pen-to-square"></i>
-                                            </a>
+                                            </button>
                                         @endcan
                                         @can('delete', $user)
                                             <div
@@ -336,4 +336,9 @@
         <x-modals.add-client-contact :client="$client" />
     @endcan
     <x-modals.add-client-address :client="$client" :countries="$countries" />
+    @foreach($client->contacts as $contact)
+        @can('update', $contact)
+            <x-modals.edit-client-contact :client="$client" :user="$contact" />
+        @endcan
+    @endforeach
 </x-layout-admin>

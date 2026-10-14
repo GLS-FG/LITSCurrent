@@ -57,7 +57,7 @@
                                 Correo de activación
                             </button>
                         </form>
-                        <button type="button" @click="window.dispatchEvent(new CustomEvent('open-edit-client-contact-modal'))" class="{{ $actionBtn }}">
+                        <button type="button" @click="window.dispatchEvent(new CustomEvent('open-edit-client-contact-modal-{{ $user->id }}'))" class="{{ $actionBtn }}">
                             <i class="fa-regular fa-pen-to-square"></i>
                             Editar contacto
                         </button>

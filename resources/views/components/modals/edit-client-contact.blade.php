@@ -13,7 +13,8 @@
     descarta lo escrito. Los ids llevan el prefijo `ec_`.
 --}}
 @php
-    $mine = old('_drawer') === 'client-contact-edit';
+    $uid = $user->id;
+    $mine = old('_drawer') === 'client-contact-edit-' . $uid;
     $primaryRole = $user->roles->pluck('id')->first();
     $val = fn ($field) => $mine ? old($field, $user->{$field}) : $user->{$field};
     $inputClass = 'block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6';
@@ -22,15 +23,15 @@
 <div
     class="relative z-90"
     x-data="{ open: {{ $mine && $errors->any() ? 'true' : 'false' }} }"
-    x-init="$watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('edit-client-contact-modal-closed')) })"
-    x-on:open-edit-client-contact-modal.window="open = true"
+    x-init="$watch('open', value => { if (!value) window.dispatchEvent(new CustomEvent('edit-client-contact-modal-closed-{{ $uid }}')) })"
+    x-on:open-edit-client-contact-modal-{{ $uid }}.window="open = true"
     x-on:keydown.escape.window="open = false"
     x-trap.inert.noscroll="open"
     x-cloak
     x-show="open"
     role="dialog"
     aria-modal="true"
-    aria-labelledby="edit-client-contact-title"
+    aria-labelledby="edit-client-contact-title-{{ $uid }}"
 >
     <div
         class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
@@ -57,15 +58,15 @@
                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 class="relative flex max-h-[calc(100vh-3rem)] w-full flex-col overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 shadow-xl sm:max-w-xl"
             >
-                <form id="client-contact-edit-form" action="{{ route('clients.users.update', ['client' => $client, 'user' => $user]) }}" method="POST" autocomplete="off" class="flex min-h-0 flex-1 flex-col">
+                <form id="client-contact-edit-form-{{ $uid }}" action="{{ route('clients.users.update', ['client' => $client, 'user' => $user]) }}" method="POST" autocomplete="off" class="flex min-h-0 flex-1 flex-col">
                     @csrf
                     @method('PUT')
-                    <input type="hidden" name="_drawer" value="client-contact-edit">
+                    <input type="hidden" name="_drawer" value="client-contact-edit-{{ $uid }}">
                     <input type="hidden" name="role_id" value="{{ $primaryRole }}">
 
                     <div class="flex items-start justify-between gap-3 border-b border-gray-200 dark:border-lits-blue-450 px-6 py-5">
                         <div>
-                            <h3 id="edit-client-contact-title" class="text-base font-semibold text-gray-900 dark:text-gray-50">Editar contacto</h3>
+                            <h3 id="edit-client-contact-title-{{ $uid }}"class="text-base font-semibold text-gray-900 dark:text-gray-50">Editar contacto</h3>
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user->name }} · {{ $client->company_name }}</p>
                         </div>
                         <button type="button" @click="open = false" class="rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
@@ -76,34 +77,34 @@
 
                     <div class="flex-1 min-h-0 overflow-y-auto px-6 py-5">
                         @if ($mine && $errors->any())
-                            <div id="client-contact-edit-errors">
+                            <div id="client-contact-edit-errors-{{ $uid }}">
                                 <x-alerts.error :message="'Para editar el contacto soluciona los siguientes errores:'" :errors="$errors" class="mb-6" />
                             </div>
                         @endif
 
                         <div class="grid grid-cols-1 gap-x-6 gap-y-8">
                             <div>
-                                <label for="ec_name" class="{{ $labelClass }}">Nombre</label>
+                                <label for="ec{{ $uid }}_name" class="{{ $labelClass }}">Nombre</label>
                                 <div class="mt-2">
-                                    <input id="ec_name" value="{{ $val('name') }}" name="name" type="text" autocomplete="off" class="{{ $inputClass }}">
+                                    <input id="ec{{ $uid }}_name" value="{{ $val('name') }}" name="name" type="text" autocomplete="off" class="{{ $inputClass }}">
                                 </div>
                             </div>
                             <div>
-                                <label for="ec_email" class="{{ $labelClass }}">Email</label>
+                                <label for="ec{{ $uid }}_email" class="{{ $labelClass }}">Email</label>
                                 <div class="mt-2">
-                                    <input id="ec_email" value="{{ $val('email') }}" name="email" type="email" autocomplete="off" class="{{ $inputClass }}">
+                                    <input id="ec{{ $uid }}_email" value="{{ $val('email') }}" name="email" type="email" autocomplete="off" class="{{ $inputClass }}">
                                 </div>
                             </div>
                             <div>
-                                <label for="ec_password" class="{{ $labelClass }}">Nueva contraseña</label>
+                                <label for="ec{{ $uid }}_password" class="{{ $labelClass }}">Nueva contraseña</label>
                                 <div class="mt-2">
-                                    <input id="ec_password" name="password" type="password" autocomplete="new-password" placeholder="Déjala vacía para conservar la actual" class="{{ $inputClass }}">
+                                    <input id="ec{{ $uid }}_password" name="password" type="password" autocomplete="new-password" placeholder="Déjala vacía para conservar la actual" class="{{ $inputClass }}">
                                 </div>
                             </div>
                             <div>
-                                <label for="ec_password_confirmation" class="{{ $labelClass }}">Confirmar contraseña</label>
+                                <label for="ec{{ $uid }}_password_confirmation" class="{{ $labelClass }}">Confirmar contraseña</label>
                                 <div class="mt-2">
-                                    <input id="ec_password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" class="{{ $inputClass }}">
+                                    <input id="ec{{ $uid }}_password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" class="{{ $inputClass }}">
                                 </div>
                             </div>
                         </div>
@@ -123,19 +124,21 @@
     @include('partials.live-validation')
     <script type="module">
         (function () {
-            const form = document.getElementById('client-contact-edit-form');
-            const el = (name) => document.getElementById('ec_' + name);
+            const uid = @json($uid);
+            const form = document.getElementById('client-contact-edit-form-' + uid);
+            const pre = 'ec' + uid + '_';
+            const el = (name) => document.getElementById(pre + name);
             const fields = ['name', 'email'];
 
-            attachLiveValidation('ec_name', { required: true, max: 255 });
-            attachLiveValidation('ec_email', { required: true, email: true });
-            attachLiveValidation('ec_password', { min: 6 });
-            attachLiveValidation('ec_password_confirmation', {
+            attachLiveValidation(pre + 'name', { required: true, max: 255 });
+            attachLiveValidation(pre + 'email', { required: true, email: true });
+            attachLiveValidation(pre + 'password', { min: 6 });
+            attachLiveValidation(pre + 'password_confirmation', {
                 required: true,
-                match: 'ec_password',
+                match: pre + 'password',
                 matchMessage: 'Las contraseñas no coinciden.',
                 when: () => el('password').value !== '' || el('password_confirmation').value !== '',
-                watch: ['ec_password']
+                watch: [pre + 'password']
             });
 
             // Avoid saving twice on a double click.
@@ -149,7 +152,7 @@
             const snapshot = {};
             fields.forEach(function (field) { snapshot[field] = @json(['name' => $user->name, 'email' => $user->email])[field]; });
 
-            window.addEventListener('edit-client-contact-modal-closed', function () {
+            window.addEventListener('edit-client-contact-modal-closed-' + uid, function () {
                 fields.forEach(function (field) { el(field).value = snapshot[field]; });
                 el('password').value = '';
                 el('password_confirmation').value = '';
@@ -158,7 +161,7 @@
                     node.classList.remove('outline-red-500', 'dark:outline-red-500');
                     node.classList.add('outline-gray-300', 'dark:outline-gray-600');
                 });
-                const serverErrors = document.getElementById('client-contact-edit-errors');
+                const serverErrors = document.getElementById('client-contact-edit-errors-' + uid);
                 if (serverErrors) { serverErrors.remove(); }
             });
         })();
