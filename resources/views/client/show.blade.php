@@ -210,10 +210,10 @@
             {{-- Direcciones --}}
             <section>
                 <div class="mb-2">
-                    <h2 class="text-[15px] font-semibold text-gray-900 dark:text-gray-50">Direcciones<span class="ml-1.5 font-medium text-gray-400 dark:text-gray-500">{{ $client->addresses->count() }}</span></h2>
+                    <h2 class="text-[15px] font-semibold text-gray-900 dark:text-gray-50">Direcciones<span class="ml-1.5 font-medium text-gray-400 dark:text-gray-500">{{ $client->addresses->count() + $client->clientAddresses->count() }}</span></h2>
                     <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Crea o edita las direcciones del cliente.</p>
                 </div>
-                @if($client->addresses->isNotEmpty())
+                @if($client->addresses->isNotEmpty() || $client->clientAddresses->isNotEmpty())
                     <div class="grid grid-cols-1 gap-x-7 md:grid-cols-2">
                         @foreach($client->addresses as $address)
                             <article class="flex min-w-0 justify-between gap-3 border-b border-gray-100 dark:border-lits-blue-450/60 py-4">
@@ -304,6 +304,18 @@
                                             </div>
                                         </div>
                                     @endcan
+                                </div>
+                            </article>
+                        @endforeach
+                        {{-- Direcciones capturadas al dar de alta al cliente (tabla client_addresses). Solo lectura. --}}
+                        @foreach($client->clientAddresses as $clientAddress)
+                            <article class="flex min-w-0 justify-between gap-3 border-b border-gray-100 dark:border-lits-blue-450/60 py-4">
+                                <div class="min-w-0 text-[13px]/6 text-gray-500 dark:text-gray-400 break-words">
+                                    <p class="mb-0.5 flex flex-wrap items-center gap-x-2 text-sm font-semibold text-gray-900 dark:text-gray-50">
+                                        {{ $clientAddress->address_type?->label() ?? 'Dirección' }}
+                                        <span class="rounded-full border border-gray-200 dark:border-lits-blue-450 px-2 py-0.5 text-[11px] font-medium text-gray-500 dark:text-gray-400">Registrada al dar de alta</span>
+                                    </p>
+                                    <p>{{ collect([$clientAddress->street_name . ' ' . $clientAddress->street_no, $clientAddress->neighborhood])->map(fn ($part) => trim($part))->filter()->implode(', ') }}{{ $clientAddress->postal_code ? ', C.P. ' . str_pad($clientAddress->postal_code, 5, '0', STR_PAD_LEFT) : '' }}, {{ $clientAddress->city?->name }}, {{ $clientAddress->state?->name }}, {{ $clientAddress->country?->name }}</p>
                                 </div>
                             </article>
                         @endforeach

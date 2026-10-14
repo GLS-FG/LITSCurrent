@@ -32,6 +32,11 @@ class Client extends Model
         return $this->hasMany(User::class, 'client_id');
     }
 
+    public function clientAddresses(): HasMany
+    {
+        return $this->hasMany(ClientAddress::class);
+    }
+
     public function addresses(): MorphMany
     {
         return $this->morphMany(Address::class, 'addressable');
