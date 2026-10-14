@@ -49,6 +49,6 @@ class ClientAddressController extends Controller
     public function destroy(Client $client, Address $address)
     {
         $address->delete();
-        return back()->with('success', 'La dirección del cliente ha sido eliminada correctamente.');
+        return back()->with('success', 'La dirección del cliente ha sido desactivada correctamente.');
     }
 }

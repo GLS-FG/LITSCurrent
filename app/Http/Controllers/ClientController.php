@@ -58,7 +58,8 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         return view('client.show', [
-            'client' => $client
+            'client' => $client,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
         ]);
     }
 
