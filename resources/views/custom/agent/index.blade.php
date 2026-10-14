@@ -121,14 +121,6 @@
                             </td>
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                <a
-                                    href="{{route('custom-agents.show', ['custom_agent' => $agent->id])}}"
-                                    data-tippy-content="Ver"
-                                    role="button"
-                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                >
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
                                 @can('update', $agent)
                                     <button
                                         type="button"
