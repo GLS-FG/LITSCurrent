@@ -1,6 +1,6 @@
 @php($label = $name ?: '—')
 <div class="flex items-center gap-2.5">
-    <div class="size-8 shrink-0 flex items-center justify-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 text-[11px] font-bold text-gray-500 dark:text-gray-300">
+    <div class="size-8 shrink-0 flex items-center justify-center rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 text-[12px] font-bold text-gray-500 dark:text-gray-300">
         @if($image)
             <img alt="{{ $label }}" src="{{ route('clients.logos', ['filename' => str_replace('.', '_', str_replace('logos/', '', $image))]) }}" />
         @else

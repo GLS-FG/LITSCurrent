@@ -22,6 +22,10 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
     --color-body: #f5f6fa;
 
+    /* text-xs un poco más grande (13px en vez de 12px) para los textos secundarios */
+    --text-xs: 0.8125rem;
+    --text-xs--line-height: calc(1 / 0.8125);
+
     --color-lits-red-600: #be1112;
     --color-lits-red-550: #de1617;
     --color-lits-red-500: #FF1B1C;

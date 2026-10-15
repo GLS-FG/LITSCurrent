@@ -8,7 +8,7 @@
     ];
 @endphp
 <div>
-    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1.5">Manejo especial</div>
+    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1.5">Manejo especial</div>
     <div class="flex flex-wrap gap-2">
         @foreach($flags as $property => $flag)
             @if($isEditable)

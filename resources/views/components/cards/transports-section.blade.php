@@ -19,11 +19,11 @@
             <table class="relative min-w-full divide-y divide-gray-200 dark:divide-lits-blue-450">
                 <thead>
                 <tr>
-                    <th scope="col" class="py-2.5 pr-3 pl-4 text-left text-[11px] font-medium text-gray-500 dark:text-gray-400 sm:pl-3 bg-gray-50 dark:bg-white/[0.02]">Proveedor</th>
-                    <th scope="col" class="px-3 py-2.5 text-left text-[11px] font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02]">Unit Eco. Number</th>
-                    <th scope="col" class="px-3 py-2.5 text-left text-[11px] font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02]">Tipo de transporte</th>
-                    <th scope="col" class="px-3 py-2.5 text-left text-[11px] font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02]">Placas</th>
-                    <th scope="col" class="py-2.5 pr-4 pl-3 text-center text-[11px] font-medium text-gray-500 dark:text-gray-400 sm:pr-3 bg-gray-50 dark:bg-white/[0.02]">Acciones</th>
+                    <th scope="col" class="py-2.5 pr-3 pl-4 text-left text-[12px] font-medium text-gray-500 dark:text-gray-400 sm:pl-3 bg-gray-50 dark:bg-white/[0.02]">Proveedor</th>
+                    <th scope="col" class="px-3 py-2.5 text-left text-[12px] font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02]">Unit Eco. Number</th>
+                    <th scope="col" class="px-3 py-2.5 text-left text-[12px] font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02]">Tipo de transporte</th>
+                    <th scope="col" class="px-3 py-2.5 text-left text-[12px] font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02]">Placas</th>
+                    <th scope="col" class="py-2.5 pr-4 pl-3 text-center text-[12px] font-medium text-gray-500 dark:text-gray-400 sm:pr-3 bg-gray-50 dark:bg-white/[0.02]">Acciones</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-lits-blue-450">

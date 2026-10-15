@@ -100,7 +100,7 @@
                             <tr class="border-b border-gray-100 dark:border-lits-blue-450/60 hover:bg-gray-50 dark:hover:bg-lits-blue-550/60">
                                 <td class="py-3.5 pr-3 text-sm whitespace-nowrap">
                                     <div class="flex items-center gap-2.5 font-semibold text-gray-900 dark:text-gray-50">
-                                        <span class="flex size-7 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-[11px] font-bold text-gray-500 dark:text-gray-400">{{ \Illuminate\Support\Str::of($user->name)->explode(' ')->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('') }}</span>
+                                        <span class="flex size-7 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-[12px] font-bold text-gray-500 dark:text-gray-400">{{ \Illuminate\Support\Str::of($user->name)->explode(' ')->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('') }}</span>
                                         {{ $user->name }}
                                     </div>
                                 </td>
@@ -313,7 +313,7 @@
                                 <div class="min-w-0 text-[13px]/6 text-gray-500 dark:text-gray-400 break-words">
                                     <p class="mb-0.5 flex flex-wrap items-center gap-x-2 text-sm font-semibold text-gray-900 dark:text-gray-50">
                                         {{ $clientAddress->address_type?->label() ?? 'Dirección' }}
-                                        <span class="rounded-full border border-gray-200 dark:border-lits-blue-450 px-2 py-0.5 text-[11px] font-medium text-gray-500 dark:text-gray-400">Registrada al dar de alta</span>
+                                        <span class="rounded-full border border-gray-200 dark:border-lits-blue-450 px-2 py-0.5 text-[12px] font-medium text-gray-500 dark:text-gray-400">Registrada al dar de alta</span>
                                     </p>
                                     <p>{{ collect([$clientAddress->street_name . ' ' . $clientAddress->street_no, $clientAddress->neighborhood])->map(fn ($part) => trim($part))->filter()->implode(', ') }}{{ $clientAddress->postal_code ? ', C.P. ' . str_pad($clientAddress->postal_code, 5, '0', STR_PAD_LEFT) : '' }}, {{ $clientAddress->city?->name }}, {{ $clientAddress->state?->name }}, {{ $clientAddress->country?->name }}</p>
                                 </div>

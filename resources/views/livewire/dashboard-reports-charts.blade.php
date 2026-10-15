@@ -78,7 +78,7 @@
                         <canvas id="doughnut-chart" data-charts="{{ json_encode($doughnutCharts) }}"></canvas>
                         <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
                             <span id="doughnut-center-value" class="text-2xl font-bold text-gray-900 dark:text-gray-50">0</span>
-                            <span id="doughnut-center-label" class="text-center text-[11px] text-gray-400 dark:text-gray-500"></span>
+                            <span id="doughnut-center-label" class="text-center text-[12px] text-gray-400 dark:text-gray-500"></span>
                         </div>
                     </div>
                     <ul id="doughnut-legend" class="flex min-w-40 flex-1 flex-col gap-2.5 text-sm text-gray-600 dark:text-gray-400"></ul>

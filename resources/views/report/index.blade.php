@@ -27,7 +27,7 @@
                     <span class="block text-xs text-gray-400 dark:text-gray-500">Embarques y órdenes que ya se pasaron de tiempo</span>
                 </span>
                 <span class="size-[18px] shrink-0 rounded-full flex items-center justify-center {{ $isOpen ? 'bg-lits-red-500 text-white' : 'border border-gray-300 dark:border-lits-blue-450' }}">
-                    @if($isOpen)<i class="fa-solid fa-check text-[10px]"></i>@endif
+                    @if($isOpen)<i class="fa-solid fa-check text-[12px]"></i>@endif
                 </span>
             </a>
             <a href="{{ route('reports.index', ['report' => 'activity']) }}" role="tab" aria-selected="{{ $isOpen ? 'false' : 'true' }}"
@@ -38,7 +38,7 @@
                     <span class="block text-xs text-gray-400 dark:text-gray-500">Volumen y días para cerrar, por cliente</span>
                 </span>
                 <span class="size-[18px] shrink-0 rounded-full flex items-center justify-center {{ $isOpen ? 'border border-gray-300 dark:border-lits-blue-450' : 'bg-lits-red-500 text-white' }}">
-                    @if(! $isOpen)<i class="fa-solid fa-check text-[10px]"></i>@endif
+                    @if(! $isOpen)<i class="fa-solid fa-check text-[12px]"></i>@endif
                 </span>
             </a>
         </div>

@@ -118,7 +118,7 @@
                                         @else bg-entity-orders-50 dark:bg-entity-orders/15 text-entity-orders dark:text-indigo-400
                                         @endif
                                     ">
-                                        <span class="text-[10px] uppercase tracking-wide opacity-80">{{ $service['label'] }}</span>{{ $service['code'] }}
+                                        <span class="text-[12px] uppercase tracking-wide opacity-80">{{ $service['label'] }}</span>{{ $service['code'] }}
                                     </span>
                                 </td>
                                 <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $file->documentType->name }}</td>

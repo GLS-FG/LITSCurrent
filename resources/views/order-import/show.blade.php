@@ -92,15 +92,15 @@
             </div>
             <div class="flex items-start gap-6 flex-wrap">
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
                     <div class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-xs break-words">{{$import->reference}}</div>
                 </div>
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $import->created_at->isoFormat('DD/MM/YYYY ['. __('shows.at_time') .'] h:mm a') }}</div>
                 </div>
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $import->order->createdBy?->name }}</div>
                 </div>
             </div>
@@ -152,7 +152,7 @@
                         ] as $label => $code)
                             @if($code)
                                 <div>
-                                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{ $label }}</div>
+                                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{ $label }}</div>
                                     <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-entity-customs-50 dark:bg-entity-customs/15 text-entity-customs">{{ $code }}</span>
                                 </div>
                             @endif
@@ -160,7 +160,7 @@
                     </div>
 
                     <div>
-                        <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">{{__('shows.comments')}}</div>
+                        <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">{{__('shows.comments')}}</div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                             {{ $import->comments == null || $import->comments == "" ? "Sin comentarios" : $import->comments }}
                         </p>

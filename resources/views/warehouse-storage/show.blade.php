@@ -92,15 +92,15 @@
             </div>
             <div class="flex items-start gap-6 flex-wrap">
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
                     <div class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-xs break-words">{{$storage->reference}}</div>
                 </div>
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $storage->created_at->isoFormat('DD/MM/YYYY ['. __('shows.at_time') .'] h:mm a') }}</div>
                 </div>
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $storage->order->createdBy?->name }}</div>
                 </div>
             </div>
@@ -152,7 +152,7 @@
                         ] as $label => $code)
                             @if($code)
                                 <div>
-                                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{ $label }}</div>
+                                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{ $label }}</div>
                                     <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-entity-warehouses-50 dark:bg-entity-warehouses/15 text-entity-warehouses">{{ $code }}</span>
                                 </div>
                             @endif
@@ -161,13 +161,13 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-5 gap-6">
                         <div>
-                            <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Almacén</div>
+                            <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">Almacén</div>
                             <p class="text-sm text-gray-900 dark:text-gray-50 font-medium">{{$storage->warehouse->name}}</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">{{$storage->warehouse->contact_name}}</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">{{$storage->warehouse->phone1}}</p>
                         </div>
                         <div>
-                            <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Recibido de</div>
+                            <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">Recibido de</div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 @isset($storage->receipt)
                                     {{$storage->receipt}}
@@ -177,7 +177,7 @@
                             </p>
                         </div>
                         <div>
-                            <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Fecha de recibo</div>
+                            <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">Fecha de recibo</div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 @isset($storage->receipt_date)
                                     <time dateTime="{{ $storage->receipt_date->isoFormat('YYYY-MM-DD') }}">{{ $storage->receipt_date->isoFormat('DD/MM/YYYY') }}</time>
@@ -187,7 +187,7 @@
                             </p>
                         </div>
                         <div>
-                            <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Documento</div>
+                            <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">Documento</div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 @isset($storage->document)
                                     {{$storage->document}}
@@ -197,7 +197,7 @@
                             </p>
                         </div>
                         <div>
-                            <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Fecha de documento</div>
+                            <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">Fecha de documento</div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 @isset($storage->document_date)
                                     <time dateTime="{{ $storage->document_date->isoFormat('YYYY-MM-DD') }}">{{ $storage->document_date->isoFormat('DD/MM/YYYY') }}</time>
@@ -209,7 +209,7 @@
                     </div>
 
                     <div class="pt-6 border-t border-gray-200 dark:border-lits-blue-450/60">
-                        <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">{{__('shows.comments')}}</div>
+                        <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">{{__('shows.comments')}}</div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                             {{ $storage->comments == null || $storage->comments == "" ? "Sin comentarios" : $storage->comments }}
                         </p>

@@ -8,6 +8,6 @@
 <th scope="col" aria-sort="{{ $active ? ($current === 'asc' ? 'ascending' : 'descending') : 'none' }}" class="{{ $thClass }} {{ $pad ?? '' }} {{ $align }}">
     <a href="{{ $url }}" class="group inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200 {{ $active ? 'text-gray-700 dark:text-gray-200' : '' }}">
         {{ $label }}
-        <i class="fa-solid {{ $active ? ($current === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down') : 'fa-arrow-up opacity-0 group-hover:opacity-40' }} text-[9px]"></i>
+        <i class="fa-solid {{ $active ? ($current === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down') : 'fa-arrow-up opacity-0 group-hover:opacity-40' }} text-[12px]"></i>
     </a>
 </th>

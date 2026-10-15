@@ -493,7 +493,7 @@
                 ] as $label => $code)
                     @if($code)
                         <div>
-                            <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{ $label }}</div>
+                            <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{ $label }}</div>
                             <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-entity-shipments-50 dark:bg-entity-shipments/15 text-entity-shipments">{{ $code }}</span>
                         </div>
                     @endif
@@ -502,20 +502,20 @@
             <div class="flex items-start gap-6 flex-wrap">
                 @can('create', \App\Models\Order::class)
                     <div>
-                        <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">Tracking Number</div>
+                        <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">Tracking Number</div>
                         <div class="text-sm font-medium text-gray-700 dark:text-gray-300">{{$shipment->tracking_number}}</div>
                     </div>
                 @endcan
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
                     <div class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-xs break-words">{{$shipment->reference}}</div>
                 </div>
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $shipment->created_at->isoFormat('DD/MM/YYYY ['. __('shows.at_time') .'] h:mm a') }}</div>
                 </div>
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $shipment->order->createdBy?->name }}</div>
                 </div>
             </div>
@@ -600,7 +600,7 @@
                         @endcan
 
                         <div class="pt-6 border-t border-gray-200 dark:border-lits-blue-450/60">
-                            <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">{{__('shows.comments')}}</div>
+                            <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">{{__('shows.comments')}}</div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 {{ $shipment->comments == null || $shipment->comments == "" ? "Sin comentarios" : $shipment->comments }}
                             </p>
@@ -886,7 +886,7 @@
                                                             @click="expanded = !expanded"
                                                             class="flex-1 min-w-0 flex items-center gap-1.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                                         >
-                                                            <i class="fa-regular text-[10px]" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                                            <i class="fa-regular text-[12px]" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                                                             <span x-text="expanded ? 'Ocultar {{ $middle->count() }} {{ $middle->count() == 1 ? 'estatus intermedio' : 'estatus intermedios' }}' : 'Ver {{ $middle->count() }} {{ $middle->count() == 1 ? 'estatus intermedio' : 'estatus intermedios' }}'"></span>
                                                         </button>
                                                     </li>
@@ -1016,19 +1016,19 @@
                                             @endif
                                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-y-3 gap-x-3 p-4">
                                                 <div>
-                                                    <p class="text-[11px] text-gray-400 dark:text-gray-500">ETD</p>
+                                                    <p class="text-[12px] text-gray-400 dark:text-gray-500">ETD</p>
                                                     <p class="text-sm text-gray-900 dark:text-gray-50">{{ $shipment->estimated_time_departure?->isoFormat('DD/MM/YYYY') ?? '—' }}</p>
                                                 </div>
                                                 <div>
-                                                    <p class="text-[11px] text-gray-400 dark:text-gray-500">ETA</p>
+                                                    <p class="text-[12px] text-gray-400 dark:text-gray-500">ETA</p>
                                                     <p class="text-sm text-gray-900 dark:text-gray-50">{{ $shipment->estimated_time_arrival?->isoFormat('DD/MM/YYYY') ?? '—' }}</p>
                                                 </div>
                                                 <div>
-                                                    <p class="text-[11px] text-gray-400 dark:text-gray-500">ATD</p>
+                                                    <p class="text-[12px] text-gray-400 dark:text-gray-500">ATD</p>
                                                     <p class="text-sm text-gray-900 dark:text-gray-50">{{ $shipment->start_date?->isoFormat('DD/MM/YYYY') ?? 'Pendiente' }}</p>
                                                 </div>
                                                 <div>
-                                                    <p class="text-[11px] text-gray-400 dark:text-gray-500">ATA</p>
+                                                    <p class="text-[12px] text-gray-400 dark:text-gray-500">ATA</p>
                                                     <p class="text-sm text-gray-900 dark:text-gray-50">{{ $shipment->end_date?->isoFormat('DD/MM/YYYY') ?? 'Pendiente' }}</p>
                                                 </div>
                                             </div>

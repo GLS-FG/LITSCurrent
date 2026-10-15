@@ -111,11 +111,11 @@
                             </td>
                             <td class="px-3 py-3.5 text-sm whitespace-nowrap">
                                 <div class="flex items-center gap-1.5">
-                                    <i class="fa-solid fa-location-dot text-[11px] text-gray-400 dark:text-gray-500"></i>
+                                    <i class="fa-solid fa-location-dot text-[12px] text-gray-400 dark:text-gray-500"></i>
                                     <span class="text-xs text-gray-700 dark:text-gray-300 line-clamp-1">{{ $shipment->originCity?->name }}, {{ $shipment->originState?->short_name }}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5 mt-1">
-                                    <i class="fa-solid fa-flag text-[11px] text-gray-400 dark:text-gray-500"></i>
+                                    <i class="fa-solid fa-flag text-[12px] text-gray-400 dark:text-gray-500"></i>
                                     <span class="text-xs text-gray-700 dark:text-gray-300 line-clamp-1">{{ $shipment->destinationCity?->name }}, {{ $shipment->destinationState?->short_name }}</span>
                                 </div>
                             </td>

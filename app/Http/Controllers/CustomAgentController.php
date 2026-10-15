@@ -56,7 +56,10 @@ class CustomAgentController extends Controller
 
     public function show(CustomAgent $customAgent)
     {
-        return view('custom.agent.show', [ 'agent' => $customAgent ]);
+        return view('custom.agent.show', [
+            'agent' => $customAgent,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
+        ]);
     }
 
     public function edit(CustomAgent $customAgent)

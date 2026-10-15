@@ -96,15 +96,15 @@
             </div>
             <div class="flex items-start gap-6 flex-wrap">
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('indexes.reference')}}</div>
                     <div class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-xs break-words">{{$order->reference}}</div>
                 </div>
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">{{__('shows.created_at')}}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $order->created_at->isoFormat('DD/MM/YYYY ['. __('shows.at_time') .'] h:mm a') }}</div>
                 </div>
                 <div>
-                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
+                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-0.5">Creada por</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $order->createdBy?->name }}</div>
                 </div>
             </div>
@@ -166,7 +166,7 @@
                                         @else bg-entity-customs-50 dark:bg-entity-customs/15
                                         @endif
                                     ">
-                                    <span class="w-[4.75rem] shrink-0 text-[11px] font-semibold uppercase tracking-wide
+                                    <span class="w-[4.75rem] shrink-0 text-[12px] font-semibold uppercase tracking-wide
                                         @if($entitySlug === 'shipment') text-entity-shipments
                                         @elseif($entitySlug === 'warehouse') text-entity-warehouses
                                         @else text-entity-customs
@@ -179,7 +179,7 @@
                                         'Service Level' => $service->service->serviceLevel?->code,
                                     ] as $label => $code)
                                         @if($code)
-                                            <span data-tippy-content="{{ $label }}" class="w-[2.75rem] text-center text-[10.5px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:cursor-help">{{ $code }}</span>
+                                            <span data-tippy-content="{{ $label }}" class="w-[2.75rem] text-center text-[12px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:cursor-help">{{ $code }}</span>
                                         @else
                                             <span aria-hidden="true" class="w-[2.75rem]"></span>
                                         @endif
@@ -205,18 +205,18 @@
                                     @endif
                                 </a>
                                 <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mt-0.5 max-w-xs break-words">{{ $service->service->reference }}</div>
-                                <div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{{__('shows.created_at')}} {{ $service->service->created_at->isoFormat('DD/MM/YYYY') }}</div>
+                                <div class="text-[12px] text-gray-400 dark:text-gray-500 mt-1">{{__('shows.created_at')}} {{ $service->service->created_at->isoFormat('DD/MM/YYYY') }}</div>
                             </div>
 
                             <div class="hidden lg:block min-w-0">
                                 @if($service->serviceType == 'Embarque')
-                                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Ruta</div>
+                                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">Ruta</div>
                                     <div data-tippy-content="{{ $service->service->ship_from }}" class="flex items-center gap-1.5">
-                                        <i class="fa-solid fa-location-dot text-[11px] text-gray-400 dark:text-gray-500"></i>
+                                        <i class="fa-solid fa-location-dot text-[12px] text-gray-400 dark:text-gray-500"></i>
                                         <span class="text-xs text-gray-700 dark:text-gray-300 line-clamp-1">{{ $service->service->originCity?->name }}, {{ $service->service->originState?->short_name }}</span>
                                     </div>
                                     <div data-tippy-content="{{ $service->service->ship_to }}" class="flex items-center gap-1.5 mt-1">
-                                        <i class="fa-solid fa-flag text-[11px] text-gray-400 dark:text-gray-500"></i>
+                                        <i class="fa-solid fa-flag text-[12px] text-gray-400 dark:text-gray-500"></i>
                                         <span class="text-xs text-gray-700 dark:text-gray-300 line-clamp-1">{{ $service->service->destinationCity?->name }}, {{ $service->service->destinationState?->short_name }}</span>
                                     </div>
                                 @endif
@@ -225,7 +225,7 @@
                             <div>
                                 @if($service->serviceType == 'Embarque')
                                   @can('create', \App\Models\Order::class)
-                                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Transportista</div>
+                                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">Transportista</div>
                                     @if($service->service->transportations->isNotEmpty())
                                         <div class="text-xs font-semibold">
                                             @foreach($service->service->transportations as $transportation)
@@ -373,17 +373,17 @@
                             </div>
                             <div>
                                 @if($service->serviceType == 'Embarque')
-                                    <div class="text-[11px] text-gray-400 dark:text-gray-500 mb-1">Último estatus</div>
+                                    <div class="text-[12px] text-gray-400 dark:text-gray-500 mb-1">Último estatus</div>
                                     @if($service->service->latestLocation)
                                         <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
                                             <span class="size-1.5 rounded-full bg-gray-400 dark:bg-gray-500"></span>
                                             {{$service->service->latestLocation->status->name}}
                                         </div>
-                                        <div class="text-[11.5px] text-gray-400 dark:text-gray-500 mt-0.5">{{$service->service->latestLocation->location_date->isoFormat('D MMM YYYY, h:mm a')}}</div>
+                                        <div class="text-[12.5px] text-gray-400 dark:text-gray-500 mt-0.5">{{$service->service->latestLocation->location_date->isoFormat('D MMM YYYY, h:mm a')}}</div>
                                         @isset($service->service->latestLocation->name)
                                             <a
                                                 href="{{route($service->route . 'show', ['order' => $service->service->order->id, $service->slug => $service->service->id, 'activeTab' => 2])}}"
-                                                class="text-[11.5px] text-blue-600 dark:text-blue-400 hover:underline"
+                                                class="text-[12.5px] text-blue-600 dark:text-blue-400 hover:underline"
                                             >{{$service->service->latestLocation->name}}</a>
                                         @endisset
                                     @else

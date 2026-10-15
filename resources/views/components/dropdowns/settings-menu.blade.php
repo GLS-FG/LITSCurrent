@@ -45,12 +45,12 @@
                 @if($nav->group && $nav->group !== ($navigation[$loop->index - 1]->group ?? null))
                     {{-- Group title when the sidebar is open; a thin divider when it is collapsed to icons --}}
                     @if($collapsible)
-                        <li role="presentation" x-show="isSidebarOpen" class="{{ $loop->first ? 'mt-1' : 'mt-4' }} mb-1 px-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">{{ $nav->group }}</li>
+                        <li role="presentation" x-show="isSidebarOpen" class="{{ $loop->first ? 'mt-1' : 'mt-4' }} mb-1 px-1.5 text-[12px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">{{ $nav->group }}</li>
                         @unless($loop->first)
                             <li role="presentation" x-show="!isSidebarOpen" class="my-2 w-6 border-t border-gray-200 dark:border-lits-blue-450"></li>
                         @endunless
                     @else
-                        <li role="presentation" class="{{ $loop->first ? 'mt-1' : 'mt-4' }} mb-1 px-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">{{ $nav->group }}</li>
+                        <li role="presentation" class="{{ $loop->first ? 'mt-1' : 'mt-4' }} mb-1 px-1.5 text-[12px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">{{ $nav->group }}</li>
                     @endif
                 @endif
                 <li>
