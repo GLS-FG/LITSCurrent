@@ -22,6 +22,29 @@ enum RolesEnum: string implements ServiceState
         };
     }
 
+    /**
+     * Qué puede hacer el rol, según las policies (OrderPolicy, DocumentPolicy,
+     * ClientPolicy, CustomPolicy, UserPolicy). Si cambian las policies, actualizar aquí.
+     *
+     * @return array<string, bool> descripción => permitido
+     */
+    public function capabilities(): array
+    {
+        $staff = [self::SUPERADMIN, self::OPERATORADMIN, self::OPERATOR, self::WAREHOUSE, self::BILLING];
+        $admins = [self::SUPERADMIN, self::OPERATORADMIN];
+
+        return [
+            'Ver órdenes y servicios' => in_array($this, $staff) || $this === self::CLIENT,
+            'Crear órdenes y servicios' => in_array($this, [self::SUPERADMIN, self::OPERATORADMIN, self::OPERATOR, self::WAREHOUSE]),
+            'Editar órdenes y servicios' => in_array($this, [self::SUPERADMIN, self::OPERATORADMIN, self::OPERATOR]),
+            'Cancelar órdenes y servicios' => $this === self::SUPERADMIN,
+            'Cargar documentos' => in_array($this, [self::SUPERADMIN, self::OPERATORADMIN, self::OPERATOR, self::WAREHOUSE]),
+            'Borrar documentos' => in_array($this, $admins),
+            'Administrar clientes y aduanas' => in_array($this, $admins),
+            'Administrar usuarios' => $this === self::SUPERADMIN,
+        ];
+    }
+
     public function badgeColor(): string
     {
         return match ($this) {

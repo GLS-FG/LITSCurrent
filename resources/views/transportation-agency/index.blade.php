@@ -5,7 +5,7 @@
         <x-headings.with-one-action
             :title="'Transportistas'"
             :buttonLabel="'Nueva transportista'"
-            :buttonAction="route('transportation-agencies.create')"
+            :buttonEvent="'open-add-transportation-agency-modal'"
             :objectClass="\App\Models\TransportationAgency::class"
         />
         @if(session()->has('success'))
@@ -121,23 +121,26 @@
                             </td>
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                <a
-                                    href="{{route('transportation-agencies.show', ['transportation_agency' => $agency->id])}}"
-                                    data-tippy-content="Ver"
-                                    role="button"
-                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                >
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
                                 @can('update', $agency)
-                                    <a
-                                        href="{{route('transportation-agencies.edit', ['transportation_agency' => $agency->id])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-transportation-agency', { detail: @js([
+                                            'id' => $agency->id,
+                                            'update_url' => route('transportation-agencies.update', ['transportation_agency' => $agency->id]),
+                                            'name' => $agency->name,
+                                            'company_name' => $agency->company_name,
+                                            'rfc' => $agency->rfc,
+                                            'caat_code' => $agency->caat_code,
+                                            'scac_code' => $agency->scac_code,
+                                            'contact_name' => $agency->contact_name,
+                                            'phone1' => $agency->phone1,
+                                            'phone2' => $agency->phone2,
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $agency)
                                     <div
@@ -221,7 +224,7 @@
                                     <td colspan="6" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                         No hay Transportistas en la base de datos
                                         @can('create', \App\Models\TransportationAgency::class)
-                                            <span>, define una nueva haciendo <a href="{{route('transportation-agencies.create')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                            <span>, define una nueva haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-transportation-agency-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                         @endcan
                                         .
                                     </td>
@@ -237,4 +240,10 @@
                     </nav>
                 @endif
     </section>
+    @can('create', \App\Models\TransportationAgency::class)
+        <x-modals.transportation-agency-form mode="create" />
+    @endcan
+    @if($agencies->isNotEmpty() && auth()->user()->can('update', $agencies->first()))
+        <x-modals.transportation-agency-form mode="edit" />
+    @endif
 </x-layout-admin>

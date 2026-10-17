@@ -59,7 +59,7 @@ class TransportationAgencyDocumentController extends Controller
             $document->document_type_id = $validated['document_type_id'];
             $transportationAgency->documents()->save($document);
         }
-        return redirect()->route('transportation-agencies.show', [ 'transportation_agency' => $transportationAgency ]);
+        return redirect()->route('transportation-agencies.show', [ 'transportation_agency' => $transportationAgency, 'activeTab' => 1 ]);
     }
 
     public function destroy(TransportationAgency $transportationAgency, Document $document)

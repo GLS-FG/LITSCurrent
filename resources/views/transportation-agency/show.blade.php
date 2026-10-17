@@ -1,140 +1,126 @@
-@section('title', 'Detalles de el transportista')
+@section('title', 'Detalles del transportista')
+@php
+    $actionBtn = 'inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer';
+    $dataFields = [
+        'Nombre comercial' => $agency->company_name,
+        'Contacto' => $agency->contact_name,
+        'Teléfono' => $agency->phone1,
+        'Otro teléfono' => $agency->phone2,
+        'RFC' => $agency->rfc,
+        'CAAT' => $agency->caat_code,
+        'SCAC' => $agency->scac_code,
+    ];
+    $tabClass = 'inline-flex items-baseline gap-1.5 border-b-2 pb-2.5 text-sm hover:cursor-pointer';
+@endphp
 <x-layout-admin>
     <section>
-        <x-navigation.breadcrumbs :links="['Transportistas' => route('transportation-agencies.index'), $agency->name => '#']" />
-        <x-headings.without-action
-            :title="'Detalles de el transportista'"
-        />
-        @if ($errors->any())
+        <x-navigation.breadcrumbs :links="['Transportistas' => route('transportation-agencies.index')]" />
+        @if ($errors->any() && ! old('_drawer'))
             <x-alerts.error :message="'Ocurrieron los siguientes errores:'" :errors="$errors" class="my-4" />
         @endif
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
-        <div class="mt-2 space-y-8">
-            <div class="divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
-                <div class="px-4 py-5 sm:px-6">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-50">Transportista</h3>
-                            <p class="mt-1 max-w-2xl text-sm/6 text-gray-500 dark:text-gray-400">Información de el transportista y su contacto.</p>
-                        </div>
-                        <div class="flex shrink-0 space-x-5">
-                            @can('update', $agency)
-                                <a
-                                    href='{{route('transportation-agencies.edit', [ 'transportation_agency' => $agency->id ])}}'
-                                    class="inline-flex items-center gap-1 rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer"
-                                >
-                                    <i class="fa-regular fa-pen-to-square mr-1.5 -ml-0.5"></i>
-                                    Editar transportista
-                                </a>
-                            @endcan
-                        </div>
-                    </div>
-                </div>
-                <div class="px-4 py-5 sm:p-6 divide-y divide-gray-200 dark:divide-gray-700">
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Razon social</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$agency->name}}
-                        </dd>
-                    </div>
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Nombre comercial</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$agency->company_name}}
-                        </dd>
-                    </div>
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">CAAT</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$agency->caat_code}}
-                        </dd>
-                    </div>
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">SCAC</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$agency->scac_code}}
-                        </dd>
-                    </div>
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">RFC</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$agency->rfc}}
-                        </dd>
-                    </div>
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Persona de contacto</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$agency->contact_name}}
-                        </dd>
-                    </div>
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Teléfono 1</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$agency->phone1}}
-                        </dd>
-                    </div><div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Teléfono 2</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$agency->phone2}}
-                        </dd>
-                    </div>
 
+        <div class="mt-4 space-y-8">
+            {{-- Cabecera compacta --}}
+            <header class="flex flex-wrap items-center gap-x-4 gap-y-3">
+                <div class="flex size-12 flex-none items-center justify-center rounded-xl bg-gray-100 dark:bg-lits-blue-550 text-lg text-gray-500 dark:text-gray-400" aria-hidden="true">
+                    <i class="fa-regular fa-truck"></i>
                 </div>
-            </div>
-            <div class="divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
-                <div class="px-4 py-5 sm:px-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-50">Unidades de transporte</h3>
-                    <p class="mt-1 max-w-2xl text-sm/6 text-gray-500 dark:text-gray-400">Crea o edita nuevas unidades del transportista</p>
+                <div class="min-w-0">
+                    <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-50 break-words">{{ $agency->name }}</h1>
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Transportista desde {{ $agency->created_at->isoFormat('D MMM YYYY') }}</p>
                 </div>
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="flex space-x-2">
+                <div class="flex flex-wrap gap-2 sm:ml-auto">
+                    @can('update', $agency)
+                        <button type="button" @click="window.dispatchEvent(new CustomEvent('open-edit-transportation-agency-modal'))" class="{{ $actionBtn }}">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                            Editar transportista
+                        </button>
+                    @endcan
+                </div>
+            </header>
+
+            {{-- Franja de datos --}}
+            <dl class="grid grid-cols-2 gap-x-7 gap-y-5 border-y border-gray-200 dark:border-lits-blue-450 py-5 md:grid-cols-4 lg:grid-cols-7">
+                @foreach($dataFields as $label => $value)
+                    <div class="min-w-0">
+                        <dt class="mb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">{{ $label }}</dt>
+                        <dd class="text-sm break-words {{ filled($value) ? 'text-gray-900 dark:text-gray-50' : 'text-gray-400 dark:text-gray-500' }}">{{ filled($value) ? $value : '—' }}</dd>
+                    </div>
+                @endforeach
+            </dl>
+
+            {{-- Pestañas: la activa se recuerda en la URL (?activeTab=) para que un redirect o recargar no regrese a la primera --}}
+            <div
+                x-data="{ activeTab: Number(new URLSearchParams(window.location.search).get('activeTab')) === 1 ? 1 : 0 }"
+                x-init="$watch('activeTab', value => { const url = new URL(window.location); url.searchParams.set('activeTab', value); history.replaceState(null, '', url) })"
+            >
+                <div class="flex items-center gap-6 border-b border-gray-200 dark:border-lits-blue-450" role="tablist">
+                    <button type="button" role="tab" @click="activeTab = 0" :aria-selected="activeTab === 0" :class="activeTab === 0 ? 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' : 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'" class="{{ $tabClass }}">
+                        Unidades
+                        <span class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ $agency->vehicles->count() }}</span>
+                    </button>
+                    <button type="button" role="tab" @click="activeTab = 1" :aria-selected="activeTab === 1" :class="activeTab === 1 ? 'border-lits-red-500 font-semibold text-gray-900 dark:text-gray-50' : 'border-transparent font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'" class="{{ $tabClass }}">
+                        Expediente
+                        <span class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ $agency->documents->count() }}</span>
+                    </button>
+                </div>
+
+                {{-- Unidades --}}
+                <div x-cloak x-show="activeTab === 0" role="tabpanel">
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-4 pb-2">
+                        <h2 class="text-xs font-semibold text-gray-400 dark:text-gray-500">Unidades de transporte</h2>
                         @can('update', $agency)
-                        <div class="w-full flex justify-end mb-6">
-                            <a
-                                href='{{route('transportation-agencies.vehicles.create', [ 'transportation_agency' => $agency->id ])}}'
-                                class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                            >
+                            <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-vehicle-modal'))" class="{{ $actionBtn }} py-1.5">
+                                <i class="fa-regular fa-plus"></i>
                                 Agregar unidad
-                            </a>
-                        </div>
+                            </button>
                         @endcan
                     </div>
-                    <div class="overflow-x-auto border border-gray-300 dark:border-gray-600 rounded">
+                    <div class="overflow-x-auto">
                         <div class="inline-block min-w-full align-middle">
-                            <table class="relative min-w-full divide-y divide-gray-300 dark:divide-gray-600">
+                            <table class="min-w-full">
                                 <thead>
-                                    <tr class="divide-x divide-gray-200 dark:divide-gray-700">
-                                        <th scope="col" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pl-3">Número económico</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">Placas</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">Tipo</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">N.Serie</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-50">Origen</th>
-                                        <th scope="col" class="py-3.5 pr-4 pl-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-50 sm:pr-3">Acciones</th>
+                                    <tr class="border-b border-gray-200 dark:border-lits-blue-450">
+                                        <th scope="col" class="py-2.5 pr-3 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Número económico</th>
+                                        <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Placas</th>
+                                        <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Tipo</th>
+                                        <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">N. serie</th>
+                                        <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Origen</th>
+                                        <th scope="col" class="py-2.5 pr-3 pl-3 text-center text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white dark:bg-lits-blue-550 divide-y divide-gray-300 dark:divide-gray-600">
+                                <tbody>
                                 @forelse($agency->vehicles as $vehicle)
-                                    <tr class="even:bg-gray-50 divide-x divide-gray-200 dark:divide-gray-700">
-                                        <td class="py-4 pr-3 pl-4 text-xs text-gray-900 dark:text-gray-50 sm:pl-3 font-medium">
-                                            {{$vehicle->eco_number}}
-                                        </td>
-                                        <td class="px-3 py-4 text-xs text-gray-500 dark:text-gray-400">{{$vehicle->plates}}</td>
-                                        <td class="px-3 py-4 text-xs text-gray-500 dark:text-gray-400">{{$vehicle->vehicle_type}}</td>
-                                        <td class="px-3 py-4 text-xs text-gray-500 dark:text-gray-400">{{$vehicle->serial_number}}</td>
-                                        <td class="px-3 py-4 text-xs text-gray-500 dark:text-gray-400">{{$vehicle->origin}}</td>
-                                        <td class="py-4 pr-4 pl-3 text-right text-xs font-medium whitespace-nowrap sm:pr-3">
-                                            <div class="flex items-center justify-center gap-x-1">
+                                    <tr class="border-b border-gray-100 dark:border-lits-blue-450/60 hover:bg-gray-50 dark:hover:bg-lits-blue-550/60">
+                                        <td class="py-3.5 pr-3 text-sm font-medium text-gray-900 dark:text-gray-50">{{ $vehicle->eco_number }}</td>
+                                        <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $vehicle->plates }}</td>
+                                        <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $vehicle->vehicle_type }}</td>
+                                        <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $vehicle->serial_number }}</td>
+                                        <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $vehicle->origin }}</td>
+                                        <td class="py-3.5 pr-3 pl-3 text-sm font-medium whitespace-nowrap">
+                                            <div class="flex items-center justify-center gap-1">
                                                 @can('update', $agency)
-                                                    <a
-                                                        href="{{route('transportation-agencies.vehicles.edit', [ 'transportation_agency' => $agency->id, 'vehicle' => $vehicle->id ])}}"
+                                                    <button
+                                                        type="button"
+                                                        @click="window.dispatchEvent(new CustomEvent('request-edit-vehicle', { detail: @js([
+                                                            'id' => $vehicle->id,
+                                                            'update_url' => route('transportation-agencies.vehicles.update', [ 'transportation_agency' => $agency->id, 'vehicle' => $vehicle->id ]),
+                                                            'eco_number' => $vehicle->eco_number,
+                                                            'plates' => $vehicle->plates,
+                                                            'vehicle_type' => $vehicle->vehicle_type,
+                                                            'serial_number' => $vehicle->serial_number,
+                                                            'vehicle_brand' => $vehicle->vehicle_brand,
+                                                            'vehicle_model' => $vehicle->vehicle_model,
+                                                            'origin' => $vehicle->origin,
+                                                        ]) }))"
                                                         data-tippy-content="Editar"
-                                                        role="button"
-                                                        class="size-7 shrink-0 rounded-md bg-green-100 dark:bg-green-500/15 flex items-center justify-center font-semibold text-green-500 dark:text-green-400 hover:text-green-800 hover:bg-green-200"
+                                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                                     >
                                                         <i class="fa-regular fa-pen-to-square"></i>
-                                                    </a>
+                                                    </button>
                                                 @endcan
                                                 @can('delete', $agency)
                                                     <div
@@ -142,14 +128,14 @@
                                                         x-data="{ openCancel: false }"
                                                         @keydown.escape.prevent.stop="close($refs.buttonDropdown)"
                                                         @focusin.window="! $refs.panel.contains($event.target) && close()"
-                                                        x-id="['dropdown-button-{{$agency->id}}']"
-                                                        @confirm.window="{{$agency->id}} == $event.detail && $refs['delete-row-' + $event.detail].submit()"
+                                                        x-id="['dropdown-button-{{ $agency->id }}']"
+                                                        @confirm.window="{{ $agency->id }} == $event.detail && $refs['delete-row-' + $event.detail].submit()"
                                                     >
                                                         <button
                                                             type="button"
                                                             @click="openCancel = true"
                                                             data-tippy-content="Desactivar"
-                                                            class="size-7 shrink-0 rounded-md bg-red-100 dark:bg-red-500/15 flex items-center justify-center font-semibold text-red-500 dark:text-red-400 hover:text-red-800 hover:bg-red-200 hover:cursor-pointer"
+                                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400 hover:cursor-pointer"
                                                         >
                                                             <i class="fa-regular fa-trash-can"></i>
                                                         </button>
@@ -197,7 +183,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                                                            <form action="{{route('transportation-agencies.vehicles.destroy', [ 'transportation_agency' => $agency->id, 'vehicle' => $vehicle->id ])}}" method="POST">
+                                                                            <form action="{{ route('transportation-agencies.vehicles.destroy', [ 'transportation_agency' => $agency->id, 'vehicle' => $vehicle->id ]) }}" method="POST">
                                                                                 @csrf
                                                                                 @method('DELETE')
                                                                                 <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Eliminar</button>
@@ -214,12 +200,13 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr class="text-sm text-center text-gray-400 dark:text-gray-500 py-5 px-4">
-                                        <td colspan="6" class="py-4 px-4 text-xs text-gray-500 dark:text-gray-400">
+                                    <tr>
+                                        <td colspan="6" class="px-3 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                                             No hay unidades del transportista en la base de datos
                                             @can('update', $agency)
-                                                <span>, define una nueva haciendo <a href="{{route('transportation-agencies.vehicles.create', [ 'transportation_agency' => $agency->id ])}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                                <span>, define una nueva haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-vehicle-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                             @endcan
+                                            .
                                         </td>
                                     </tr>
                                 @endforelse
@@ -228,23 +215,16 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
-                <div class="px-4 py-5 sm:px-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-50">Expediente</h3>
-                    <p class="mt-1 max-w-2xl text-sm/6 text-gray-500 dark:text-gray-400">Agrega archivos al expediente del transportista</p>
-                </div>
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="flex space-x-2">
+
+                {{-- Expediente --}}
+                <div x-cloak x-show="activeTab === 1" role="tabpanel">
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-4 pb-2">
+                        <h2 class="text-xs font-semibold text-gray-400 dark:text-gray-500">Expediente del transportista</h2>
                         @can('update', $agency)
-                            <div class="w-full flex justify-end mb-6">
-                                <a
-                                    href='{{route('transportation-agencies.documents.create', [ 'transportation_agency' => $agency->id ])}}'
-                                    class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                                >
-                                    Adjuntar
-                                </a>
-                            </div>
+                            <a href="{{ route('transportation-agencies.documents.create', [ 'transportation_agency' => $agency->id ]) }}" class="{{ $actionBtn }} py-1.5">
+                                <i class="fa-regular fa-paperclip"></i>
+                                Adjuntar
+                            </a>
                         @endcan
                     </div>
                     <x-cards.transportationdocs
@@ -258,4 +238,11 @@
             </div>
         </div>
     </section>
+    @can('update', $agency)
+        <x-modals.transportation-agency-form mode="edit" :agency="$agency" />
+        <x-modals.vehicle-form mode="create" :agency="$agency" />
+        @if($agency->vehicles->isNotEmpty())
+            <x-modals.vehicle-form mode="edit" :agency="$agency" />
+        @endif
+    @endcan
 </x-layout-admin>

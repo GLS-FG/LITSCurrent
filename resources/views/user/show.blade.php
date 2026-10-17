@@ -5,7 +5,7 @@
 @endphp
 <x-layout-admin>
     <section>
-        <x-navigation.breadcrumbs :links="['Usuarios' => route('users.index'), $user->name => '#']" />
+        <x-navigation.breadcrumbs :links="['Usuarios' => route('users.index')]" />
         @if ($errors->any() && ! old('_drawer'))
             <x-alerts.error :message="'Ocurrieron los siguientes errores:'" :errors="$errors" class="my-4" />
         @endif
@@ -53,11 +53,7 @@
             </header>
 
             {{-- Franja de datos --}}
-            <dl class="grid grid-cols-2 gap-x-7 gap-y-5 border-y border-gray-200 dark:border-lits-blue-450 py-5 md:grid-cols-4">
-                <div class="min-w-0">
-                    <dt class="mb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">Nombre</dt>
-                    <dd class="text-sm text-gray-900 dark:text-gray-50 break-words">{{ $user->name }} {{ $user->last_name }}</dd>
-                </div>
+            <dl class="grid grid-cols-2 gap-x-7 gap-y-5 border-y border-gray-200 dark:border-lits-blue-450 py-5 md:grid-cols-2">
                 <div class="min-w-0">
                     <dt class="mb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">Correo</dt>
                     <dd class="text-sm break-words"><a href="mailto:{{ $user->email }}" class="text-lits-red-500 hover:underline">{{ $user->email }}</a></dd>
@@ -72,19 +68,9 @@
                         @endisset
                     </dd>
                 </div>
-                <div class="min-w-0">
-                    <dt class="mb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">Permiso</dt>
-                    <dd class="text-sm">
-                        @foreach($user->getRoleNames() as $role)
-                            @php $roleEnum = App\Enums\RolesEnum::from($role); @endphp
-                            <span class="inline-flex items-center gap-1.5 font-medium {{ $roleEnum->textColor() }}">
-                                <span class="size-1.5 rounded-full {{ $roleEnum->dotColor() }}"></span>
-                                {{ $roleEnum->label() }}
-                            </span>
-                        @endforeach
-                    </dd>
-                </div>
             </dl>
+
+            <x-cards.user-access :user="$user" />
         </div>
     </section>
     @can('update', $user)

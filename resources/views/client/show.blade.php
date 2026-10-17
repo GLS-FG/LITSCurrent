@@ -5,7 +5,7 @@
 @endphp
 <x-layout-admin>
     <section>
-        <x-navigation.breadcrumbs :links="['Clientes' => route('clients.index'), $client->company_name => '#']" />
+        <x-navigation.breadcrumbs :links="['Clientes' => route('clients.index')]" />
         @if ($errors->any() && ! old('_drawer'))
             <x-alerts.error :message="'Ocurrieron los siguientes errores:'" :errors="$errors" class="my-4" />
         @endif

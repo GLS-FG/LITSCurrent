@@ -11,7 +11,7 @@
 @endphp
 <x-layout-admin>
     <section>
-        <x-navigation.breadcrumbs :links="['Aduanas' => route('customs.index'), $custom->denomination => '#']" />
+        <x-navigation.breadcrumbs :links="['Aduanas' => route('customs.index')]" />
         @if ($errors->any() && ! old('_drawer'))
             <x-alerts.error :message="'Ocurrieron los siguientes errores:'" :errors="$errors" class="my-4" />
         @endif
@@ -29,8 +29,6 @@
                     <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-50 break-words">{{ $custom->denomination }}</h1>
                     <p class="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
                         <span>Sección {{ $custom->code }}</span>
-                        <span aria-hidden="true">·</span>
-                        <span>{{ $custom->city->name }}, {{ $custom->state->name }}</span>
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2 sm:ml-auto">
@@ -44,15 +42,7 @@
             </header>
 
             {{-- Franja de datos --}}
-            <dl class="grid grid-cols-2 gap-x-7 gap-y-5 border-y border-gray-200 dark:border-lits-blue-450 py-5 md:grid-cols-3 lg:grid-cols-5">
-                <div class="min-w-0">
-                    <dt class="mb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">Aduana</dt>
-                    <dd class="text-sm text-gray-900 dark:text-gray-50 break-words">{{ $custom->denomination }}</dd>
-                </div>
-                <div class="min-w-0">
-                    <dt class="mb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">Sección</dt>
-                    <dd class="text-sm text-gray-900 dark:text-gray-50 break-words">{{ $custom->code }}</dd>
-                </div>
+            <dl class="grid grid-cols-2 gap-x-7 gap-y-5 border-y border-gray-200 dark:border-lits-blue-450 py-5 md:grid-cols-3">
                 <div class="min-w-0">
                     <dt class="mb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">País</dt>
                     <dd class="text-sm text-gray-900 dark:text-gray-50 break-words">{{ $custom->country->name }}</dd>
