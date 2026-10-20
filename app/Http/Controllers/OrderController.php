@@ -377,26 +377,14 @@ class OrderController extends Controller
             }
             $order->export_row = true;
             $order->closed_at = Carbon::now();
+            $order->urgent = false;
             $order->save();
+            foreach ($this->getOrderServices($order) as $service) {
+                $service->service->urgent = false;
+                $service->service->save();
+            }
         } else if($validated['order_status_id'] == OrderStatusEnum::CANCELED->value){
-            foreach ($order->storages as $storage) {
-                $storage->warehouse_storage_status_id = WarehouseStorageStatusEnum::CANCELED->value;
-                $storage->save();
-            }
-            foreach ($order->imports as $import) {
-                $import->order_import_status_id = OrderImportStatusEnum::CANCELED->value;
-                $import->save();
-            }
-            foreach ($order->shipments as $shipment) {
-                $shipment->order_shipment_status_id = OrderShipmentStatusEnum::CANCELED->value;
-                $shipment->save();
-                foreach ($shipment->transportations as $transportation) {
-                    if($transportation->transportation_status_id->value == TransportationStatusEnum::ACTIVE->value){
-                        $transportation->transportation_status_id = TransportationStatusEnum::CANCELED;
-                        $transportation->save();
-                    }
-                }
-            }
+            $this->cancelServices($order);
         }
         $order->update($validated);
         return redirect()->route('orders.show', [ 'order' => $order ])
@@ -417,6 +405,7 @@ class OrderController extends Controller
 
     public function destroy(Order $order): RedirectResponse
     {
+        $this->cancelServices($order);
         $order->order_status_id = OrderStatusEnum::CANCELED;
         $order->save();
         return back()->with('success', 'La órden de servicio ' . $order->code . ' ha sido cancelada.');
@@ -479,6 +468,32 @@ class OrderController extends Controller
             $copyTo->products()->save($product);
         }
         return back()->with('success', 'Los productos se copiaron correctamente.');
+    }
+
+    private function cancelServices(Order $order): void
+    {
+        foreach ($order->storages as $storage) {
+            $storage->warehouse_storage_status_id = WarehouseStorageStatusEnum::CANCELED->value;
+            $storage->urgent = false;
+            $storage->save();
+        }
+        foreach ($order->imports as $import) {
+            $import->order_import_status_id = OrderImportStatusEnum::CANCELED->value;
+            $import->urgent = false;
+            $import->save();
+        }
+        foreach ($order->shipments as $shipment) {
+            $shipment->order_shipment_status_id = OrderShipmentStatusEnum::CANCELED->value;
+            $shipment->urgent = false;
+            $shipment->save();
+            foreach ($shipment->transportations as $transportation) {
+                if($transportation->transportation_status_id->value == TransportationStatusEnum::ACTIVE->value){
+                    $transportation->transportation_status_id = TransportationStatusEnum::CANCELED;
+                    $transportation->save();
+                }
+            }
+        }
+        $order->urgent = false;
     }
 
     private function getOrderServices(Order $order): array
