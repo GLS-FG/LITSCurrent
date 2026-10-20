@@ -96,9 +96,15 @@
                     </div>
 
                     <div class="flex-1 min-h-0 overflow-y-auto px-6 py-5">
-                        @if ($mine && $errors->any())
+                        @php
+                            // Los errores de estos campos se muestran bajo su input; el aviso solo conserva los que no tienen campo.
+                            $unmatchedErrors = new \Illuminate\Support\MessageBag(
+                                collect($errors->messages())->except(['name', 'company_name', 'rfc', 'caat_code', 'scac_code', 'contact_name', 'phone1', 'phone2'])->all()
+                            );
+                        @endphp
+                        @if ($mine && $unmatchedErrors->any())
                             <div id="{{ $formId }}-errors">
-                                <x-alerts.error :message="$isEdit ? 'Para editar el transportista soluciona los siguientes errores:' : 'Para crear el transportista soluciona los siguientes errores:'" :errors="$errors" class="mb-6" />
+                                <x-alerts.error :message="$isEdit ? 'Para editar el transportista soluciona los siguientes errores:' : 'Para crear el transportista soluciona los siguientes errores:'" :errors="$unmatchedErrors" class="mb-6" />
                             </div>
                         @endif
 
@@ -187,10 +193,14 @@
             attachLiveValidation(p + 'contact_name', { required: true, max: 100 });
             attachLiveValidation(p + 'phone1', { required: true, max: 20 });
             attachLiveValidation(p + 'phone2', { max: 20 });
+            // Valida todo al enviar y pinta bajo su campo los errores del servidor (solo los de este modal).
+            // Va antes del seguro de doble clic: si cancela el envío, ese seguro no debe bloquear el botón.
+            enableFormValidation(@js($formId), { errors: @json($mine ? $errors->messages() : (object) []) });
 
             // Avoid submitting twice on a double click.
             form.addEventListener('submit', function (e) {
                 const submit = form.querySelector('button[type="submit"]');
+                if (e.defaultPrevented) return;
                 if (submit.disabled) { e.preventDefault(); return; }
                 submit.disabled = true;
             });

@@ -4,12 +4,21 @@ namespace App\Http\Requests;
 
 use App\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class ClientPostRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return $this->user()->can('create', Client::class);
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(collect(['company_name', 'trade_name', 'federal_tax_id', 'national_id'])
+            ->filter(fn (string $field) => is_string($this->input($field)))
+            ->mapWithKeys(fn (string $field) => [$field => Str::upper(trim(preg_replace('/\s+/', ' ', $this->input($field))))])
+            ->all());
     }
 
     public function rules(): array

@@ -10,6 +10,7 @@
         attachLiveValidation('state_id', { required: true, requiredMessage: 'Selecciona un estado.', when: () => !newStateChecked(), watch: ['new_state'] });
         attachLiveValidation('new_state_name', { required: true, max: 100, when: newStateChecked, watch: ['new_state'] });
         attachLiveValidation('new_state_short_name', { required: true, max: 50, when: newStateChecked, watch: ['new_state'] });
+        enableFormValidation('city-create-form', { errors: @json($errors->messages()) });
     </script>
 @endpush
 <x-layout-admin>
@@ -18,10 +19,16 @@
         <x-headings.without-action
             :title="'Nueva ciudad'"
         />
-        @if ($errors->any())
-            <x-alerts.error :message="'Para crear la ciudad soluciona los siguientes errores:'" :errors="$errors" class="my-4" />
+        @php
+            // Los errores de estos campos ya se muestran bajo su input; el aviso solo conserva los que no tienen campo.
+            $unmatchedErrors = new \Illuminate\Support\MessageBag(
+                collect($errors->messages())->except(['name', 'country_id', 'state_id', 'new_state_name', 'new_state_short_name'])->all()
+            );
+        @endphp
+        @if ($unmatchedErrors->any())
+            <x-alerts.error :message="'Para crear la ciudad soluciona los siguientes errores:'" :errors="$unmatchedErrors" class="my-4" />
         @endif
-        <form action="{{ route('cities.store') }}" method="POST" class="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-1" autocomplete="off">
+        <form id="city-create-form" action="{{ route('cities.store') }}" method="POST" class="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-1" autocomplete="off">
             @csrf
             <div
                 x-data="{

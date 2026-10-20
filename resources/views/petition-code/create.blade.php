@@ -5,6 +5,7 @@
         attachLiveValidation('code', { required: true, max: 3 });
         attachLiveValidation('description', { required: true, max: 500 });
         attachLiveValidation('application_assumptions', { required: true, max: 500 });
+        enableFormValidation('petition-code-create-form', { errors: @json($errors->messages()) });
     </script>
 @endpush
 <x-layout-admin>
@@ -13,10 +14,16 @@
         <x-headings.without-action
             :title="'Nueva clave de pedimento'"
         />
-        @if ($errors->any())
-            <x-alerts.error :message="'Para crear la clave de pedimento soluciona los siguientes errores:'" :errors="$errors" class="my-4" />
+        @php
+            // Los errores de estos campos ya se muestran bajo su input; el aviso solo conserva los que no tienen campo.
+            $unmatchedErrors = new \Illuminate\Support\MessageBag(
+                collect($errors->messages())->except(['code', 'description', 'application_assumptions'])->all()
+            );
+        @endphp
+        @if ($unmatchedErrors->any())
+            <x-alerts.error :message="'Para crear la clave de pedimento soluciona los siguientes errores:'" :errors="$unmatchedErrors" class="my-4" />
         @endif
-        <form action="{{ route('petition-codes.store') }}" method="POST" class="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-1" autocomplete="off">
+        <form id="petition-code-create-form" action="{{ route('petition-codes.store') }}" method="POST" class="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-1" autocomplete="off">
             @csrf
             <div class="h-fit lg:col-span-2 divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
                 <div class="px-4 py-5 sm:px-6">

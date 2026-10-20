@@ -6,6 +6,7 @@
         attachLiveValidation('contact_name', { required: true, max: 255 });
         attachLiveValidation('phone1', { required: true, max: 20 });
         attachLiveValidation('phone2', { max: 20 });
+        enableFormValidation('warehouse-create-form', { errors: @json($errors->messages()) });
     </script>
 @endpush
 <x-layout-admin>
@@ -14,10 +15,16 @@
         <x-headings.without-action
             :title="'Nuevo almacen'"
         />
-        @if ($errors->any())
-            <x-alerts.error :message="'Para crear el almacen de transporte soluciona los siguientes errores:'" :errors="$errors" class="my-4" />
+        @php
+            // Los errores de estos campos ya se muestran bajo su input; el aviso solo conserva los que no tienen campo.
+            $unmatchedErrors = new \Illuminate\Support\MessageBag(
+                collect($errors->messages())->except(['name', 'contact_name', 'phone1', 'phone2'])->all()
+            );
+        @endphp
+        @if ($unmatchedErrors->any())
+            <x-alerts.error :message="'Para crear el almacen de transporte soluciona los siguientes errores:'" :errors="$unmatchedErrors" class="my-4" />
         @endif
-        <form action="{{ route('warehouses.store') }}" method="POST" class="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-1" autocomplete="off">
+        <form id="warehouse-create-form" action="{{ route('warehouses.store') }}" method="POST" class="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-1" autocomplete="off">
             @csrf
             <div class="h-fit lg:col-span-2 divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
                 <div class="px-4 py-5 sm:px-6">

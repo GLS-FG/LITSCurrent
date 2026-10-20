@@ -64,9 +64,15 @@
                     </div>
 
                     <div class="flex-1 min-h-0 overflow-y-auto px-6 py-5">
-                        @if ($mine && $errors->any())
+                        @php
+                            // Los errores de estos campos se muestran bajo su input; el aviso solo conserva los que no tienen campo.
+                            $unmatchedErrors = new \Illuminate\Support\MessageBag(
+                                collect($errors->messages())->except(['company_name', 'trade_name', 'federal_tax_id', 'national_id', 'email', 'phone1', 'country_id', 'state_id', 'city_id', 'street_name', 'street_no', 'neighborhood', 'postal_code'])->all()
+                            );
+                        @endphp
+                        @if ($mine && $unmatchedErrors->any())
                             <div id="client-create-errors">
-                                <x-alerts.error :message="'Para crear el cliente soluciona los siguientes errores:'" :errors="$errors" class="mb-6" />
+                                <x-alerts.error :message="'Para crear el cliente soluciona los siguientes errores:'" :errors="$unmatchedErrors" class="mb-6" />
                             </div>
                         @endif
                         <div class="space-y-12">
@@ -206,12 +212,19 @@
             attachLiveValidation('street_no', { required: true, max: 50 });
             attachLiveValidation('neighborhood', { required: true, max: 100 });
             attachLiveValidation('postal_code', { required: true, numeric: true, min: 5 });
+            // Sin reglas en el navegador: solo para pintar bajo su campo el error que devuelva el servidor.
+            attachLiveValidation('federal_tax_id');
+            attachLiveValidation('national_id');
 
             const form = document.getElementById('client-create-form');
+            // Valida todo al enviar y pinta bajo su campo los errores del servidor (solo los de este modal).
+            // Va antes del seguro de doble clic: si cancela el envío, ese seguro no debe bloquear el botón.
+            enableFormValidation('client-create-form', { errors: @json($mine ? $errors->messages() : (object) []) });
 
             // Avoid creating the client twice on a double click.
             form.addEventListener('submit', function (e) {
                 const submit = form.querySelector('button[type="submit"]');
+                if (e.defaultPrevented) return;
                 if (submit.disabled) { e.preventDefault(); return; }
                 submit.disabled = true;
             });

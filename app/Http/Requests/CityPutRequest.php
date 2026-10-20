@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class CityPutRequest extends FormRequest
@@ -10,6 +11,13 @@ class CityPutRequest extends FormRequest
     public function authorize(): bool
     {
         return $this->user()->can('update', $this->city);
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('name')) {
+            $this->merge(['name' => Str::upper(trim(preg_replace('/\s+/', ' ', (string) $this->input('name'))))]);
+        }
     }
 
     public function rules(): array

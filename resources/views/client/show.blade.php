@@ -101,7 +101,11 @@
                                 <td class="py-3.5 pr-3 text-sm whitespace-nowrap">
                                     <div class="flex items-center gap-2.5 font-semibold text-gray-900 dark:text-gray-50">
                                         <span class="flex size-7 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-[12px] font-bold text-gray-500 dark:text-gray-400">{{ \Illuminate\Support\Str::of($user->name)->explode(' ')->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('') }}</span>
-                                        {{ $user->name }}
+                                        @can('update', $user)
+                                            <a href="{{route('clients.users.show', ['client' => $client, 'user' => $user])}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 text-sm font-medium">{{ $user->name }}</a>
+                                        @else
+                                            {{ $user->name }}
+                                        @endcan
                                     </div>
                                 </td>
                                 <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
@@ -113,14 +117,6 @@
                                 <td class="px-3 py-3.5 text-sm font-medium whitespace-nowrap">
                                     <div class="flex items-center justify-center gap-0.5">
                                         @can('update', $user)
-                                            <a
-                                                href="{{route('clients.users.show', ['client' => $client, 'user' => $user])}}"
-                                                data-tippy-content="Ver usuario"
-                                                role="button"
-                                                class="{{ $iconBtn }}"
-                                            >
-                                                <i class="fa-regular fa-eye"></i>
-                                            </a>
                                             <button
                                                 type="button"
                                                 @click="window.dispatchEvent(new CustomEvent('open-edit-client-contact-modal-{{ $user->id }}'))"

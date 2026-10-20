@@ -21,6 +21,8 @@
     }
     $logoUrl = fn ($c) => route('clients.logos', ['filename' => str_replace('.', '_', str_replace('logos/', '', $c->image))]);
     $formAction = $client ? route('clients.update', ['client' => $client->id]) : '';
+    $savedValues = collect(['company_name', 'trade_name', 'federal_tax_id', 'national_id', 'phone1', 'email'])
+        ->mapWithKeys(fn ($field) => [$field => $client?->{$field} ?? ''])->all();
     $val = fn ($field) => $mine ? old($field, $client?->{$field}) : $client?->{$field};
     $inputClass = 'block w-full rounded-md bg-white dark:bg-lits-blue-550 px-3 py-1.5 text-base text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6';
     $labelClass = 'block text-sm/6 font-medium text-gray-900 dark:text-gray-50';
@@ -81,9 +83,15 @@
                     </div>
 
                     <div class="flex-1 min-h-0 overflow-y-auto px-6 py-5">
-                        @if ($mine && $errors->any())
+                        @php
+                            // Los errores de estos campos se muestran bajo su input; el aviso solo conserva los que no tienen campo.
+                            $unmatchedErrors = new \Illuminate\Support\MessageBag(
+                                collect($errors->messages())->except(['company_name', 'trade_name', 'federal_tax_id', 'national_id', 'email', 'phone1'])->all()
+                            );
+                        @endphp
+                        @if ($mine && $unmatchedErrors->any())
                             <div id="client-edit-errors">
-                                <x-alerts.error :message="'Para editar el cliente soluciona los siguientes errores:'" :errors="$errors" class="mb-6" />
+                                <x-alerts.error :message="'Para editar el cliente soluciona los siguientes errores:'" :errors="$unmatchedErrors" class="mb-6" />
                             </div>
                         @endif
 
@@ -160,6 +168,12 @@
             attachLiveValidation('edit_trade_name', { required: true });
             attachLiveValidation('edit_email', { required: true, email: true });
             attachLiveValidation('edit_phone1', { required: true, numeric: true, min: 10 });
+            // Sin reglas en el navegador: solo para pintar bajo su campo el error que devuelva el servidor.
+            attachLiveValidation('edit_federal_tax_id');
+            attachLiveValidation('edit_national_id');
+            // Valida todo al enviar y pinta bajo su campo los errores del servidor (solo los de este modal).
+            // Va antes del seguro de doble clic: si cancela el envío, ese seguro no debe bloquear el botón.
+            enableFormValidation('client-edit-form', { errors: @json($mine ? $errors->messages() : (object) []) });
 
             fileInput.addEventListener('change', function () {
                 const file = fileInput.files[0];
@@ -169,14 +183,16 @@
             // Avoid saving twice on a double click.
             form.addEventListener('submit', function (e) {
                 const submit = form.querySelector('button[type="submit"]');
+                if (e.defaultPrevented) return;
                 if (submit.disabled) { e.preventDefault(); return; }
                 submit.disabled = true;
             });
 
             // What the server rendered (or the last row loaded from the list); closing
             // the modal without saving restores it.
-            const snapshot = { image: preview.getAttribute('src') };
-            fields.forEach(function (field) { snapshot[field] = el(field).value; });
+            // Taken from the saved record, not from the DOM, which may hold old() input after a rejected save.
+            const snapshot = @json($savedValues);
+            snapshot.image = preview.getAttribute('src');
 
             const clearMarks = function () {
                 form.querySelectorAll('[id$="-error"]').forEach(function (node) { node.classList.add('hidden'); });

@@ -66,9 +66,15 @@
                     </div>
 
                     <div class="flex-1 min-h-0 overflow-y-auto px-6 py-5">
-                        @if ($mine && $errors->any())
+                        @php
+                            // Los errores de estos campos se muestran bajo su input; el aviso solo conserva los que no tienen campo.
+                            $unmatchedErrors = new \Illuminate\Support\MessageBag(
+                                collect($errors->messages())->except(['name', 'email', 'password', 'password_confirmation', 'role_id'])->all()
+                            );
+                        @endphp
+                        @if ($mine && $unmatchedErrors->any())
                             <div id="user-create-errors">
-                                <x-alerts.error :message="'Para crear el usuario soluciona los siguientes errores:'" :errors="$errors" class="mb-6" />
+                                <x-alerts.error :message="'Para crear el usuario soluciona los siguientes errores:'" :errors="$unmatchedErrors" class="mb-6" />
                             </div>
                         @endif
 
@@ -129,12 +135,18 @@
             attachLiveValidation('email', { required: true, email: true });
             attachLiveValidation('password', { required: true, min: 6 });
             attachLiveValidation('password-confirm', { required: true, match: 'password', matchMessage: 'Las contraseñas no coinciden.', watch: ['password'] });
+            // Sin reglas en el navegador: solo para pintar bajo su campo el error que devuelva el servidor.
+            attachLiveValidation('role_id');
+            // Valida todo al enviar y pinta bajo su campo los errores del servidor (solo los de este modal).
+            // Va antes del seguro de doble clic: si cancela el envío, ese seguro no debe bloquear el botón.
+            enableFormValidation('user-create-form', { errors: @json($mine ? $errors->messages() : (object) []) });
 
             const form = document.getElementById('user-create-form');
 
             // Avoid creating the user twice on a double click.
             form.addEventListener('submit', function (e) {
                 const submit = form.querySelector('button[type="submit"]');
+                if (e.defaultPrevented) return;
                 if (submit.disabled) { e.preventDefault(); return; }
                 submit.disabled = true;
             });

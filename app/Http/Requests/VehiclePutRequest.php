@@ -3,12 +3,21 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class VehiclePutRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return $this->user()->can('update', $this->vehicle);
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(collect(['eco_number', 'plates', 'vehicle_type', 'serial_number', 'vehicle_brand', 'vehicle_model', 'origin'])
+            ->filter(fn (string $field) => is_string($this->input($field)))
+            ->mapWithKeys(fn (string $field) => [$field => Str::upper(trim(preg_replace('/\s+/', ' ', $this->input($field))))])
+            ->all());
     }
 
     public function rules(): array

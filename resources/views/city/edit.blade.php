@@ -7,6 +7,7 @@
         attachLiveValidation('name', { required: true, max: 100 });
         attachLiveValidation('country_id', { required: true, requiredMessage: 'Selecciona un país.' });
         attachLiveValidation('state_id', { required: true, requiredMessage: 'Selecciona un estado.' });
+        enableFormValidation('city-edit-form', { errors: @json($errors->messages()) });
     </script>
 @endpush
 <x-layout-admin>
@@ -15,10 +16,16 @@
         <x-headings.without-action
             :title="'Editar ciudad'"
         />
-        @if ($errors->any())
-            <x-alerts.error :message="'Para editar la ciudad soluciona los siguientes errores:'" :errors="$errors" class="my-4" />
+        @php
+            // Los errores de estos campos ya se muestran bajo su input; el aviso solo conserva los que no tienen campo.
+            $unmatchedErrors = new \Illuminate\Support\MessageBag(
+                collect($errors->messages())->except(['name', 'country_id', 'state_id'])->all()
+            );
+        @endphp
+        @if ($unmatchedErrors->any())
+            <x-alerts.error :message="'Para editar la ciudad soluciona los siguientes errores:'" :errors="$unmatchedErrors" class="my-4" />
         @endif
-        <form action="{{ route('cities.update', ['city' => $city]) }}" method="POST" class="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-1" autocomplete="off">
+        <form id="city-edit-form" action="{{ route('cities.update', ['city' => $city]) }}" method="POST" class="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-1" autocomplete="off">
             @csrf
             @method('PUT')
             <div class="h-fit lg:col-span-2 divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
