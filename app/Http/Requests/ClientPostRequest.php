@@ -15,7 +15,7 @@ class ClientPostRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(collect(['company_name', 'trade_name', 'federal_tax_id', 'national_id'])
+        $this->merge(collect(['company_name', 'trade_name', 'federal_tax_id', 'national_id', 'street_name', 'neighborhood'])
             ->filter(fn (string $field) => is_string($this->input($field)))
             ->mapWithKeys(fn (string $field) => [$field => Str::upper(trim(preg_replace('/\s+/', ' ', $this->input($field))))])
             ->all());

@@ -16,7 +16,7 @@ class CustomAgentPostRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(collect(['company_name', 'name', 'last_name', 'patent'])
+        $this->merge(collect(['company_name', 'name', 'last_name', 'patent', 'street_name', 'neighborhood'])
             ->filter(fn (string $field) => $this->has($field))
             ->mapWithKeys(fn (string $field) => [$field => Str::upper(trim(preg_replace('/\s+/', ' ', (string) $this->input($field))))])
             ->all());

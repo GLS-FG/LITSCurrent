@@ -3,12 +3,21 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class CustomAgentAddressPutRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return $this->user()->can('update', $this->custom_agent);
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(collect(['street_name', 'neighborhood'])
+            ->filter(fn (string $field) => is_string($this->input($field)))
+            ->mapWithKeys(fn (string $field) => [$field => Str::upper(trim(preg_replace('/\s+/', ' ', $this->input($field))))])
+            ->all());
     }
 
     public function rules(): array
