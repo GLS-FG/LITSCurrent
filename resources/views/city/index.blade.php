@@ -5,7 +5,7 @@
         <x-headings.with-one-action
             :title="'Ciudades'"
             :buttonLabel="'Nueva ciudad'"
-            :buttonAction="route('cities.create')"
+            :buttonEvent="'open-add-city-modal'"
             :objectClass="\App\Models\City::class"
         />
         @if(session()->has('success'))
@@ -117,23 +117,21 @@
                             </td>
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                <a
-                                    href="{{route('cities.show', ['city' => $city->id])}}"
-                                    data-tippy-content="Ver"
-                                    role="button"
-                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                >
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
                                 @can('update', $city)
-                                    <a
-                                        href="{{route('cities.edit', ['city' => $city->id])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-city', { detail: @js([
+                                            'id' => $city->id,
+                                            'update_url' => route('cities.update', ['city' => $city->id]),
+                                            'name' => $city->name,
+                                            'country_id' => $city->state->country_id,
+                                            'state_id' => $city->state_id,
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $city)
                                     <div
@@ -217,7 +215,7 @@
                                     <td colspan="5" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                         No hay ciudades en la base de datos
                                         @can('create', \App\Models\City::class)
-                                            <span>, define uno nuevo haciendo <a href="{{route('cities.create')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                            <span>, define uno nuevo haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-city-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                         @endcan
                                         .
                                     </td>
@@ -233,4 +231,10 @@
                     </nav>
                 @endif
     </section>
+    @can('create', \App\Models\City::class)
+        <x-modals.city-form mode="create" :countries="$countries" />
+    @endcan
+    @if($cities->isNotEmpty() && auth()->user()->can('update', $cities->first()))
+        <x-modals.city-form mode="edit" :countries="$countries" />
+    @endif
 </x-layout-admin>

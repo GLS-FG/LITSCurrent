@@ -5,8 +5,8 @@
         <x-headings.with-one-action
             :title="'Claves de pedimento'"
             :buttonLabel="'Nueva clave'"
-            :buttonAction="route('petition-codes.create')"
-            :objectClass="\App\Models\Warehouse::class"
+            :buttonEvent="'open-add-petition-code-modal'"
+            :objectClass="\App\Models\PetitionCode::class"
         />
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
@@ -113,23 +113,21 @@
                             </td>
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                <a
-                                    href="{{route('petition-codes.show', ['petition_code' => $code->id])}}"
-                                    data-tippy-content="Ver"
-                                    role="button"
-                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                >
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
                                 @can('update', $code)
-                                    <a
-                                        href="{{route('petition-codes.edit', ['petition_code' => $code->id])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-petition-code', { detail: @js([
+                                            'id' => $code->id,
+                                            'update_url' => route('petition-codes.update', ['petition_code' => $code->id]),
+                                            'code' => $code->code,
+                                            'description' => $code->description,
+                                            'application_assumptions' => $code->application_assumptions,
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $code)
                                     <div
@@ -213,7 +211,7 @@
                                     <td colspan="4" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                         No hay claves de pedimento en la base de datos
                                         @can('create', \App\Models\PetitionCode::class)
-                                            <span>, define una nueva haciendo <a href="{{route('petition-codes.create')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                            <span>, define una nueva haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-petition-code-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                         @endcan
                                         .
                                     </td>
@@ -229,4 +227,10 @@
                     </nav>
                 @endif
     </section>
+    @can('create', \App\Models\PetitionCode::class)
+        <x-modals.petition-code-form mode="create" />
+    @endcan
+    @if($codes->isNotEmpty() && auth()->user()->can('update', $codes->first()))
+        <x-modals.petition-code-form mode="edit" />
+    @endif
 </x-layout-admin>

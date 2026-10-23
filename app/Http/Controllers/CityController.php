@@ -33,8 +33,10 @@ class CityController extends Controller
                     ->orderBy('created_at', 'asc')
             )
             ->paginate(20)->withQueryString();
+        $cities->load('state.country');
         return view('city.index', [
-            'cities' => $cities
+            'cities' => $cities,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
         ]);
     }
 
@@ -60,7 +62,10 @@ class CityController extends Controller
 
     public function show(City $city)
     {
-        return view('city.show', compact('city'));
+        return view('city.show', [
+            'city' => $city,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
+        ]);
     }
 
     public function edit(City $city)

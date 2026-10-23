@@ -15,8 +15,10 @@ class WarehousePutRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('name')) {
-            $this->merge(['name' => Str::upper(trim(preg_replace('/\s+/', ' ', (string) $this->input('name'))))]);
+        foreach (['name', 'contact_name'] as $field) {
+            if ($this->has($field)) {
+                $this->merge([$field => Str::upper(trim(preg_replace('/\s+/', ' ', (string) $this->input($field))))]);
+            }
         }
     }
 

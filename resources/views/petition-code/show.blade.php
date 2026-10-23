@@ -1,55 +1,53 @@
 @section('title', 'Detalles de la clave de pedimento')
+@php
+    $actionBtn = 'inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer';
+@endphp
 <x-layout-admin>
     <section>
-        <x-navigation.breadcrumbs :links="['Claves de pedimento' => route('petition-codes.index'), $code->code => '#']" />
-        <x-headings.without-action
-            :title="'Detalles de la clave de pedimento'"
-        />
-        @if ($errors->any())
+        <x-navigation.breadcrumbs :links="['Claves de pedimento' => route('petition-codes.index')]" />
+        @if ($errors->any() && ! old('_drawer'))
             <x-alerts.error :message="'Ocurrieron los siguientes errores:'" :errors="$errors" class="my-4" />
         @endif
         @if(session()->has('success'))
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
-        <div class="mt-8">
-            <div class="divide-y divide-gray-200 dark:divide-gray-700 rounded bg-white dark:bg-lits-blue-550 shadow-lits-card">
-                <div class="px-4 py-5 sm:px-6">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-50">Transportista</h3>
-                            <p class="mt-1 max-w-2xl text-sm/6 text-gray-500 dark:text-gray-400">Información del almacen y su contacto.</p>
-                        </div>
-                        <div class="flex shrink-0 space-x-5">
-                            @can('update', $code)
-                                <a href='{{route('petition-codes.edit', [ 'petition_code' => $code->id ])}}' class="inline-flex items-center gap-1 rounded bg-lits-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lits-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-450 hover:cursor-pointer">
-                                    <i class="fa-regular fa-pen-to-square mr-1.5 -ml-0.5"></i>
-                                    Editar clave
-                                </a>
-                            @endcan
-                        </div>
-                    </div>
+
+        <div class="mt-4 space-y-8">
+            {{-- Cabecera compacta --}}
+            <header class="flex flex-wrap items-center gap-x-4 gap-y-3">
+                <div class="flex size-12 flex-none items-center justify-center rounded-full border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 text-lg text-gray-500 dark:text-gray-400" aria-hidden="true">
+                    <i class="fa-regular fa-file-lines"></i>
                 </div>
-                <div class="px-4 py-5 sm:p-6 divide-y divide-gray-200 dark:divide-gray-700">
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Clave</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$code->code}}
-                        </dd>
-                    </div>
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Descripción</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$code->description}}
-                        </dd>
-                    </div>
-                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-gray-50">Supuesto</dt>
-                        <dd class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-2 sm:mt-0">
-                            {{$code->application_assumptions}}
-                        </dd>
-                    </div>
+                <div class="min-w-0">
+                    <h1 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-50 break-words">{{ $code->code }}</h1>
+                    <p class="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                        <span>Alta {{ $code->created_at->isoFormat('D MMM YYYY') }}</span>
+                    </p>
                 </div>
-            </div>
+                <div class="flex flex-wrap gap-2 sm:ml-auto">
+                    @can('update', $code)
+                        <button type="button" @click="window.dispatchEvent(new CustomEvent('open-edit-petition-code-modal'))" class="{{ $actionBtn }}">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                            Editar clave
+                        </button>
+                    @endcan
+                </div>
+            </header>
+
+            {{-- Franja de datos --}}
+            <dl class="grid grid-cols-1 gap-x-7 gap-y-5 border-y border-gray-200 dark:border-lits-blue-450 py-5">
+                <div class="min-w-0">
+                    <dt class="mb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">Descripción</dt>
+                    <dd class="text-sm text-gray-900 dark:text-gray-50 break-words">{{ $code->description }}</dd>
+                </div>
+                <div class="min-w-0">
+                    <dt class="mb-1 text-xs font-semibold text-gray-400 dark:text-gray-500">Supuesto de aplicación</dt>
+                    <dd class="text-sm text-gray-900 dark:text-gray-50 break-words whitespace-pre-line">{{ $code->application_assumptions }}</dd>
+                </div>
+            </dl>
         </div>
     </section>
+    @can('update', $code)
+        <x-modals.petition-code-form mode="edit" :petition-code="$code" />
+    @endcan
 </x-layout-admin>

@@ -5,7 +5,7 @@
         <x-headings.with-one-action
             :title="'Almacenes'"
             :buttonLabel="'Nuevo almacen'"
-            :buttonAction="route('warehouses.create')"
+            :buttonEvent="'open-add-warehouse-modal'"
             :objectClass="\App\Models\Warehouse::class"
         />
         @if(session()->has('success'))
@@ -117,23 +117,22 @@
                             </td>
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                <a
-                                    href="{{route('warehouses.show', ['warehouse' => $warehouse->id])}}"
-                                    data-tippy-content="Ver"
-                                    role="button"
-                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                >
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
                                 @can('update', $warehouse)
-                                    <a
-                                        href="{{route('warehouses.edit', ['warehouse' => $warehouse->id])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-warehouse', { detail: @js([
+                                            'id' => $warehouse->id,
+                                            'update_url' => route('warehouses.update', ['warehouse' => $warehouse->id]),
+                                            'name' => $warehouse->name,
+                                            'contact_name' => $warehouse->contact_name,
+                                            'phone1' => $warehouse->phone1,
+                                            'phone2' => $warehouse->phone2,
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $warehouse)
                                     <div
@@ -217,7 +216,7 @@
                                     <td colspan="5" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                         No hay almacenes en la base de datos
                                         @can('create', \App\Models\Warehouse::class)
-                                            <span>, define uno nuevo haciendo <a href="{{route('warehouses.create')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                            <span>, define uno nuevo haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-warehouse-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                         @endcan
                                         .
                                     </td>
@@ -233,4 +232,10 @@
                     </nav>
                 @endif
     </section>
+    @can('create', \App\Models\Warehouse::class)
+        <x-modals.warehouse-form mode="create" />
+    @endcan
+    @if($warehouses->isNotEmpty() && auth()->user()->can('update', $warehouses->first()))
+        <x-modals.warehouse-form mode="edit" />
+    @endif
 </x-layout-admin>
