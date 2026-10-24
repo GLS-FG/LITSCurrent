@@ -4,12 +4,22 @@ namespace App\Http\Requests;
 
 use App\Models\Transportation;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class TransportationPostRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return $this->user()->can('create', Transportation::class);
+    }
+
+    protected function prepareForValidation(): void
+    {
+        foreach (['plates', 'driver'] as $field) {
+            if ($this->filled($field)) {
+                $this->merge([$field => Str::upper(trim(preg_replace('/\s+/', ' ', (string) $this->input($field))))]);
+            }
+        }
     }
 
     public function rules(): array

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class TransportationPutRequest extends FormRequest
 {
@@ -10,6 +11,15 @@ class TransportationPutRequest extends FormRequest
     {
         return $this->user()->can('update', $this->transportation);
 
+    }
+
+    protected function prepareForValidation(): void
+    {
+        foreach (['plates', 'driver'] as $field) {
+            if ($this->filled($field)) {
+                $this->merge([$field => Str::upper(trim(preg_replace('/\s+/', ' ', (string) $this->input($field))))]);
+            }
+        }
     }
 
     public function rules(): array

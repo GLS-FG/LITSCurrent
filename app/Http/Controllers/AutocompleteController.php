@@ -149,13 +149,14 @@ class AutocompleteController extends Controller
         }
         $search = $request->get('search');
         $transportation = $request->get('transportation_agency_id');
-        $countries = Vehicle::select('id', 'eco_number', 'plates', 'vehicle_type')
+        $query = Vehicle::select('id', 'eco_number', 'plates', 'vehicle_type')
             ->where( 'transportation_agency_id', $transportation)
             ->where( 'eco_number', 'like' , '%' . $search . '%')
-            ->orderBy('eco_number')
-            ->limit(20)
-            ->get();
-        return response()->json($this->mapVehicles($countries));
+            ->orderBy('eco_number');
+        if (!$request->boolean('all')) {
+            $query->limit(20);
+        }
+        return response()->json($this->mapVehicles($query->get()));
     }
 
     private function mapVehicles(Collection $locations)

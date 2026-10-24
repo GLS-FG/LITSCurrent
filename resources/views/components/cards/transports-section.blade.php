@@ -1,16 +1,17 @@
+@props(['order', 'shipment', 'statuses', 'agencies'])
 <div class="flow-root">
     <div class="flex flex-wrap items-center justify-between sm:flex-nowrap mb-3">
         <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-50">Transportes</h3>
         <div class="flex space-x-2">
             @can('update', $shipment)
-                <a
+                <button
                     type="button"
-                    href="{{route('orders.shipments.transportations.create', ['order' => $order->id, 'shipment' => $shipment->id])}}"
-                    class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    @click="window.dispatchEvent(new CustomEvent('open-add-transportation-modal'))"
+                    class="hover:cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                     <i class="fa-regular fa-plus"></i>
                     Agregar transporte
-                </a>
+                </button>
             @endcan
         </div>
     </div>
@@ -148,14 +149,25 @@
                                     </a>
                                 @endif
                                 @can('update', $shipment)
-                                    <a
-                                        href='{{route('orders.shipments.transportations.edit', [ 'order' => $order->id, 'shipment' => $shipment->id, 'transportation' => $transportation->id ])}}'
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-transportation', { detail: @js([
+                                            'id' => $transportation->id,
+                                            'update_url' => route('orders.shipments.transportations.update', ['order' => $order->id, 'shipment' => $shipment->id, 'transportation' => $transportation->id]),
+                                            'transportation_agency' => $transportation->agency->name . ' / ' . $transportation->agency->company_name,
+                                            'transportation_agency_id' => $transportation->transportation_agency_id,
+                                            'unit_eco_number' => $transportation->unit_eco_number,
+                                            'vehicle_id' => $transportation->vehicle_id,
+                                            'transportation_type' => $transportation->transportation_type,
+                                            'plates' => $transportation->plates,
+                                            'driver' => $transportation->driver,
+                                            'tracking_link' => $transportation->tracking_link,
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $shipment)
                                     <div
@@ -245,3 +257,9 @@
         </div>
     </div>
 </div>
+@can('update', $shipment)
+    <x-modals.transportation-form mode="create" :order="$order" :shipment="$shipment" :agencies="$agencies" />
+    @if($shipment->transportations->isNotEmpty())
+        <x-modals.transportation-form mode="edit" :order="$order" :shipment="$shipment" :agencies="$agencies" />
+    @endif
+@endcan

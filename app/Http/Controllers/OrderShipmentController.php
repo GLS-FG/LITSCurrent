@@ -22,6 +22,7 @@ use App\Models\OrderShipmentStatus;
 use App\Models\PetitionCode;
 use App\Models\ServiceClass;
 use App\Models\ServiceTypeStatus;
+use App\Models\TransportationAgency;
 use App\Models\TransportationStatus;
 use App\Notifications\OrderShipmentUpdate;
 use App\View\Helpers\OrderDocumentCount;
@@ -320,6 +321,7 @@ class OrderShipmentController extends Controller
             'statuses' => OrderShipmentStatus::all(),
             'documentTypes' => $documentTypes,
             'transportationStatuses' => TransportationStatus::all(),
+            'agencies' => TransportationAgency::all(),
             'mapAvailable' => $mapAvailable,
             'mapLocations' => $mapLocations,
             'serviceClasses' => ServiceClass::where('service_type_id', 1)->get(),
