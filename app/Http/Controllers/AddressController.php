@@ -29,8 +29,10 @@ class AddressController extends Controller
                     ->orderBy('created_at', 'desc')
             )
             ->paginate(20)->withQueryString();
+        $addresses->load('city', 'state', 'country');
         return view('address.index', [
-            'addresses' => $addresses
+            'addresses' => $addresses,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
         ]);
     }
 
@@ -50,7 +52,10 @@ class AddressController extends Controller
 
     public function show(Address $address)
     {
-        return view('address.show', ['address' => $address]);
+        return view('address.show', [
+            'address' => $address,
+            'countries' => Country::select('id', 'name')->orderBy('name')->get(),
+        ]);
     }
 
     public function edit(Address $address)

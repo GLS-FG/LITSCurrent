@@ -10,7 +10,7 @@
         <x-headings.with-one-action
             :title="'Class Types'"
             :buttonLabel="'Nuevo class type'"
-            :buttonAction="route('service-types.service-classes.service-modes.class-types.create', ['service_type' => $serviceType, 'service_class' => $serviceClass, 'service_mode' => $serviceMode])"
+            :buttonEvent="'open-add-class-type-modal'"
             :objectClass="\App\Models\ServiceClass::class"
         />
         @if(session()->has('success'))
@@ -41,23 +41,20 @@
                             </td>
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                <a
-                                    href="{{route('service-types.service-classes.service-modes.class-types.service-levels.index', ['service_type' => $serviceType, 'service_class' => $serviceClass, 'service_mode' => $serviceMode, 'class_type' => $service])}}"
-                                    data-tippy-content="Ver"
-                                    role="button"
-                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                >
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
                                 @can('update', $serviceType)
-                                    <a
-                                        href="{{route('service-types.service-classes.service-modes.class-types.edit', ['service_type' => $serviceType, 'service_class' => $serviceClass, 'service_mode' => $serviceMode, 'class_type' => $service])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-class-type', { detail: @js([
+                                            'id' => $service->id,
+                                            'update_url' => route('service-types.service-classes.service-modes.class-types.update', ['service_type' => $serviceType, 'service_class' => $serviceClass, 'service_mode' => $serviceMode, 'class_type' => $service]),
+                                            'code' => $service->code,
+                                            'name' => $service->name,
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $serviceType)
                                     <div
@@ -140,8 +137,8 @@
                                 <tr>
                                     <td colspan="4" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                         No hay service classes en la base de datos
-                                        @can('create', \App\Models\TransportationAgency::class)
-                                            <span>, define uno nuevo haciendo <a href="{{route('service-types.service-classes.create', ['service_type' => $serviceType->id])}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                        @can('create', \App\Models\ServiceClass::class)
+                                            <span>, define uno nuevo haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-class-type-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                         @endcan
                                         .
                                     </td>
@@ -152,4 +149,10 @@
             </div>
         </div>
     </section>
+    @can('create', \App\Models\ServiceClass::class)
+        <x-modals.service-type-form kind="class-type" mode="create" :service-type="$serviceType" :service-class="$serviceClass" :service-mode="$serviceMode" />
+    @endcan
+    @if($services->isNotEmpty() && auth()->user()->can('update', $serviceType))
+        <x-modals.service-type-form kind="class-type" mode="edit" :service-type="$serviceType" :service-class="$serviceClass" :service-mode="$serviceMode" />
+    @endif
 </x-layout-admin>

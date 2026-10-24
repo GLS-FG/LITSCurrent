@@ -14,7 +14,6 @@
                         <th scope="col" class="py-2.5 pl-2 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Código</th>
                         <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Nombre</th>
                         <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Fecha alta</th>
-                        <th scope="col" class="py-2.5 pr-2 pl-3 text-center text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -29,22 +28,10 @@
                             <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                                 {{ $service->created_at->isoFormat('D MMM YYYY') }}
                             </td>
-                            <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
-                                <div class="flex items-center justify-center gap-1">
-                                <a
-                                    href="{{route('service-types.service-classes.index', ['service_type' => $service->id])}}"
-                                    data-tippy-content="Ver"
-                                    role="button"
-                                    class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-                                >
-                                    <i class="fa-regular fa-eye"></i>
-                                </a>
-                                </div>
-                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="3" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                 No hay Service Types en la base de datos.
                             </td>
                         </tr>
