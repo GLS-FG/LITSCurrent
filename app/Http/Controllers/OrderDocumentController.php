@@ -60,7 +60,7 @@ class OrderDocumentController extends Controller
             $document->document_type_id = $validated['document_type_id'];
             $order->documents()->save($document);
         }
-        return redirect()->route('orders.show', [ 'order' => $order ]);
+        return redirect()->route('orders.show', [ 'order' => $order, 'activeTab' => 1 ]);
     }
 
     public function destroy(Order $order, Document $document)

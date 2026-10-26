@@ -62,7 +62,7 @@ class OrderShipmentDocumentController extends Controller
             $document->document_type_id = $validated['document_type_id'];
             $shipment->documents()->save($document);
         }
-        return redirect()->route('orders.shipments.show', [ 'order' => $order, 'shipment' => $shipment ])->with('success', 'Archivo adjuntado correctamente.');
+        return redirect()->route('orders.shipments.show', [ 'order' => $order, 'shipment' => $shipment, 'activeTab' => 1 ])->with('success', 'Archivo adjuntado correctamente.');
     }
 
     public function destroy(Order $order, OrderShipment $shipment, Document $document)

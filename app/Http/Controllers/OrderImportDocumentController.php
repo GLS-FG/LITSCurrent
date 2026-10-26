@@ -62,7 +62,7 @@ class OrderImportDocumentController extends Controller
             $document->document_type_id = $validated['document_type_id'];
             $import->documents()->save($document);
         }
-        return redirect()->route('orders.imports.show', [ 'order' => $order, 'import' => $import ]);
+        return redirect()->route('orders.imports.show', [ 'order' => $order, 'import' => $import, 'activeTab' => 1 ]);
     }
 
     public function destroy(Order $order, OrderImport $import, Document $document)

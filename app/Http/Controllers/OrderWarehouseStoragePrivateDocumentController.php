@@ -62,7 +62,7 @@ class OrderWarehouseStoragePrivateDocumentController extends Controller
             $document->private_document_type_id = $validated['private_document_type_id'];
             $warehouseStorage->documents()->save($document);
         }
-        return redirect()->route('orders.warehouse-storages.show', [ 'order' => $order, 'warehouse_storage' => $warehouseStorage ]);
+        return redirect()->route('orders.warehouse-storages.show', [ 'order' => $order, 'warehouse_storage' => $warehouseStorage, 'activeTab' => 3 ]);
     }
 
     public function destroy(String $document)

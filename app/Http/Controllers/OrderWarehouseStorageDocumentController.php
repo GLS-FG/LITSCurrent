@@ -62,7 +62,7 @@ class OrderWarehouseStorageDocumentController extends Controller
             $document->document_type_id = $validated['document_type_id'];
             $warehouseStorage->documents()->save($document);
         }
-        return redirect()->route('orders.warehouse-storages.show', [ 'order' => $order, 'warehouse_storage' => $warehouseStorage ]);
+        return redirect()->route('orders.warehouse-storages.show', [ 'order' => $order, 'warehouse_storage' => $warehouseStorage, 'activeTab' => 1 ]);
     }
 
     public function destroy(Order $order, WarehouseStorage $warehouseStorage, Document $document)

@@ -63,7 +63,7 @@ class OrderExportDocumentController extends Controller
             $document->document_type_id = $validated['document_type_id'];
             $export->documents()->save($document);
         }
-        return redirect()->route('orders.exports.show', [ 'order' => $order, 'export' => $export ]);
+        return redirect()->route('orders.exports.show', [ 'order' => $order, 'export' => $export, 'activeTab' => 1 ]);
     }
 
     public function destroy(Order $order, OrderExport $export, Document $document)

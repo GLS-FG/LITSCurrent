@@ -62,7 +62,7 @@ class OrderShipmentPrivateDocumentController extends Controller
             $document->private_document_type_id = $validated['private_document_type_id'];
             $shipment->privateDocuments()->save($document);
         }
-        return redirect()->route('orders.shipments.show', [ 'order' => $order, 'shipment' => $shipment ])->with('success', 'Archivo interno adjuntado correctamente.');
+        return redirect()->route('orders.shipments.show', [ 'order' => $order, 'shipment' => $shipment, 'activeTab' => 3 ])->with('success', 'Archivo interno adjuntado correctamente.');
     }
 
     public function destroy(String $document)

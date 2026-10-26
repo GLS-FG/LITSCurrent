@@ -62,7 +62,7 @@ class OrderImportPrivateDocumentController extends Controller
             $document->private_document_type_id = $validated['private_document_type_id'];
             $import->documents()->save($document);
         }
-        return redirect()->route('orders.imports.show', [ 'order' => $order, 'import' => $import ]);
+        return redirect()->route('orders.imports.show', [ 'order' => $order, 'import' => $import, 'activeTab' => 3 ]);
     }
 
     public function destroy(String $document)
