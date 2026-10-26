@@ -16,17 +16,17 @@ class OrderImportPrivateDocumentController extends Controller
 {
     public function index(Order $order, OrderImport $import, Request $request)
     {
-        if (!$request->has('files')) {
+        if (!$request->has('privatefiles')) {
             abort(400, 'Debes seleccionar al menos dos archivos para descargar el ZIP del expediente interno.');
         }
-        $selectedFiles = $request->input('files');
+        $selectedFiles = $request->input('privatefiles');
         if (count($selectedFiles) < 2) {
             abort(400, 'Debes seleccionar al menos dos archivos para descargar el ZIP del expediente interno.');
         }
         $zipFileName = 'ExpedienteInterno_' . $import->tracking_code .'_Aduana.zip';
         $zip = new ZipArchive();
         $zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-        foreach ($import->documents as $document) {
+        foreach ($import->privateDocuments as $document) {
             if(in_array($document->id, $selectedFiles)){
                 $filePath = storage_path('app/private/' . $document->name);
                 $zip->addFile($filePath, $document->original_name);
