@@ -22,5 +22,18 @@ return [
     'search_status' => 'Search Status',
     'active' => 'Active',
     'urgent' => 'Urgent',
+    'field_code' => 'Code',
+    'field_client' => 'Client',
+    'field_reference' => 'Reference',
+    'field_service' => 'Service',
+    'hint_code' => 'order, creator or tracking',
+    'hint_client' => 'client or contact',
+    'hint_reference' => 'order reference',
+    'hint_service' => 'class, mode, type or level',
+    'search_placeholder' => 'Type and choose where to search…',
+    'search_in' => 'Search “:term” in…',
+    'search_replaces' => 'replaces the current chip',
+    'search_remove' => 'Remove',
+    'search_clear' => 'Clear search',
 ];
 
