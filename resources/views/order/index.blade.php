@@ -43,6 +43,7 @@
                 fields: @js($searchFields),
                 chips: @js($searchChips),
                 t: @js($searchStrings),
+                urgent: @js(request()->boolean('urgent') && ! ($history ?? false)),
                 text: '',
                 open: false,
                 idx: 0,
@@ -58,6 +59,14 @@
                     this.open = false;
                 },
                 remove(i) { this.chips.splice(i, 1); },
+                removeAndSearch(i) {
+                    this.remove(i);
+                    const params = new URLSearchParams();
+                    this.chips.forEach(c => params.append(this.fields[c.f].param, c.v));
+                    if (this.urgent) params.set('urgent', '1');
+                    const query = params.toString();
+                    window.location.href = this.$refs.form.getAttribute('action') + (query ? '?' + query : '');
+                },
                 submit() {
                     if (this.text.trim()) this.add(this.keys()[0]);
                     this.$nextTick(() => this.$refs.form.submit());
@@ -68,6 +77,10 @@
                 <template x-for="c in chips" :key="c.f">
                     <input type="hidden" :name="fields[c.f].param" :value="c.v">
                 </template>
+                {{-- Conserva la pestaña Urgentes al buscar. El historial no tiene pestañas y no lee este parámetro. --}}
+                @if(request()->boolean('urgent') && ! ($history ?? false))
+                    <input type="hidden" name="urgent" value="1">
+                @endif
 
                 <div class="relative flex-1 min-w-0 flex flex-wrap items-center gap-1.5 rounded-lg bg-white dark:bg-lits-blue-550 border border-gray-200 dark:border-lits-blue-450 px-3.5 py-2 focus-within:outline-2 focus-within:-outline-offset-1 focus-within:outline-indigo-600">
                     <i class="fa-regular fa-magnifying-glass text-gray-400 dark:text-gray-500"></i>
@@ -75,7 +88,7 @@
                         <span class="inline-flex max-w-full items-center gap-1.5 rounded-md bg-entity-orders-50 dark:bg-entity-orders/15 text-entity-orders dark:text-indigo-400 py-0.5 pr-1 pl-2 text-sm">
                             <span class="font-semibold" x-text="fields[c.f].label + ':'"></span>
                             <span class="break-all" x-text="c.v"></span>
-                            <button type="button" @click="remove(i); $refs.q.focus()" :aria-label="t.remove + ' ' + fields[c.f].label + ' ' + c.v" class="inline-flex size-5 items-center justify-center rounded text-entity-orders dark:text-indigo-400 hover:bg-black/10 hover:cursor-pointer">
+                            <button type="button" @click="removeAndSearch(i)" :aria-label="t.remove + ' ' + fields[c.f].label + ' ' + c.v" class="inline-flex size-5 items-center justify-center rounded text-entity-orders dark:text-indigo-400 hover:bg-black/10 hover:cursor-pointer">
                                 <i class="fa-regular fa-xmark text-xs"></i>
                             </button>
                         </span>
@@ -118,7 +131,7 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <a x-cloak x-show="chips.length" href="{{ $index }}" class="px-1 text-sm text-gray-500 dark:text-gray-400 hover:text-lits-red-500 hover:underline">{{ __('indexes.search_clear') }}</a>
+                    <a x-cloak x-show="chips.length" href="{{ $index }}{{ request()->boolean('urgent') && ! ($history ?? false) ? '?urgent=1' : '' }}" class="px-1 text-sm text-gray-500 dark:text-gray-400 hover:text-lits-red-500 hover:underline">{{ __('indexes.search_clear') }}</a>
                     <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-lits-red-500 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-lits-red-600 hover:cursor-pointer">
                         {{ __('indexes.search') }}
                     </button>
