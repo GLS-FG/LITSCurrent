@@ -7,8 +7,15 @@
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
 
-        <div class="mt-5" x-data="{ showFilters: false }">
+        @if($dashboard)
+            @include('order-import.partials.client-dashboard')
+        @endif
+
+        <div id="operaciones" class="mt-5 scroll-mt-4" x-data="{ showFilters: false }">
             <form method="GET" action="{{ route('imports.index') }}" class="flex flex-col gap-2">
+                @if(request('period'))<input type="hidden" name="period" value="{{ request('period') }}">@endif
+                @if($stage)<input type="hidden" name="stage" value="{{ $stage }}">@endif
+                @if($onlyUrgent)<input type="hidden" name="urgent" value="1">@endif
                 <div class="flex flex-col md:flex-row gap-2">
                     <div class="flex-1 flex items-center gap-2 rounded-lg bg-white dark:bg-lits-blue-550 border border-gray-200 dark:border-lits-blue-450 px-3.5 py-2.5">
                         <i class="fa-regular fa-magnifying-glass text-gray-400 dark:text-gray-500"></i>
@@ -81,6 +88,10 @@
                         <tr class="border-b border-gray-200 dark:border-lits-blue-450">
                             <th scope="col" class="py-2.5 pl-2 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Orden</th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Cliente</th>
+                            @if($dashboard)
+                                <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Aduana</th>
+                                <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Agente aduanal</th>
+                            @endif
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Referencia</th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Fecha solicitud</th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Estatus</th>
@@ -105,6 +116,10 @@
                                     </div>
                                 </div>
                             </td>
+                            @if($dashboard)
+                                <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $import->custom?->denomination ?? '—' }}</td>
+                                <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $import->customAgent?->company_name ?: trim($import->customAgent?->name . ' ' . $import->customAgent?->last_name) ?: '—' }}</td>
+                            @endif
                             <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400 max-w-xs">
                                 <span class="block break-words">{{ $import->reference }}</span>
                             </td>
@@ -118,9 +133,12 @@
                                     role="button"
                                 >
                                     @if($import->latestLocation != null)
-                                        <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
-                                            <span class="size-1.5 rounded-full bg-gray-400 dark:bg-gray-500"></span>
-                                            {{$import->latestLocation->status->name}}
+                                        @php
+                                            $stageKey = $dashboard ? (['PENDING DOCUMENTS' => 'docs-pend', 'DOCUMENTS COLLECTED' => 'docs-ok', 'CUSTOMS CLEARANCE IN PROCESS' => 'proceso', 'CUSTOMS CLEARANCE DONE' => 'concluido', 'DELAYED' => 'retraso'][strtoupper($import->latestLocation->status->name)] ?? null) : null;
+                                        @endphp
+                                        <span class="inline-flex items-center gap-1.5 text-xs {{ $stageKey === 'retraso' ? 'font-semibold text-lits-red-500' : 'font-medium text-gray-500 dark:text-gray-400' }}">
+                                            <span class="size-1.5 rounded-full {{ ['docs-pend' => 'bg-violet-200 dark:bg-[#3F3568]', 'docs-ok' => 'bg-violet-300 dark:bg-[#6A58A8]', 'proceso' => 'bg-violet-500 dark:bg-[#8D78D6]', 'concluido' => 'bg-violet-800 dark:bg-[#B9A8F5]', 'retraso' => 'bg-lits-red-500'][$stageKey] ?? 'bg-gray-400 dark:bg-gray-500' }}"></span>
+                                            {{ $stageKey ? $stageLabels[$stageKey] : $import->latestLocation->status->name }}
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
@@ -221,7 +239,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-3 py-8 text-sm text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="{{ $dashboard ? 8 : 6 }}"class="px-3 py-8 text-sm text-center text-gray-500 dark:text-gray-400">
                                 No hay órdenes de servicio en la base de datos
                                 @can('create', \App\Models\OrderImport::class)
                                     <span>, para crear una debes ingresar a una <a href="{{route('orders.index')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">órden de servicio</a>, hacer click en "Agregar servicio", seguido de "Importación"</span>

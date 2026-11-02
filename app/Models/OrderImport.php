@@ -30,6 +30,16 @@ class OrderImport extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function custom(): BelongsTo
+    {
+        return $this->belongsTo(Custom::class)->withTrashed();
+    }
+
+    public function customAgent(): BelongsTo
+    {
+        return $this->belongsTo(CustomAgent::class)->withTrashed();
+    }
+
     public function declarations(): HasMany
     {
         return $this->hasMany(CustomDeclaration::class);

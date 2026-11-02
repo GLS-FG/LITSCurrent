@@ -30,11 +30,131 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class OrderImportController extends Controller
 {
+    /**
+     * Etapas del despacho del tablero (rol Cliente), según el nombre del último
+     * estatus de ubicación del catálogo (`service_type_statuses.name`).
+     */
+    private const STAGE_BY_STATUS = [
+        'PENDING DOCUMENTS' => 'docs-pend',
+        'DOCUMENTS COLLECTED' => 'docs-ok',
+        'CUSTOMS CLEARANCE IN PROCESS' => 'proceso',
+        'CUSTOMS CLEARANCE DONE' => 'concluido',
+        'DELAYED' => 'retraso',
+    ];
+
+    public const STAGE_LABELS = [
+        'docs-pend' => 'Documentos pendientes',
+        'docs-ok' => 'Documentos recopilados',
+        'proceso' => 'Despacho en proceso',
+        'concluido' => 'Despacho concluido',
+        'retraso' => 'Retrasado',
+        'otros' => 'Otros estatus',
+        'stale' => 'Sin actualizar',
+    ];
+
+    private function filterByStage($query, string $stage)
+    {
+        $known = array_keys(self::STAGE_BY_STATUS);
+        if ($stage === 'stale') {
+            return $query->whereDoesntHave('latestLocation');
+        }
+        if ($stage === 'otros') {
+            return $query->whereHas('latestLocation.status', fn ($q) => $q->whereNotIn(DB::raw('UPPER(name)'), $known));
+        }
+        $names = array_keys(array_filter(self::STAGE_BY_STATUS, fn ($s) => $s === $stage));
+        return $names ? $query->whereHas('latestLocation.status', fn ($q) => $q->whereIn(DB::raw('UPPER(name)'), $names)) : $query;
+    }
+
+    /**
+     * Indicadores del tablero de Aduanas para el rol Cliente. Solo cuenta las
+     * operaciones de las órdenes del propio contacto (misma regla que el listado).
+     */
+    private function clientDashboard($user, string $period): array
+    {
+        $period = in_array($period, ['month', '6m', 'all']) ? $period : 'month';
+        $from = match ($period) {
+            'month' => now()->startOfMonth(),
+            '6m' => now()->subMonths(5)->startOfMonth(),
+            default => null,
+        };
+        $scope = fn () => OrderImport::whereHas('order', fn ($q) => $q
+            ->where('client_id', $user->client->id)
+            ->where('contact_id', $user->id));
+        $closed = [OrderImportStatusEnum::CLOSED->value, OrderImportStatusEnum::CANCELED->value];
+        $canceled = OrderImportStatusEnum::CANCELED->value;
+        $closedId = OrderImportStatusEnum::CLOSED->value;
+
+        // Operaciones activas por etapa (último estatus de ubicación)
+        $active = $scope()->whereNotIn('order_import_status_id', $closed)->with('latestLocation.status')->get();
+        $stages = array_fill_keys(array_keys(self::STAGE_LABELS), 0);
+        foreach ($active as $import) {
+            $name = $import->latestLocation?->status?->name;
+            $key = $name === null ? 'stale' : (self::STAGE_BY_STATUS[strtoupper($name)] ?? 'otros');
+            $stages[$key]++;
+        }
+
+        // "Retrasado" solo aplica a modos de servicio que tienen ese estatus en su catálogo
+        $delayedModes = DB::table('service_type_status_modes as sm')
+            ->join('service_type_statuses as s', 's.id', '=', 'sm.service_type_status_id')
+            ->whereNull('s.deleted_at')
+            ->whereRaw("UPPER(s.name) = 'DELAYED'")
+            ->pluck('sm.service_mode_id');
+        $showDelayed = $stages['retraso'] > 0 || $active->whereIn('service_mode_id', $delayedModes)->isNotEmpty();
+
+        // Días promedio de solicitud a pago
+        $avgDays = $scope()
+            ->whereNotNull('petition_date')->whereNotNull('payment_date')
+            ->whereColumn('payment_date', '>=', 'petition_date')
+            ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
+            ->avg(DB::raw('DATEDIFF(payment_date, petition_date)'));
+
+        // Operaciones por mes (últimos 12 meses, sin canceladas)
+        $start = now()->startOfMonth()->subMonths(11);
+        $perMonth = $scope()->where('order_import_status_id', '!=', $canceled)
+            ->where('created_at', '>=', $start)
+            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, COUNT(*) as total")
+            ->groupBy('ym')->pluck('total', 'ym');
+        $months = [];
+        for ($i = 0; $i < 12; $i++) {
+            $d = $start->copy()->addMonths($i);
+            $months[] = ['label' => $d->locale('es')->isoFormat('MMM'), 'total' => (int) ($perMonth[$d->format('Y-m')] ?? 0), 'current' => $i === 11];
+        }
+
+        // Carga por aduana en el periodo
+        $byCustom = $scope()->where('order_import_status_id', '!=', $canceled)
+            ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
+            ->selectRaw('custom_id, SUM(order_import_status_id != ?) as active, SUM(order_import_status_id = ?) as closed', [$closedId, $closedId])
+            ->groupBy('custom_id')->get()
+            ->sortByDesc(fn ($r) => $r->active + $r->closed)->values();
+        $names = Custom::withTrashed()->whereIn('id', $byCustom->pluck('custom_id')->filter())->pluck('denomination', 'id');
+        $customs = $byCustom->take(6)->map(fn ($r) => [
+            'name' => $r->custom_id ? ($names[$r->custom_id] ?? '—') : 'Sin aduana',
+            'active' => (int) $r->active, 'closed' => (int) $r->closed,
+        ])->all();
+        $rest = $byCustom->slice(6);
+        if ($rest->isNotEmpty()) {
+            $customs[] = ['name' => 'Otras ' . $rest->count() . ' aduanas', 'active' => (int) $rest->sum('active'), 'closed' => (int) $rest->sum('closed')];
+        }
+
+        return [
+            'period' => $period,
+            'stages' => $stages,
+            'active' => $active->count(),
+            'urgent' => $active->where('urgent', true)->count(),
+            'stale' => $stages['stale'],
+            'showDelayed' => $showDelayed,
+            'avgDays' => $avgDays !== null ? round((float) $avgDays, 1) : null,
+            'months' => $months,
+            'customs' => $customs,
+        ];
+    }
+
     public function index(Request $request)
     {
         $code = $request->get('code_search');
@@ -107,12 +227,20 @@ class OrderImportController extends Controller
         $activeCount = (clone $baseQuery)->count();
         $urgentCount = (clone $baseQuery)->where('urgent', true)->count();
         $onlyUrgent = $request->boolean('urgent');
+        $isClient = $user->hasRole(RolesEnum::CLIENT);
+        $stage = $isClient ? $request->get('stage') : null;
         $imports = (clone $baseQuery)
             ->when($onlyUrgent, fn ($query) => $query->where('urgent', true))
+            ->when($stage, fn ($query, $stage) => $this->filterByStage($query, $stage))
+            ->with(['order.client', 'order.contact', 'latestLocation.status'])
+            ->when($isClient, fn ($query) => $query->with(['custom', 'customAgent']))
             ->orderBy('urgent', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20)->withQueryString();
         return view('order-import.index', [
+            'dashboard' => $isClient ? $this->clientDashboard($user, (string) $request->get('period', 'month')) : null,
+            'stage' => $stage,
+            'stageLabels' => self::STAGE_LABELS,
             'imports' => $imports,
             'statuses' => OrderImportStatus::all(),
             'activeCount' => $activeCount,
