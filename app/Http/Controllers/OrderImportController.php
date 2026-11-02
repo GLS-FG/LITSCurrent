@@ -107,12 +107,14 @@ class OrderImportController extends Controller
             ->pluck('sm.service_mode_id');
         $showDelayed = $stages['retraso'] > 0 || $active->whereIn('service_mode_id', $delayedModes)->isNotEmpty();
 
-        // Días promedio de solicitud a pago
-        $avgDays = $scope()
-            ->whereNotNull('petition_date')->whereNotNull('payment_date')
-            ->whereColumn('payment_date', '>=', 'petition_date')
-            ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
-            ->avg(DB::raw('DATEDIFF(payment_date, petition_date)'));
+        // Días que llevan abiertas las operaciones activas (desde su creación)
+        $today = now()->startOfDay();
+        $open = $active->map(fn ($i) => [
+            'days' => max(0, (int) $i->created_at->copy()->startOfDay()->diffInDays($today, true)),
+            'code' => $i->tracking_code,
+        ]);
+        $oldest = $open->sortByDesc('days')->first();
+        $avgOpen = $open->isNotEmpty() ? round($open->avg('days'), 1) : null;
 
         // Operaciones por mes (últimos 12 meses, sin canceladas)
         $start = now()->startOfMonth()->subMonths(11);
@@ -149,7 +151,8 @@ class OrderImportController extends Controller
             'urgent' => $active->where('urgent', true)->count(),
             'stale' => $stages['stale'],
             'showDelayed' => $showDelayed,
-            'avgDays' => $avgDays !== null ? round((float) $avgDays, 1) : null,
+            'avgOpen' => $avgOpen,
+            'oldest' => $oldest,
             'months' => $months,
             'customs' => $customs,
         ];

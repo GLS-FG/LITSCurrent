@@ -3,7 +3,6 @@
     Recibe: $dashboard (OrderImportController::clientDashboard), $stage (filtro activo), $stageLabels.
 --}}
 @php
-    $periods = ['month' => 'Este mes', '6m' => 'Últimos 6 meses', 'all' => 'Todo el tiempo'];
     $stageUrl = fn ($key) => route('imports.index', array_merge(
         request()->except(['stage', 'page']),
         $stage === $key ? [] : ['stage' => $key]
@@ -27,43 +26,51 @@
     $maxCustom = max(1, collect($dashboard['customs'])->max(fn ($c) => $c['active'] + $c['closed']) ?? 1);
 @endphp
 
-<div class="mt-5 flex flex-col gap-5">
-    {{-- Periodo --}}
-    <div class="flex items-center gap-4 text-sm font-medium" role="group" aria-label="Periodo">
-        <span class="font-semibold text-gray-400 dark:text-gray-500">Reportes</span>
-        @foreach($periods as $key => $label)
-            <a href="{{ route('imports.index', array_merge(request()->except(['period', 'page']), ['period' => $key])) }}"
-               class="py-1 {{ $dashboard['period'] === $key ? 'font-semibold text-lits-red-500' : 'text-entity-customs dark:text-violet-400 hover:underline' }}">{{ $label }}</a>
-        @endforeach
-    </div>
-
+<div
+    class="mt-5 flex flex-col gap-5"
+    x-data="{ keepScroll() { try { sessionStorage.setItem('stageScrollY', window.scrollY) } catch (e) {} } }"
+    x-init="
+        if (! window.__stageScrollBound) {
+            window.__stageScrollBound = true;
+            document.addEventListener('livewire:navigated', () => {
+                try {
+                    const y = sessionStorage.getItem('stageScrollY');
+                    if (y === null) return;
+                    sessionStorage.removeItem('stageScrollY');
+                    requestAnimationFrame(() => window.scrollTo(0, Number(y)));
+                } catch (e) {}
+            });
+        }
+    "
+>
     {{-- Indicadores --}}
-    <section aria-label="Indicadores" class="grid grid-cols-2 lg:grid-cols-4 rounded-xl border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550">
+    <section aria-label="Indicadores" class="grid grid-cols-1 sm:grid-cols-3 rounded-xl border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550">
         <div class="p-5">
             <div class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"><span class="size-1.5 rounded-full bg-green-600 dark:bg-green-400"></span>Activas</div>
             <div class="mt-2 text-3xl font-bold tabular-nums text-gray-900 dark:text-gray-50">{{ $dashboard['active'] }}</div>
             <div class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">operaciones sin cerrar</div>
         </div>
-        <div class="p-5 border-l border-gray-200 dark:border-lits-blue-450">
+        <div class="p-5 border-t sm:border-t-0 sm:border-l border-gray-200 dark:border-lits-blue-450">
             <div class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"><span class="size-1.5 rounded-full bg-lits-red-500"></span>Urgentes</div>
             <div class="mt-2 text-3xl font-bold tabular-nums {{ $dashboard['urgent'] ? 'text-lits-red-500' : 'text-gray-900 dark:text-gray-50' }}">{{ $dashboard['urgent'] }}</div>
             <div class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">marcadas como urgentes</div>
         </div>
-        <div class="p-5 border-t lg:border-t-0 border-gray-200 dark:border-lits-blue-450 lg:border-l">
-            <div class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"><span class="size-1.5 rounded-full bg-amber-500"></span>Sin actualizar</div>
-            <div class="mt-2 text-3xl font-bold tabular-nums text-gray-900 dark:text-gray-50">{{ $dashboard['stale'] }}</div>
-            <div class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">sin estatus de ubicación registrado</div>
-        </div>
-        <div class="p-5 border-t lg:border-t-0 border-l border-gray-200 dark:border-lits-blue-450">
-            <div class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"><span class="size-1.5 rounded-full bg-entity-customs"></span>De solicitud a pago</div>
+        <div class="p-5 border-t sm:border-t-0 sm:border-l border-gray-200 dark:border-lits-blue-450">
+            <div class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400"><span class="size-1.5 rounded-full bg-entity-customs"></span>Días abiertas</div>
             <div class="mt-2 flex items-baseline gap-1.5 text-3xl font-bold tabular-nums text-gray-900 dark:text-gray-50">
-                @if($dashboard['avgDays'] !== null)
-                    {{ rtrim(rtrim(number_format($dashboard['avgDays'], 1), '0'), '.') }}<small class="text-sm font-medium text-gray-400 dark:text-gray-500">días</small>
+                @if($dashboard['avgOpen'] !== null)
+                    {{ rtrim(rtrim(number_format($dashboard['avgOpen'], 1), '0'), '.') }}<small class="text-sm font-medium text-gray-400 dark:text-gray-500">días</small>
                 @else
                     —
                 @endif
             </div>
-            <div class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">promedio, operaciones del periodo</div>
+            <div class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
+                @if($dashboard['oldest'])
+                    promedio de las activas · la más antigua lleva {{ $dashboard['oldest']['days'] }} {{ $dashboard['oldest']['days'] === 1 ? 'día' : 'días' }}
+                @else
+                    promedio de las operaciones activas
+                @endif
+            </div>
         </div>
     </section>
 
@@ -72,7 +79,7 @@
         <div class="flex flex-wrap items-baseline justify-between gap-3 mb-3.5">
             <h2 id="etapas-t" class="text-base font-semibold text-gray-900 dark:text-gray-50">En qué etapa está cada operación activa</h2>
             @if($stage && isset($stageLabels[$stage]))
-                <a href="{{ route('imports.index', request()->except(['stage', 'page'])) }}#operaciones" class="inline-flex items-center gap-1.5 rounded-full bg-entity-customs-50 dark:bg-entity-customs/15 px-2.5 py-0.5 text-xs font-semibold text-entity-customs dark:text-violet-400">{{ $stageLabels[$stage] }} <i class="fa-regular fa-xmark"></i></a>
+                <a wire:navigate @click="keepScroll()" href="{{ route('imports.index', request()->except(['stage', 'page'])) }}#operaciones" class="inline-flex items-center gap-1.5 rounded-full bg-entity-customs-50 dark:bg-entity-customs/15 px-2.5 py-0.5 text-xs font-semibold text-entity-customs dark:text-violet-400">{{ $stageLabels[$stage] }} <i class="fa-regular fa-xmark"></i></a>
             @else
                 <span class="text-xs text-gray-400 dark:text-gray-500">Toca una etapa para filtrar el listado</span>
             @endif
@@ -81,7 +88,7 @@
             <div class="flex gap-[3px] h-11">
                 @foreach($stages as $key => $count)
                     @if($count > 0)
-                        <a href="{{ $stageUrl($key) }}" style="flex: {{ $count }}" aria-label="{{ $stageLabels[$key] }}, {{ $count }}"
+                        <a wire:navigate @click="keepScroll()" href="{{ $stageUrl($key) }}" style="flex: {{ $count }}" aria-label="{{ $stageLabels[$key] }}, {{ $count }}"
                            class="min-w-9 rounded-md px-3 flex items-center text-sm font-bold transition {{ $stageStyle[$key]['bg'] }} {{ $stageStyle[$key]['text'] }} {{ $stage && $stage !== $key ? 'opacity-35' : '' }} {{ $stage === $key ? '-translate-y-0.5' : '' }}">{{ $count }}</a>
                     @endif
                 @endforeach
@@ -93,7 +100,7 @@
             @foreach($stages as $key => $count)
                 @continue($key === 'otros' && $count === 0)
                 @continue($key === 'retraso' && ! $dashboard['showDelayed'])
-                <a href="{{ $stageUrl($key) }}" class="rounded-lg px-1.5 py-1.5 hover:bg-gray-50 dark:hover:bg-lits-blue-600/60">
+                <a wire:navigate @click="keepScroll()" href="{{ $stageUrl($key) }}" class="rounded-lg px-1.5 py-1.5 hover:bg-gray-50 dark:hover:bg-lits-blue-600/60">
                     <div class="flex items-center gap-1.5 text-xs leading-snug text-gray-500 dark:text-gray-400"><span class="size-2 shrink-0 rounded-[3px] {{ $stageStyle[$key]['dot'] }}"></span>{{ $stageLabels[$key] }}</div>
                     <div class="ml-3.5 mt-0.5 text-xs tabular-nums text-gray-400 dark:text-gray-500">{{ $count }} {{ $count === 1 ? 'operación' : 'operaciones' }}</div>
                 </a>
