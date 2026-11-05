@@ -40,7 +40,7 @@ class OrderImportController extends Controller
      * Etapas del despacho del tablero (rol Cliente), según el nombre del último
      * estatus de ubicación del catálogo (`service_type_statuses.name`).
      */
-    private const STAGE_BY_STATUS = [
+    public const STAGE_BY_STATUS = [
         'PENDING DOCUMENTS' => 'docs-pend',
         'DOCUMENTS COLLECTED' => 'docs-ok',
         'CUSTOMS CLEARANCE IN PROCESS' => 'proceso',
@@ -75,20 +75,13 @@ class OrderImportController extends Controller
      * Indicadores del tablero de Aduanas para el rol Cliente. Solo cuenta las
      * operaciones de las órdenes del propio contacto (misma regla que el listado).
      */
-    private function clientDashboard($user, string $period): array
+    private function clientDashboard($user): array
     {
-        $period = in_array($period, ['month', '6m', 'all']) ? $period : 'month';
-        $from = match ($period) {
-            'month' => now()->startOfMonth(),
-            '6m' => now()->subMonths(5)->startOfMonth(),
-            default => null,
-        };
         $scope = fn () => OrderImport::whereHas('order', fn ($q) => $q
             ->where('client_id', $user->client->id)
             ->where('contact_id', $user->id));
         $closed = [OrderImportStatusEnum::CLOSED->value, OrderImportStatusEnum::CANCELED->value];
         $canceled = OrderImportStatusEnum::CANCELED->value;
-        $closedId = OrderImportStatusEnum::CLOSED->value;
 
         // Operaciones activas por etapa (último estatus de ubicación)
         $active = $scope()->whereNotIn('order_import_status_id', $closed)->with('latestLocation.status')->get();
@@ -128,24 +121,30 @@ class OrderImportController extends Controller
             $months[] = ['label' => $d->locale('es')->isoFormat('MMM'), 'total' => (int) ($perMonth[$d->format('Y-m')] ?? 0), 'current' => $i === 11];
         }
 
-        // Carga por aduana en el periodo
-        $byCustom = $scope()->where('order_import_status_id', '!=', $canceled)
-            ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
-            ->selectRaw('custom_id, SUM(order_import_status_id != ?) as active, SUM(order_import_status_id = ?) as closed', [$closedId, $closedId])
-            ->groupBy('custom_id')->get()
-            ->sortByDesc(fn ($r) => $r->active + $r->closed)->values();
-        $names = Custom::withTrashed()->whereIn('id', $byCustom->pluck('custom_id')->filter())->pluck('denomination', 'id');
-        $customs = $byCustom->take(6)->map(fn ($r) => [
-            'name' => $r->custom_id ? ($names[$r->custom_id] ?? '—') : 'Sin aduana',
-            'active' => (int) $r->active, 'closed' => (int) $r->closed,
-        ])->all();
+        // Carga por aduana (histórico). La aduana sale de las declaraciones; si la operación
+        // no tiene ninguna, del campo propio de la operación (aduanas anteriores a las declaraciones).
+        $byCustom = [];
+        $scope()->where('order_import_status_id', '!=', $canceled)
+            ->with(['custom', 'declarations.custom'])->get()
+            ->each(function ($import) use (&$byCustom) {
+                $isClosed = $import->order_import_status_id === OrderImportStatusEnum::CLOSED;
+                $customs = $import->customsList();
+                foreach ($customs->isEmpty() ? [null] : $customs as $custom) {
+                    $key = $custom?->id ?? 0;
+                    $byCustom[$key] ??= ['id' => $key, 'name' => $custom ? $custom->denomination : 'Sin aduana', 'active' => 0, 'closed' => 0];
+                    $byCustom[$key][$isClosed ? 'closed' : 'active']++;
+                }
+            });
+        $byCustom = collect($byCustom)->sortByDesc(fn ($c) => $c['active'] + $c['closed'])->values();
+        // Opciones del filtro por aduana: solo aduanas con operaciones activas
+        $customOptions = $byCustom->filter(fn ($c) => $c['id'] !== 0 && $c['active'] > 0)->sortBy('name')->pluck('name', 'id')->all();
+        $customs = $byCustom->take(6)->all();
         $rest = $byCustom->slice(6);
         if ($rest->isNotEmpty()) {
             $customs[] = ['name' => 'Otras ' . $rest->count() . ' aduanas', 'active' => (int) $rest->sum('active'), 'closed' => (int) $rest->sum('closed')];
         }
 
         return [
-            'period' => $period,
             'stages' => $stages,
             'active' => $active->count(),
             'urgent' => $active->where('urgent', true)->count(),
@@ -155,6 +154,7 @@ class OrderImportController extends Controller
             'oldest' => $oldest,
             'months' => $months,
             'customs' => $customs,
+            'customOptions' => $customOptions,
         ];
     }
 
@@ -166,6 +166,7 @@ class OrderImportController extends Controller
         $service = $request->get('service_search');
         $status = $request->get('status_search');
         $user = Auth::user();
+        $isClient = $user->hasRole(RolesEnum::CLIENT);
         $baseQuery = OrderImport::whereNotIn('order_import_status_id', [OrderImportStatusEnum::CLOSED, OrderImportStatusEnum::CANCELED])
             ->when($user->hasRole(RolesEnum::CLIENT), fn ($query) => $query
                 ->whereHas('order', function ($query) use ($user) {
@@ -173,13 +174,15 @@ class OrderImportController extends Controller
                         ->where('contact_id', $user->id);
                 })
             )
-            ->where(function ($query) use ($code, $reference, $client, $service, $status) {
+            ->where(function ($query) use ($code, $reference, $client, $service, $status, $isClient) {
                 return $query->when($code, fn ($query, $code) => $query
-                    ->where(function ($query) use ($code, $reference, $client) {
+                    ->where(function ($query) use ($code, $isClient) {
                         return $query->where('tracking_code', 'like', '%' . $code . '%')
                             ->orWhereHas('order', function ($query) use ($code) {
                                 return $query->where('code', 'like', '%' . $code . '%');
-                            });
+                            })
+                            // El cliente tiene un solo buscador: también busca en la referencia
+                            ->when($isClient, fn ($query) => $query->orWhere('reference', 'like', '%' . $code . '%'));
                     })
                 )
                     ->when($reference, fn ($query, $reference) => $query
@@ -230,19 +233,24 @@ class OrderImportController extends Controller
         $activeCount = (clone $baseQuery)->count();
         $urgentCount = (clone $baseQuery)->where('urgent', true)->count();
         $onlyUrgent = $request->boolean('urgent');
-        $isClient = $user->hasRole(RolesEnum::CLIENT);
         $stage = $isClient ? $request->get('stage') : null;
+        $customFilter = $isClient ? $request->integer('custom') : null;
         $imports = (clone $baseQuery)
             ->when($onlyUrgent, fn ($query) => $query->where('urgent', true))
+            // Aduana: la de sus declaraciones o, si no tiene ninguna, la propia de la operación
+            ->when($customFilter, fn ($query, $id) => $query->where(fn ($q) => $q
+                ->whereHas('declarations', fn ($d) => $d->where('custom_id', $id))
+                ->orWhere(fn ($q) => $q->whereDoesntHave('declarations')->where('custom_id', $id))))
             ->when($stage, fn ($query, $stage) => $this->filterByStage($query, $stage))
             ->with(['order.client', 'order.contact', 'latestLocation.status'])
-            ->when($isClient, fn ($query) => $query->with(['custom', 'customAgent']))
+            ->when($isClient, fn ($query) => $query->with(['custom', 'customAgent', 'declarations.custom', 'declarations.customAgent']))
             ->orderBy('urgent', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20)->withQueryString();
         return view('order-import.index', [
-            'dashboard' => $isClient ? $this->clientDashboard($user, (string) $request->get('period', 'month')) : null,
+            'dashboard' => $isClient ? $this->clientDashboard($user) : null,
             'stage' => $stage,
+            'customFilter' => $customFilter,
             'stageLabels' => self::STAGE_LABELS,
             'imports' => $imports,
             'statuses' => OrderImportStatus::all(),

@@ -8,13 +8,10 @@
         @endif
 
         @if($dashboard)
-            @include('order-import.partials.client-dashboard')
-        @endif
-
+            @include('order-import.partials.client-index')
+        @else
         <div id="operaciones" class="mt-5 scroll-mt-4" x-data="{ showFilters: false }">
             <form method="GET" action="{{ route('imports.index') }}" class="flex flex-col gap-2">
-                @if(request('period'))<input type="hidden" name="period" value="{{ request('period') }}">@endif
-                @if($stage)<input type="hidden" name="stage" value="{{ $stage }}">@endif
                 @if($onlyUrgent)<input type="hidden" name="urgent" value="1">@endif
                 <div class="flex flex-col md:flex-row gap-2">
                     <div class="flex-1 flex items-center gap-2 rounded-lg bg-white dark:bg-lits-blue-550 border border-gray-200 dark:border-lits-blue-450 px-3.5 py-2.5">
@@ -88,10 +85,6 @@
                         <tr class="border-b border-gray-200 dark:border-lits-blue-450">
                             <th scope="col" class="py-2.5 pl-2 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Orden</th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Cliente</th>
-                            @if($dashboard)
-                                <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Aduana</th>
-                                <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Agente aduanal</th>
-                            @endif
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Referencia</th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Fecha solicitud</th>
                             <th scope="col" class="px-3 py-2.5 text-left text-xs font-semibold whitespace-nowrap text-gray-400 dark:text-gray-500">Estatus</th>
@@ -116,10 +109,6 @@
                                     </div>
                                 </div>
                             </td>
-                            @if($dashboard)
-                                <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $import->custom?->denomination ?? '—' }}</td>
-                                <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400">{{ $import->customAgent?->company_name ?: trim($import->customAgent?->name . ' ' . $import->customAgent?->last_name) ?: '—' }}</td>
-                            @endif
                             <td class="px-3 py-3.5 text-sm text-gray-500 dark:text-gray-400 max-w-xs">
                                 <span class="block break-words">{{ $import->reference }}</span>
                             </td>
@@ -133,12 +122,9 @@
                                     role="button"
                                 >
                                     @if($import->latestLocation != null)
-                                        @php
-                                            $stageKey = $dashboard ? (['PENDING DOCUMENTS' => 'docs-pend', 'DOCUMENTS COLLECTED' => 'docs-ok', 'CUSTOMS CLEARANCE IN PROCESS' => 'proceso', 'CUSTOMS CLEARANCE DONE' => 'concluido', 'DELAYED' => 'retraso'][strtoupper($import->latestLocation->status->name)] ?? null) : null;
-                                        @endphp
-                                        <span class="inline-flex items-center gap-1.5 text-xs {{ $stageKey === 'retraso' ? 'font-semibold text-lits-red-500' : 'font-medium text-gray-500 dark:text-gray-400' }}">
-                                            <span class="size-1.5 rounded-full {{ ['docs-pend' => 'bg-violet-200 dark:bg-[#3F3568]', 'docs-ok' => 'bg-violet-300 dark:bg-[#6A58A8]', 'proceso' => 'bg-violet-500 dark:bg-[#8D78D6]', 'concluido' => 'bg-violet-800 dark:bg-[#B9A8F5]', 'retraso' => 'bg-lits-red-500'][$stageKey] ?? 'bg-gray-400 dark:bg-gray-500' }}"></span>
-                                            {{ $stageKey ? $stageLabels[$stageKey] : $import->latestLocation->status->name }}
+                                        <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+                                            <span class="size-1.5 rounded-full bg-gray-400 dark:bg-gray-500"></span>
+                                            {{ $import->latestLocation->status->name }}
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
@@ -149,97 +135,12 @@
                                 </a>
                             </td>
                             <td class="relative py-3.5 pr-4 pl-3 text-sm font-medium whitespace-nowrap">
-                                <div class="flex items-center justify-center gap-1">
-                                    @can('update', $import)
-                                        <button
-                                            type="button"
-                                            @click="window.dispatchEvent(new CustomEvent('request-edit-import', { detail: { url: '{{ route('orders.imports.edit-data', ['order' => $import->order->id, 'import' => $import->id]) }}' } }))"
-                                            data-tippy-content="Editar"
-                                            class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
-                                        >
-                                            <i class="fa-regular fa-pen-to-square"></i>
-                                        </button>
-                                    @endcan
-                                    @can('delete', $import)
-                                        <div
-                                            class="relative inline-block text-left"
-                                            x-data="{ openCancel: false }"
-                                            @keydown.escape.prevent.stop="close($refs.buttonDropdown)"
-                                            @focusin.window="! $refs.panel.contains($event.target) && close()"
-                                            x-id="['dropdown-button-{{$import->id}}']"
-                                            @confirm.window="{{$import->id}} == $event.detail && $refs['delete-row-' + $event.detail].submit()"
-                                        >
-                                            <button
-                                                type="button"
-                                                @click="openCancel = true"
-                                                data-tippy-content="Cancelar"
-                                                class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400 hover:cursor-pointer"
-                                            >
-                                                <i class="fa-regular fa-trash-can"></i>
-                                            </button>
-                                            <div x-cloak x-show="openCancel" class="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                                                <div
-                                                    class="fixed inset-0 bg-gray-500/75 dark:bg-gray-950/75 transition-opacity"
-                                                    aria-hidden="true"
-                                                    x-show="openCancel"
-                                                    x-transition:enter="ease-out duration-300"
-                                                    x-transition:enter-start="opacity-0"
-                                                    x-transition:enter-end="opacity-100"
-                                                    x-transition:leave="ease-in duration-200"
-                                                    x-transition:leave-start="opacity-100"
-                                                    x-transition:leave-end="opacity-0"
-                                                ></div>
-
-                                                <div class="fixed inset-0 z-100 w-screen overflow-y-auto">
-                                                    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                                                        <div
-                                                            x-show="openCancel"
-                                                            x-transition:enter="ease-out duration-300"
-                                                            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                                                            x-transition:leave="ease-in duration-200"
-                                                            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                                                            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                            class="relative transform overflow-hidden rounded-lg bg-white dark:bg-lits-blue-550 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
-                                                        >
-                                                            <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-                                                                <button type="button" @click="openCancel = false" class="rounded-md bg-white dark:bg-lits-blue-550 text-gray-400 dark:text-gray-500 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
-                                                                    <span class="sr-only">Close</span>
-                                                                    <i class="fa-regular fa-xmark"></i>
-                                                                </button>
-                                                            </div>
-                                                            <div class="sm:flex sm:items-start">
-                                                                <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/15 sm:mx-0 sm:size-10">
-                                                                    <i class="fa-regular fa-triangle-exclamation text-lg text-red-600 dark:text-red-400"></i>
-                                                                </div>
-                                                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left whitespace-normal">
-                                                                    <h3 class="text-base font-semibold text-gray-900 dark:text-gray-50" id="modal-title">Cancelar importación</h3>
-                                                                    <div class="mt-2">
-                                                                        <p class="text-sm text-gray-500 dark:text-gray-400 font-normal">¿Estás seguro de cancelar la siguiente importación?</p>
-                                                                        <p class="text-sm text-red-500 dark:text-red-400 font-medium">{{$import->reference}}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                                                <form action="{{route('orders.imports.destroy', ['order' => $import->order->id, 'import' => $import->id])}}" method="POST">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Cancelar</button>
-                                                                </form>
-                                                                <button type="button" @click="openCancel = false" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-lits-blue-550 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-50 shadow-xs ring-1 ring-gray-300 dark:ring-gray-600 ring-inset hover:bg-gray-50 dark:hover:bg-gray-800 sm:mt-0 sm:w-auto">Regresar</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endcan
-                                </div>
+                                @include('order-import.partials.row-actions')
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="{{ $dashboard ? 8 : 6 }}"class="px-3 py-8 text-sm text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="6" class="px-3 py-8 text-sm text-center text-gray-500 dark:text-gray-400">
                                 No hay órdenes de servicio en la base de datos
                                 @can('create', \App\Models\OrderImport::class)
                                     <span>, para crear una debes ingresar a una <a href="{{route('orders.index')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">órden de servicio</a>, hacer click en "Agregar servicio", seguido de "Importación"</span>
@@ -256,6 +157,7 @@
             <nav class="mt-2">
                 {{ $imports->links() }}
             </nav>
+        @endif
         @endif
     </section>
     @if($imports->contains(fn ($import) => auth()->user()->can('update', $import)))

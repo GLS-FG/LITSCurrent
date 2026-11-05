@@ -40,6 +40,23 @@ class OrderImport extends Model
         return $this->belongsTo(CustomAgent::class)->withTrashed();
     }
 
+    /**
+     * Aduanas de la operación: las de sus declaraciones; si no tiene ninguna, la propia
+     * del servicio (campo usado antes de existir las declaraciones).
+     */
+    public function customsList(): \Illuminate\Support\Collection
+    {
+        $fromDeclarations = $this->declarations->map->custom->filter()->unique('id')->values();
+        return $fromDeclarations->isNotEmpty() ? $fromDeclarations : collect([$this->custom])->filter()->values();
+    }
+
+    /** Agentes aduanales de la operación (mismo criterio que customsList). */
+    public function customAgentsList(): \Illuminate\Support\Collection
+    {
+        $fromDeclarations = $this->declarations->map->customAgent->filter()->unique('id')->values();
+        return $fromDeclarations->isNotEmpty() ? $fromDeclarations : collect([$this->customAgent])->filter()->values();
+    }
+
     public function declarations(): HasMany
     {
         return $this->hasMany(CustomDeclaration::class);
