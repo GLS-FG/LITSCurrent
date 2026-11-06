@@ -77,7 +77,7 @@
                             <tr class="border-b border-gray-200 dark:border-lits-blue-450">
                                 <th scope="col" class="relative px-7 sm:w-12 sm:px-6">
                                     <div class="group absolute top-1/2 left-4 -mt-2 grid size-4 grid-cols-1">
-                                        <input type="checkbox" id="allPrivateDocuments" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-lits-blue-550 checked:border-lits-red-500 checked:bg-lits-red-500 indeterminate:border-lits-red-500 indeterminate:bg-lits-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-500 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
+                                        <input type="checkbox" id="allPrivateDocuments" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-lits-blue-550 checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
                                         <i class="fa-solid fa-check text-xs pointer-events-none col-start-1 row-start-1 self-center justify-self-center text-white group-has-disabled:text-gray-950/25 opacity-0 group-has-checked:opacity-100 group-has-indeterminate:opacity-100"></i>
                                     </div>
                                 </th>
@@ -97,7 +97,7 @@
                                     <div class="absolute inset-y-0 left-0 hidden w-0.5 bg-lits-red-500 group-has-checked:block"></div>
 
                                     <div class="group absolute top-1/2 left-4 -mt-2 grid size-4 grid-cols-1">
-                                        <input type="checkbox" name="privatefiles[]" value="{{$file->id}}" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-lits-blue-550 checked:border-lits-red-500 checked:bg-lits-red-500 indeterminate:border-lits-red-500 indeterminate:bg-lits-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lits-red-500 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
+                                        <input type="checkbox" name="privatefiles[]" value="{{$file->id}}" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-lits-blue-550 checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
                                         <i class="fa-solid fa-check text-xs pointer-events-none col-start-1 row-start-1 self-center justify-self-center text-white group-has-disabled:text-gray-950/25 opacity-0 group-has-checked:opacity-100 group-has-indeterminate:opacity-100"></i>
                                     </div>
                                 </td>

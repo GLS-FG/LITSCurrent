@@ -5,7 +5,7 @@
         <x-headings.with-one-action
             :title="'Tipos de documento privado'"
             :buttonLabel="'Nuevo Tipo'"
-            :buttonAction="route('private-types.create')"
+            :buttonEvent="'open-add-private-type-modal'"
             :objectClass="\App\Models\PrivateDocumentType::class"
         />
         @if(session()->has('success'))
@@ -43,14 +43,18 @@
                             <td class="py-3.5 pr-2 pl-3 text-sm font-medium whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
                                 @can('update', $docType)
-                                    <a
-                                        href="{{route('private-types.edit', ['private_type' => $docType->id])}}"
+                                    <button
+                                        type="button"
+                                        @click="window.dispatchEvent(new CustomEvent('request-edit-private-type', { detail: @js([
+                                            'id' => $docType->id,
+                                            'update_url' => route('private-types.update', ['private_type' => $docType->id]),
+                                            'name' => $docType->name,
+                                        ]) }))"
                                         data-tippy-content="Editar"
-                                        role="button"
-                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 hover:cursor-pointer"
                                     >
                                         <i class="fa-regular fa-pen-to-square"></i>
-                                    </a>
+                                    </button>
                                 @endcan
                                 @can('delete', $docType)
                                     <div
@@ -134,7 +138,7 @@
                                     <td colspan="3" class="px-3 py-4 text-sm text-center text-gray-500 dark:text-gray-400">
                                         No hay tipos de documentos en la base de datos
                                         @can('create', \App\Models\PrivateDocumentType::class)
-                                            <span>, define uno nuevo haciendo <a href="{{route('private-types.create')}}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">click aquí</a></span>
+                                            <span>, define uno nuevo haciendo <button type="button" @click="window.dispatchEvent(new CustomEvent('open-add-private-type-modal'))" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 hover:cursor-pointer">click aquí</button></span>
                                         @endcan
                                         .
                                     </td>
@@ -150,4 +154,10 @@
             </nav>
         @endif
     </section>
+    @can('create', \App\Models\PrivateDocumentType::class)
+        <x-modals.private-type-form mode="create" />
+    @endcan
+    @if($documentTypes->isNotEmpty() && auth()->user()->can('update', $documentTypes->first()))
+        <x-modals.private-type-form mode="edit" />
+    @endif
 </x-layout-admin>
