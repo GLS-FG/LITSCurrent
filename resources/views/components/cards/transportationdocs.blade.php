@@ -92,14 +92,14 @@
                         @forelse($documents as $file)
                             <tr x-data="{ open: false }" class="group border-b border-gray-100 dark:border-lits-blue-450/60 last:border-b-0 has-checked:bg-gray-50 dark:has-checked:bg-lits-blue-550/60">
                                 <td class="relative px-7 sm:w-12 sm:px-6">
-                                    <div class="absolute inset-y-0 left-0 hidden w-0.5 bg-lits-red-500 group-has-checked:block"></div>
+                                    <div class="absolute inset-y-0 left-0 hidden w-0.5 bg-indigo-600 group-has-checked:block"></div>
 
                                     <div class="group absolute top-1/2 left-4 -mt-2 grid size-4 grid-cols-1">
                                         <input type="checkbox" name="files[]" value="{{$file->id}}" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-lits-blue-550 checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
                                         <i class="fa-solid fa-check text-xs pointer-events-none col-start-1 row-start-1 self-center justify-self-center text-white group-has-disabled:text-gray-950/25 opacity-0 group-has-checked:opacity-100 group-has-indeterminate:opacity-100"></i>
                                     </div>
                                 </td>
-                                <td class="py-3.5 pr-3 text-sm font-medium text-gray-900 dark:text-gray-50 group-has-checked:text-lits-red-600 dark:group-has-checked:text-lits-red-400">{{$file->original_name}}</td>
+                                <td class="py-3.5 pr-3 text-sm font-medium text-gray-900 dark:text-gray-50 group-has-checked:text-indigo-600 dark:group-has-checked:text-indigo-400">{{$file->original_name}}</td>
                                 <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">{{ $file->size_label }}</td>
                                 <td class="px-3 py-3.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">{{ $file->created_at->isoFormat('DD/MM/YYYY') }}</td>
                                 <td class="py-3.5 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-3">
