@@ -59,6 +59,10 @@
                     this.open = false;
                 },
                 remove(i) { this.chips.splice(i, 1); },
+                choose(f) {
+                    this.add(f);
+                    this.$nextTick(() => this.$refs.form.submit());
+                },
                 removeAndSearch(i) {
                     this.remove(i);
                     const params = new URLSearchParams();
@@ -103,9 +107,9 @@
                         @input="idx = 0; open = text.trim() !== ''"
                         @keydown.arrow-down.prevent="if (open) idx = (idx + 1) % keys().length"
                         @keydown.arrow-up.prevent="if (open) idx = (idx + keys().length - 1) % keys().length"
-                        @keydown.enter.prevent="text.trim() ? add(keys()[idx]) : submit()"
+                        @keydown.enter.prevent="text.trim() ? choose(keys()[idx]) : submit()"
                         @keydown.escape="open = false"
-                        @keydown.backspace="if (!text && chips.length) remove(chips.length - 1)"
+                        @keydown.backspace="if (!text && chips.length) removeAndSearch(chips.length - 1)"
                         @blur="open = false"
                         class="flex-1 min-w-32 border-0 bg-transparent p-0 py-1 text-sm text-gray-900 dark:text-gray-50 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none"
                     >
@@ -117,7 +121,7 @@
                                 type="button"
                                 role="option"
                                 :aria-selected="n === idx"
-                                @click="add(k); $refs.q.focus()"
+                                @click="choose(k)"
                                 @mouseenter="idx = n"
                                 :class="n === idx ? 'bg-gray-50 dark:bg-gray-800' : ''"
                                 class="flex w-full items-baseline gap-2 rounded-md px-2.5 py-2 text-left text-sm text-gray-900 dark:text-gray-50 hover:cursor-pointer"
