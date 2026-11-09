@@ -9,54 +9,16 @@
             <x-alerts.success class="mt-4" :message="session('success')" />
         @endif
 
-        <div class="mt-5" x-data="{ showFilters: false }">
-            <form method="GET" action="{{ route('notifications.index') }}" class="flex flex-col gap-2">
-                <div class="flex flex-col md:flex-row gap-2">
-                    <div class="flex-1 flex items-center gap-2 rounded-lg bg-white dark:bg-lits-blue-550 border border-gray-200 dark:border-lits-blue-450 px-3.5 py-2.5">
-                        <i class="fa-regular fa-magnifying-glass text-gray-400 dark:text-gray-500"></i>
-                        <input type="text" value="{{ request('code_search') }}" autocomplete="off" name="code_search" placeholder="{{__('indexes.search_orders')}}" class="flex-1 border-0 bg-transparent p-0 text-sm text-gray-900 dark:text-gray-50 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none">
-                        @if(request('code_search'))
-                            <a href="{{ route('notifications.index') }}" class="text-gray-400 dark:text-gray-500 hover:text-gray-600" aria-hidden="true"><i class="fa-regular fa-xmark"></i></a>
-                        @endif
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="showFilters = !showFilters" aria-label="{{__('indexes.search')}}" class="inline-flex items-center justify-center rounded-lg border border-gray-200 dark:border-lits-blue-450 bg-white dark:bg-lits-blue-550 px-3.5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:cursor-pointer">
-                            <i class="fa-regular fa-sliders"></i>
-                        </button>
-                        <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-lits-red-500 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-lits-red-600 hover:cursor-pointer">
-                            {{__('indexes.search')}}
-                        </button>
-                    </div>
-                </div>
-
-                <div x-cloak x-show="showFilters" x-transition class="grid grid-cols-1 sm:grid-cols-4 gap-2 rounded-lg bg-gray-50/60 dark:bg-lits-blue-550/60 border border-gray-100 dark:border-lits-blue-450 p-2.5">
-                    <div class="relative">
-                        <input type="text" value="{{ request('client_search') }}" autocomplete="off" name="client_search" placeholder="{{__('indexes.search_clients')}}" class="w-full rounded-md bg-white dark:bg-lits-blue-550 py-2 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
-                        @if(request('client_search'))
-                            <a href="{{ route('notifications.index') }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600"><i class="fa-regular fa-xmark text-xs"></i></a>
-                        @endif
-                    </div>
-                    <div class="relative">
-                        <input type="text" value="{{ request('reference_search') }}" autocomplete="off" name="reference_search" placeholder="{{__('indexes.search_references')}}" class="w-full rounded-md bg-white dark:bg-lits-blue-550 py-2 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
-                        @if(request('reference_search'))
-                            <a href="{{ route('notifications.index') }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600"><i class="fa-regular fa-xmark text-xs"></i></a>
-                        @endif
-                    </div>
-                    <div class="relative">
-                        <input type="text" value="{{ request('service_search') }}" autocomplete="off" name="service_search" placeholder="Service Type" class="w-full rounded-md bg-white dark:bg-lits-blue-550 py-2 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
-                        @if(request('service_search'))
-                            <a href="{{ route('notifications.index') }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600"><i class="fa-regular fa-xmark text-xs"></i></a>
-                        @endif
-                    </div>
-                    <div class="relative">
-                        <input type="text" value="{{ request('status_search') }}" autocomplete="off" name="status_search" placeholder="{{__('indexes.search_status')}}" class="w-full rounded-md bg-white dark:bg-lits-blue-550 py-2 pr-8 pl-3 text-sm text-gray-900 dark:text-gray-50 outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
-                        @if(request('status_search'))
-                            <a href="{{ route('notifications.index') }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600"><i class="fa-regular fa-xmark text-xs"></i></a>
-                        @endif
-                    </div>
-                </div>
-            </form>
-        </div>
+        @php
+            $searchFields = [
+                'code' => ['param' => 'code_search', 'label' => __('indexes.field_code'), 'hint' => __('indexes.hint_code')],
+                'client' => ['param' => 'client_search', 'label' => __('indexes.field_client'), 'hint' => __('indexes.hint_client')],
+                'reference' => ['param' => 'reference_search', 'label' => __('indexes.field_reference'), 'hint' => __('indexes.hint_reference_service')],
+                'service' => ['param' => 'service_search', 'label' => __('indexes.field_service'), 'hint' => __('indexes.hint_service')],
+                'status' => ['param' => 'status_search', 'label' => __('indexes.field_status'), 'hint' => __('indexes.hint_status')],
+            ];
+        @endphp
+        <x-search.chip-bar :fields="$searchFields" :action="route('notifications.index')" :ariaLabel="__('indexes.search_orders')" :keepUrgent="request()->boolean('urgent')" />
 
         <div class="mt-4 flex items-center gap-5 border-b border-gray-200 dark:border-lits-blue-450">
             <a
