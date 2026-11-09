@@ -393,6 +393,7 @@ class OrderController extends Controller
 
     public function updateUrgent(Order $order)
     {
+        Gate::authorize('update', $order);
         $newUrgent = !$order->urgent;
         $order->update(['urgent' => $newUrgent]);
         foreach ($this->getOrderServices($order) as $service) {
