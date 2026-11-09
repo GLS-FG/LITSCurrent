@@ -39,6 +39,7 @@
         @endphp
         <div
             class="mt-5"
+            x-init="restoreFocus()"
             x-data="{
                 fields: @js($searchFields),
                 chips: @js($searchChips),
@@ -48,6 +49,14 @@
                 open: false,
                 idx: 0,
                 keys() { return Object.keys(this.fields); },
+                markFocus() { try { sessionStorage.setItem('ordersSearchFocus', String(Date.now())); } catch (e) {} },
+                restoreFocus() {
+                    try {
+                        const t = Number(sessionStorage.getItem('ordersSearchFocus'));
+                        sessionStorage.removeItem('ordersSearchFocus');
+                        if (t && Date.now() - t < 10000) this.$nextTick(() => this.$refs.q.focus());
+                    } catch (e) {}
+                },
                 replaces(f) { return this.chips.some(c => c.f === f); },
                 add(f) {
                     const v = this.text.trim();
@@ -61,10 +70,12 @@
                 remove(i) { this.chips.splice(i, 1); },
                 choose(f) {
                     this.add(f);
+                    this.markFocus();
                     this.$nextTick(() => this.$refs.form.submit());
                 },
                 removeAndSearch(i) {
                     this.remove(i);
+                    this.markFocus();
                     const params = new URLSearchParams();
                     this.chips.forEach(c => params.append(this.fields[c.f].param, c.v));
                     if (this.urgent) params.set('urgent', '1');
@@ -73,6 +84,7 @@
                 },
                 submit() {
                     if (this.text.trim()) this.add(this.keys()[0]);
+                    this.markFocus();
                     this.$nextTick(() => this.$refs.form.submit());
                 },
             }"
@@ -126,7 +138,7 @@
                                 :class="n === idx ? 'bg-gray-50 dark:bg-gray-800' : ''"
                                 class="flex w-full items-baseline gap-2 rounded-md px-2.5 py-2 text-left text-sm text-gray-900 dark:text-gray-50 hover:cursor-pointer"
                             >
-                                <span class="w-24 shrink-0 font-semibold" x-text="fields[k].label"></span>
+                                <span class="w-36 shrink-0 font-semibold" x-text="fields[k].label"></span>
                                 <span class="truncate text-entity-orders dark:text-indigo-400" x-text="text.trim()"></span>
                                 <span class="ml-auto shrink-0 pl-2 text-xs text-gray-400 dark:text-gray-500" x-text="replaces(k) ? t.replaces : fields[k].hint"></span>
                             </button>
