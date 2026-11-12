@@ -185,7 +185,7 @@
                                     </div>
                                 </div>
                                 <a
-                                    href="https://aplicacionesc.mat.sat.gob.mx/soianet/oia_consultarapd_cep.aspx?&pa={{$declaration->customAgent->patent}}&dn={{$declaration->petition}}&s=0&ap={{$declaration->entry_date->isoFormat('YYYY')}}&pad={{$declaration->custom->code}}&ad={{$declaration->custom->name}}"
+                                    href="https://aplicacionesc.mat.sat.gob.mx/soianet/oia_consultarapd_cep.aspx?&pa={{$declaration->customAgent->patent}}&dn={{$declaration->petition}}&s=0&ap={{$declaration->entry_date?->isoFormat('YYYY')}}&pad={{$declaration->custom->code}}&ad={{$declaration->custom->name}}"
                                     target="_blank"
                                     data-tippy-content="Ver enlace"
                                     role="button"

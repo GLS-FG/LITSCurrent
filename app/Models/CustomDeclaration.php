@@ -18,12 +18,12 @@ class CustomDeclaration extends Model
 
     public function custom(): BelongsTo
     {
-        return $this->belongsTo(Custom::class);
+        return $this->belongsTo(Custom::class)->withTrashed();
     }
 
     public function customAgent(): BelongsTo
     {
-        return $this->belongsTo(CustomAgent::class);
+        return $this->belongsTo(CustomAgent::class)->withTrashed();
     }
 
     public function incoterm(): BelongsTo
