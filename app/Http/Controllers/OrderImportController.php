@@ -313,7 +313,7 @@ class OrderImportController extends Controller
         }
         $milestones = [];
         foreach ($import->locations()->selectRaw('min(created_at) as location_date, service_type_status_id')->groupBy('service_type_status_id')->get() as $group) {
-            $status = ServiceTypeStatus::findOrFail($group->service_type_status_id);
+            $status = ServiceTypeStatus::withTrashed()->findOrFail($group->service_type_status_id);
             $milestones[] = ['status' => $status->name, 'date' => $group->location_date];
         }
         $data = [

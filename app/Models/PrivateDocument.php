@@ -18,6 +18,6 @@ class PrivateDocument extends Model
 
     public function documentType(): BelongsTo
     {
-        return $this->belongsTo(PrivateDocumentType::class, 'private_document_type_id');
+        return $this->belongsTo(PrivateDocumentType::class, 'private_document_type_id')->withTrashed();
     }
 }
